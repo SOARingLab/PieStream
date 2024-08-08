@@ -16,10 +16,16 @@ public class DFA {
     private Node lastState;
     private Node initState;
     private TemporalRelations.PreciseRel relation;
+    private boolean isStateChanged;
+    private Alphabet lastAlphabet;
+    private Alphabet currentAlphabet;
 
     public DFA() {
         this.graph = new DefaultDirectedGraph<>(LabeledEdge.class);
         this.nodeMap = new HashMap<>();
+        this.isStateChanged = false;
+        this.lastAlphabet = null;
+        this.currentAlphabet = null;
     }
 
     public DFA(TemporalRelations.PreciseRel relation) {
@@ -73,6 +79,18 @@ public class DFA {
         this.relation = relation;
     }
 
+    public boolean isStateChanged() {
+        return isStateChanged;
+    }
+
+    public Alphabet getLastAlphabet() {
+        return lastAlphabet;
+    }
+
+    public Alphabet getCurrentAlphabet() {
+        return currentAlphabet;
+    }
+
     public void printGraph() {
         System.out.println("Graph vertices:");
         for (Node vertex : graph.vertexSet()) {
@@ -108,6 +126,9 @@ public class DFA {
             return null;
         }
 
+        lastAlphabet = currentAlphabet;
+        currentAlphabet = alphabet;
+
         // If current state is initState, first try to transition based on trans="X"
         if (currentState.equals(initState)) {
             Set<LabeledEdge> initOutgoingEdges = graph.outgoingEdgesOf(initState);
@@ -115,7 +136,8 @@ public class DFA {
                 if (edge.getTrans().equals("X")) {
                     lastState = currentState;
                     currentState = graph.getEdgeTarget(edge);
-                    break;
+                    checkAndUpdateStateChange();
+                    return currentState;
                 }
             }
         }
@@ -124,6 +146,7 @@ public class DFA {
         Node nextState = findNextState(currentState, alphabet);
         lastState = currentState;
         currentState = nextState;
+        checkAndUpdateStateChange();
         return currentState;
     }
 
@@ -143,5 +166,9 @@ public class DFA {
 
         // If no valid transition is found, throw an exception or log an error
         throw new IllegalArgumentException("No valid transition found for input: " + alphabet);
+    }
+
+    private void checkAndUpdateStateChange() {
+        isStateChanged = !currentState.equals(lastState);
     }
 }

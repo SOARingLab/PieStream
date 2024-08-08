@@ -13,24 +13,50 @@ import org.example.piepair.eba.predicate.Greater;
 import org.example.piepair.eba.predicate.Predicate;
 import org.example.piepair.TemporalRelations;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class PIEPair {
     private final DFA dfa;
     private final EventClassifier classifier;
+    private PointEvent formerPieStart;
+    private PointEvent formerPieEnd;
+    private PointEvent latterPieStart;
+    private PointEvent latterPieEnd;
 
     public PIEPair(TemporalRelations.PreciseRel relation, EBA formerPred, EBA latterPred) {
         this.dfa = Dot2DFA.createDFAFromRelation(relation);
         this.classifier = new EventClassifier(formerPred, latterPred);
+        this.formerPieStart = null;
+        this.formerPieEnd = null;
+        this.latterPieStart = null;
+        this.latterPieEnd = null;
     }
 
-    public void stepByAlphabet(PointEvent event, Schema schema) {
+    public void stepByPE(PointEvent event, Schema schema) {
         Alphabet alphabet = classifier.classify(event, schema);
         dfa.step(alphabet);
+        recordEndPoint(event, alphabet);
+    }
 
+    private void recordEndPoint(PointEvent event, Alphabet alphabet) {
+        if (dfa.isStateChanged()) {
+            Alphabet lastAlphabet = dfa.getLastAlphabet();
+            Alphabet currentAlphabet = dfa.getCurrentAlphabet();
 
+            if ((lastAlphabet == Alphabet.O || lastAlphabet == Alphabet.I) && (currentAlphabet == Alphabet.Z || currentAlphabet == Alphabet.E)) {
+                formerPieStart = event;
+            }
+            if ((lastAlphabet == Alphabet.Z || lastAlphabet == Alphabet.E) && (currentAlphabet == Alphabet.O || currentAlphabet == Alphabet.I)) {
+                formerPieEnd = event;
+            }
+            if ((lastAlphabet == Alphabet.O || lastAlphabet == Alphabet.Z) && (currentAlphabet == Alphabet.I || currentAlphabet == Alphabet.E)) {
+                latterPieStart = event;
+            }
+            if ((lastAlphabet == Alphabet.I || lastAlphabet == Alphabet.E) && (currentAlphabet == Alphabet.O || currentAlphabet == Alphabet.Z)) {
+                latterPieEnd = event;
+            }
+        }
     }
 
     public boolean isFinal() {
@@ -43,6 +69,10 @@ public class PIEPair {
 
     public boolean isCompleted() {
         return dfa.isCompleted();
+    }
+
+    public boolean isStateChanged() {
+        return dfa.isStateChanged();
     }
 
     public static void main(String[] args) {
@@ -72,21 +102,20 @@ public class PIEPair {
         // 创建 PIEPair 实例
         PIEPair piePair = new PIEPair(TemporalRelations.PreciseRel.CONTAINS, formerExpression, latterExpression);
 
-
         // 遍历事件并进行处理
         List<PointEvent> triggeredEvents = new ArrayList<>();
+
         for (PointEvent event : converter) {
-            piePair.stepByAlphabet(event, schema);
+            piePair.stepByPE(event, schema);
             if (piePair.isTrigger()) {
-                triggeredEvents.add(event);
+                System.out.println("Triggered Event payload: " + event.getPayload());
+                System.out.println("formerPieStart: " + (piePair.formerPieStart != null ? piePair.formerPieStart.getPayload() : "null"));
+                System.out.println("formerPieEnd: " + (piePair.formerPieEnd != null ? piePair.formerPieEnd.getPayload() : "null"));
+                System.out.println("latterPieStart: " + (piePair.latterPieStart != null ? piePair.latterPieStart.getPayload() : "null"));
+                System.out.println("latterPieEnd: " + (piePair.latterPieEnd != null ? piePair.latterPieEnd.getPayload() : "null"));
+
             }
         }
-
-        // 输出所有被触发的事件的 payload
-        for (PointEvent event : triggeredEvents) {
-            System.out.println("Triggered Event payload: " + event.getPayload());
-        }
-
 
     }
 }
