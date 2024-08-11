@@ -2,23 +2,29 @@ package org.example.events;
 
 public class Attribute {
     private final String name;
+    private final String type;
 
-    public Attribute(String name) {
+    public Attribute(String name, String type) {
         this.name = name;
+        this.type = type;
     }
 
     public String getName() {
         return name;
     }
 
+    public String getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
-        return name;
+        return "Attribute{name='" + name + "', type='" + type + "'}";
     }
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return 31 * name.hashCode() + type.hashCode();
     }
 
     @Override
@@ -26,6 +32,6 @@ public class Attribute {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Attribute attribute = (Attribute) obj;
-        return name.equals(attribute.name);
+        return name.equals(attribute.name) && type.equals(attribute.type);
     }
 }

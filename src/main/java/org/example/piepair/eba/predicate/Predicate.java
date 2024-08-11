@@ -6,5 +6,5 @@ import org.example.events.Schema;
 
 @FunctionalInterface
 public interface Predicate {
-    boolean test(PointEvent event, Attribute attribute, Object parameter, Schema schema);
+    boolean test(PointEvent event, Attribute attribute, Object parameter );
 }

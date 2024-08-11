@@ -126,8 +126,6 @@ public class DFA {
             return null;
         }
 
-        lastAlphabet = currentAlphabet;
-        currentAlphabet = alphabet;
 
         // If current state is initState, first try to transition based on trans="X"
         if (currentState.equals(initState)) {
@@ -137,7 +135,6 @@ public class DFA {
                     lastState = currentState;
                     currentState = graph.getEdgeTarget(edge);
                     checkAndUpdateStateChange();
-                    return currentState;
                 }
             }
         }
@@ -165,7 +162,7 @@ public class DFA {
         }
 
         // If no valid transition is found, throw an exception or log an error
-        throw new IllegalArgumentException("No valid transition found for input: " + alphabet);
+        throw new IllegalArgumentException("No valid transition found for datasource: " + alphabet);
     }
 
     private void checkAndUpdateStateChange() {

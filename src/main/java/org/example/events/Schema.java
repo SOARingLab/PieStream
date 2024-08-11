@@ -1,50 +1,63 @@
 package org.example.events;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import org.example.utils.Config;
+
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.ArrayList;
 
 public class Schema {
-    private final Map<Attribute, Integer> schema;
+    private String timestampField;
+    private Map<String, String> fields;
+    private boolean hasNativeTimestamp;
+    private List<Attribute> attributes;
+    private Map<String, Integer> fieldIndexMap;
 
     public Schema(String schemaFilePath) {
-        this.schema = loadSchema(schemaFilePath);
+        this.fields = new HashMap<>();
+        this.attributes = new ArrayList<>();
+        this.fieldIndexMap = new HashMap<>();
+        loadSchema(schemaFilePath);
     }
 
-    private Map<Attribute, Integer> loadSchema(String schemaFilePath) {
-        Map<Attribute, Integer> schema = new HashMap<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader(schemaFilePath))) {
-            String line;
-            schema.put(new Attribute("CNT"), 0); // CNT is always mapped to index
-            if ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                for (int index = 0; index < parts.length; index++) {
-                    schema.put(new Attribute(parts[index].trim()), index+1);
-                }
+    private void loadSchema(String schemaFilePath) {
+        try {
+            Config config = Config.loadConfig(schemaFilePath);
+            this.timestampField = config.getTimestamp();
+            this.hasNativeTimestamp = timestampField != null && !timestampField.isEmpty();
+            this.fields.clear();
+            this.attributes.clear();
+            this.fieldIndexMap.clear();
+
+            for (Config.Field field : config.getFields()) {
+                fields.put(field.getName(), field.getType());
+                attributes.add(new Attribute(field.getName(), field.getType()));
+                fieldIndexMap.put(field.getName(), attributes.size() - 1);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return schema;
     }
 
-    public Set<Attribute> getKeys() {
-        return schema.keySet();
+    public String getTimestampField() {
+        return timestampField;
     }
 
-    public int getIndex(Attribute key) {
-        Integer index = schema.get(key);
-        if (index != null) {
-            return index;
-        }
-        throw new IllegalArgumentException("Attribute not found in schema: " + key.getName());
+    public Map<String, String> getFields() {
+        return fields;
     }
 
-    public String getValue(Attribute key, PointEvent event) {
-        int index = getIndex(key);
-        return event.getPayload().get(index);
+    public boolean hasNativeTimestamp() {
+        return hasNativeTimestamp;
+    }
+
+    public List<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public Map<String, Integer> getFieldIndexMap() {
+        return fieldIndexMap;
     }
 }

@@ -1,0 +1,18 @@
+timestamp:
+fields:
+  - name: VID
+    type: int
+  - name: SPEED
+    type: int
+  - name: ACCEL
+    type: float
+  - name: XWay
+    type: int
+  - name: Lane
+    type: int
+  - name: Dir
+    type: int
+  - name: Seg
+    type: int
+  - name: Pos
+    type: long
