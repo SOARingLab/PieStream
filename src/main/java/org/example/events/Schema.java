@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.ArrayList;
 
 public class Schema {
+    private String rawdataType;
     private String timestampField;
     private Map<String, String> fields;
     private boolean hasNativeTimestamp;
@@ -25,6 +26,7 @@ public class Schema {
     private void loadSchema(String schemaFilePath) {
         try {
             Config config = Config.loadConfig(schemaFilePath);
+            this.rawdataType = config.getRawdataType(); // 获取 rawdataType
             this.timestampField = config.getTimestamp();
             this.hasNativeTimestamp = timestampField != null && !timestampField.isEmpty();
             this.fields.clear();
@@ -39,6 +41,11 @@ public class Schema {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    // Getter for rawdataType
+    public String getRawdataType() {
+        return rawdataType;
     }
 
     public String getTimestampField() {

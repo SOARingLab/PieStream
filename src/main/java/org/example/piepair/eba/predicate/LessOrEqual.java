@@ -15,16 +15,23 @@ public class LessOrEqual implements Predicate {
         }
 
         try {
-            // 检查 attributeValue 和 parameter 是否是数字类型
-            if (!(attributeValue instanceof Number) || !(parameter instanceof Number)) {
-                return false;
+            // 根据属性的类型进行相应的比较
+            switch (attribute.getType().toLowerCase()) {
+                case "int":
+                    return Integer.parseInt(attributeValue.toString()) <= Integer.parseInt(parameter.toString());
+                case "long":
+                    return Long.parseLong(attributeValue.toString()) <= Long.parseLong(parameter.toString());
+                case "float":
+                    return Float.parseFloat(attributeValue.toString()) <= Float.parseFloat(parameter.toString());
+                case "double":
+                    return Double.parseDouble(attributeValue.toString()) <= Double.parseDouble(parameter.toString());
+                case "string":
+                    return attributeValue.toString().compareTo(parameter.toString()) <= 0;
+                default:
+                    // 如果遇到不支持的类型，抛出异常或返回 false
+                    throw new IllegalArgumentException("Unsupported attribute type: " + attribute.getType());
             }
-
-            // 将属性值和参数转换为 double 类型进行比较
-            double attributeDoubleValue = ((Number) attributeValue).doubleValue();
-            double parameterDoubleValue = ((Number) parameter).doubleValue();
-            return attributeDoubleValue <= parameterDoubleValue;
-        } catch (ClassCastException e) {
+        } catch (NumberFormatException e) {
             // 如果类型转换失败，返回 false
             return false;
         }

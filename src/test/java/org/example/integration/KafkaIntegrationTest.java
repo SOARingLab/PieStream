@@ -5,16 +5,11 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.example.datasource.DataSource;
-import org.example.factory.DataSourceFactory;
-import org.example.worker.EventPreprocessor;
+import org.example.engine.EventPreprocessor;
 import org.example.events.Schema;
 import org.example.events.PointEvent;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Map;

@@ -1,4 +1,7 @@
-timestamp:
+# rawdataType is one of { JSON , CSV }.
+rawdataType: JSON
+
+# the name of fields need to be same with the Json RawData, or the order of the fields need to be same with the csv RowData.
 fields:
   - name: VID
     type: int
@@ -16,3 +19,6 @@ fields:
     type: int
   - name: Pos
     type: long
+
+# timestamp is a field name of fields or null.
+timestamp: null

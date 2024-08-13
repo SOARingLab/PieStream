@@ -5,6 +5,8 @@ import org.example.piepair.dfa.Alphabet;
 import org.example.piepair.dfa.DFA;
 import org.example.piepair.dfa.Dot2DFA;
 import org.example.piepair.eba.EBA;
+import org.example.utils.CircularQueue;
+import java.util.Deque;
 
 /**
  * PIEPair类用于处理PointEvent事件，根据事件分类推进DFA状态并记录事件的起止点。
@@ -18,6 +20,8 @@ public class PIEPair {
     private PointEvent latterPieEnd; // latterPie的结束事件
     private Alphabet lastAlphabet;
     private Alphabet currentAlphabet;
+    public CircularQueue<IEP> Q;
+    private TemporalRelations.PreciseRel relation;
 
     /**
      * 构造函数，根据时间关系和两个EBA条件初始化PIEPair。
@@ -26,7 +30,9 @@ public class PIEPair {
      * @param formerPred former EBA（事件属性表达式）
      * @param latterPred latter EBA（事件属性表达式）
      */
-    public PIEPair(TemporalRelations.PreciseRel relation, EBA formerPred, EBA latterPred) {
+    public PIEPair(TemporalRelations.PreciseRel relation, EBA formerPred, EBA latterPred,CircularQueue<IEP> Q ) {
+        this.relation=relation;
+        this.Q=Q;
         this.dfa = Dot2DFA.createDFAFromRelation(relation); // 根据给定的时间关系生成DFA
         this.classifier = new EventClassifier(formerPred, latterPred); // 使用former和latter的EBA初始化事件分类器
     }
@@ -41,6 +47,15 @@ public class PIEPair {
         currentAlphabet = classifier.classify(event); // 将事件分类为相应的字母（Alphabet）
         dfa.step(currentAlphabet); // 根据字母推进DFA的状态
         recordEndPoint(event); // 根据当前的状态记录事件的起止点
+        if(isTrigger()){
+            System.out.println("\nTrigger!\n");
+            enQueueByTrigger();
+        }
+        if(isCompleted()){
+            System.out.println("\nCompleted!\n");
+            updeteQueueByCompleted();
+        }
+
         return currentAlphabet;
     }
 
@@ -158,4 +173,73 @@ public class PIEPair {
     public PointEvent getLatterPieEnd() {
         return latterPieEnd;
     }
+
+    private void enQueueByTrigger() {
+        // 创建新的 IEP 对象
+        IEP newIep = new IEP(
+                relation,             // 时间关系
+                formerPieStart,       // 前事件的开始事件
+                latterPieStart,       // 后事件的开始事件
+                formerPieEnd ,         // 前事件的结束事件
+                latterPieEnd,         // 后事件的结束事件
+                formerPieStart.getTimestamp(), // 前事件的开始时间
+                latterPieStart.getTimestamp()  // 后事件的开始时间，如果 latterPieStart 为 null，则 latterStartTime 为 null
+        );
+        if ( this.relation.triggerWithoutLatterPieEnd()) {
+            newIep.setLatterPieEnd(null);
+        }
+        else if ( this.relation.triggerWithoutFormerPieEnd()) {
+            newIep.setFormerPieEnd(null);
+        }
+        // finishes/finished/equals 的话直接补充
+        // 将 IEP 对象插入队列
+        Q.enqueue(newIep);
+//        System.out.println(newIep.toString());
+
+    }
+
+    private void updeteQueueByCompleted() {
+        // 确定需要更新 FormerPieEnd 还是 LatterPieEnd
+
+        int n = 0;  // 用于跟踪更新的 IEP 数量
+        int s = Q.size();
+        if ( this.relation.triggerWithoutLatterPieEnd()) {
+            // 从队列的尾部开始，向前找 n 个与当前 LatterPieStart 相等的 IEP，统一更新 LatterPieEnd
+            PointEvent currentStartEvent = latterPieStart;
+            while (s > 0) {
+                s--;
+                IEP iep = Q.searchFromRear(n + 1);
+                if (iep.getLatterStartTime() != null && iep.getLatterStartTime().equals(currentStartEvent.getTimestamp())) {
+                    iep.setLatterPieEnd(latterPieEnd);
+                    n++;
+                } else {
+                    break; // 一旦找到不相等的 IEP，结束更新
+                }
+            }
+        } else if (this.relation.triggerWithoutFormerPieEnd()) {
+            // 从队列的尾部开始，向前找 n 个与当前 FormerPieStart 相等的 IEP，统一更新 FormerPieEnd
+            PointEvent currentStartEvent = formerPieStart;
+            while (s > 0) {
+                s--;
+                IEP iep = Q.searchFromRear(n + 1);
+                if (iep.getFormerStartTime().equals(currentStartEvent.getTimestamp())) {
+                    iep.setFormerPieEnd(formerPieEnd);
+                    n++;
+                } else {
+                    break; // 一旦找到不相等的 IEP，结束更新
+                }
+            }
+        }
+
+        // 如果 n == 0，表示没有找到匹配的 IEP，抛出异常
+        if (n == 0) {
+            throw new IllegalStateException("No matching IEP found to update.");
+        }
+
+        // finishes/finished/equals 的话就不需要补充
+    }
+    public TemporalRelations.PreciseRel getRelation(){
+        return relation;
+    }
+
 }

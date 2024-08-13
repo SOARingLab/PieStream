@@ -3,9 +3,12 @@ package org.example.piepair;
 import org.example.events.Attribute;
 import org.example.events.PointEvent;
 import org.example.piepair.dfa.Alphabet;
+import org.example.piepair.TemporalRelations;
+import org.example.piepair.IEP;
 import org.example.piepair.dfa.DFA;
 import org.example.piepair.eba.EBA;
 import org.example.piepair.eba.predicate.*;
+import org.example.utils.CircularQueue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -56,8 +59,10 @@ public class PIEPairTest {
 
     @Test
     public void testStepByPE_withPE1() {
+
+        CircularQueue<IEP> Q=new CircularQueue<IEP>(50);
         // 初始化PIEPair实例
-        piePair = new PIEPair(TemporalRelations.PreciseRel.OVERLAPS, formerPred, latterPred);
+        piePair = new PIEPair(TemporalRelations.PreciseRel.OVERLAPS, formerPred, latterPred,Q);
 
         // 进行状态转换
         Alphabet alp1=piePair.stepByPE(event1);
@@ -75,12 +80,14 @@ public class PIEPairTest {
         assertFalse(piePair.isFinal());
         assertFalse(piePair.isCompleted());
         assertTrue(piePair.isStateChanged());
+        assertTrue(piePair.Q.isEmpty());
     }
 
     @Test
     public void testStepByPE_withPE2() {
+        CircularQueue<IEP> Q=new CircularQueue<IEP>(50);
         // 初始化PIEPair实例
-        piePair = new PIEPair(TemporalRelations.PreciseRel.OVERLAPS, formerPred, latterPred);
+        piePair = new PIEPair(TemporalRelations.PreciseRel.OVERLAPS, formerPred, latterPred,Q);
 
         // 进行状态转换
         Alphabet alp1=piePair.stepByPE(event1);
@@ -100,12 +107,15 @@ public class PIEPairTest {
         assertFalse(piePair.isFinal());
         assertFalse(piePair.isCompleted());
         assertTrue(piePair.isStateChanged());
+
+        assertTrue(piePair.Q.isEmpty());
     }
 
     @Test
     public void testStepByPE_withPE3() {
+        CircularQueue<IEP> Q=new CircularQueue<IEP>(50);
         // 初始化PIEPair实例
-        piePair = new PIEPair(TemporalRelations.PreciseRel.OVERLAPS, formerPred, latterPred);
+        piePair = new PIEPair(TemporalRelations.PreciseRel.OVERLAPS, formerPred, latterPred,Q);
 
         // 进行状态转换
         Alphabet alp1=piePair.stepByPE(event1);
@@ -125,11 +135,18 @@ public class PIEPairTest {
         assertTrue(piePair.isFinal());
         assertFalse(piePair.isCompleted());
         assertTrue(piePair.isStateChanged());
+
+        assertFalse(piePair.Q.isEmpty());
+
+        IEP niep=new IEP(TemporalRelations.PreciseRel.OVERLAPS,event1 ,event2, event3,null,event1.getTimestamp(),event2.getTimestamp());
+        IEP miep=piePair.Q.searchFromRear(1);
+        assertTrue( niep.equals(miep));
     }
     @Test
     public void testStepByPE_withPE4() {
+        CircularQueue<IEP> Q=new CircularQueue<IEP>(50);
         // 初始化PIEPair实例
-        piePair = new PIEPair(TemporalRelations.PreciseRel.OVERLAPS, formerPred, latterPred);
+        piePair = new PIEPair(TemporalRelations.PreciseRel.OVERLAPS, formerPred, latterPred,Q);
 
         // 进行状态转换
         Alphabet alp1=piePair.stepByPE(event1);
@@ -150,11 +167,17 @@ public class PIEPairTest {
         assertTrue(piePair.isFinal());
         assertFalse(piePair.isCompleted());
         assertFalse(piePair.isStateChanged());
+
+        IEP niep=new IEP(TemporalRelations.PreciseRel.OVERLAPS,event1 ,event2, event3,null,event1.getTimestamp(),event2.getTimestamp());
+        IEP miep=piePair.Q.searchFromRear(1);
+        assertTrue( niep.equals(miep));
+
     }
     @Test
     public void testStepByPE_withPE5() {
+        CircularQueue<IEP> Q=new CircularQueue<IEP>(50);
         // 初始化PIEPair实例
-        piePair = new PIEPair(TemporalRelations.PreciseRel.OVERLAPS, formerPred, latterPred);
+        piePair = new PIEPair(TemporalRelations.PreciseRel.OVERLAPS, formerPred, latterPred,Q);
 
         // 进行状态转换
         Alphabet alp1=piePair.stepByPE(event1);
@@ -176,7 +199,9 @@ public class PIEPairTest {
         assertFalse(piePair.isFinal());
         assertTrue(piePair.isCompleted());
         assertTrue(piePair.isStateChanged());
+
+        IEP niep=new IEP(TemporalRelations.PreciseRel.OVERLAPS,event1 ,event2, event3,event5,event1.getTimestamp(),event2.getTimestamp());
+        IEP miep=piePair.Q.searchFromRear(1);
+        assertTrue( niep.equals(miep));
     }
-
-
 }

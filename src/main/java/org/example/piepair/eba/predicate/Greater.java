@@ -15,10 +15,20 @@ public class Greater implements Predicate {
         }
 
         try {
-            // 将属性值和参数转换为 double 类型进行比较
-            double attributeDoubleValue = Double.parseDouble(attributeValue.toString());
-            double parameterDoubleValue = Double.parseDouble(parameter.toString());
-            return attributeDoubleValue > parameterDoubleValue;
+            // 根据属性的类型进行相应的比较
+            switch (attribute.getType().toLowerCase()) {
+                case "int":
+                    return Integer.parseInt(attributeValue.toString()) > Integer.parseInt(parameter.toString());
+                case "long":
+                    return Long.parseLong(attributeValue.toString()) > Long.parseLong(parameter.toString());
+                case "float":
+                    return Float.parseFloat(attributeValue.toString()) > Float.parseFloat(parameter.toString());
+                case "double":
+                    return Double.parseDouble(attributeValue.toString()) > Double.parseDouble(parameter.toString());
+                default:
+                    // 如果遇到不支持的类型，抛出异常或返回 false
+                    throw new IllegalArgumentException("Unsupported attribute type: " + attribute.getType());
+            }
         } catch (NumberFormatException e) {
             // 如果转换失败，返回 false
             return false;

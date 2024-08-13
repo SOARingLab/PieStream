@@ -1,9 +1,9 @@
-package org.example.worker;
+package org.example.engine;
 
 import org.example.events.Attribute;
 import org.example.events.PointEvent;
 import org.example.events.Schema;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
@@ -12,6 +12,7 @@ import java.util.Arrays;
 public class EventPreprocessor {
     private final Schema schema;
     private static long timestampCounter = 0; // 用于递增时间戳
+    private static final ObjectMapper objectMapper = new ObjectMapper(); // 用于解析 JSON
 
     public EventPreprocessor(Schema schema) {
         this.schema = schema;
@@ -71,22 +72,36 @@ public class EventPreprocessor {
     private Map<Attribute, Object> parseRawEventToPayload(Object rawEvent) {
         Map<Attribute, Object> payload = new HashMap<>();
 
-        if (rawEvent instanceof Map) {
-            // 如果已经是 Map 类型，将其转换为 Map<Attribute, Object>
-            Map<String, Object> rawMap = (Map<String, Object>) rawEvent;
-            for (Attribute attribute : schema.getAttributes()) {
-                payload.put(attribute, rawMap.get(attribute.getName()));
+        String rawdataType = schema.getRawdataType();
+
+        if ("JSON".equalsIgnoreCase(rawdataType)) {
+            // 如果是 JSON，则假设 rawEvent 是 JSON 格式的字符串
+            if (rawEvent instanceof String) {
+                try {
+                    // 解析 JSON 字符串为 Map
+                    Map<String, Object> rawMap = objectMapper.readValue((String) rawEvent, Map.class);
+                    for (Attribute attribute : schema.getAttributes()) {
+                        payload.put(attribute, rawMap.get(attribute.getName()));
+                    }
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("Failed to parse JSON string", e);
+                }
+            } else {
+                throw new IllegalArgumentException("For JSON data, rawEvent should be a JSON formatted string");
             }
-        } else if (rawEvent instanceof String) {
-            // 如果是字符串，解析为 List
-            String rawString = (String) rawEvent;
-            List<String> rawList = Arrays.asList(rawString.split(","));
-            return convertListToPayload(rawList);
-        } else if (rawEvent instanceof List) {
-            // 如果是 List，直接转换为 Map<Attribute, Object>
-            return convertListToPayload((List<?>) rawEvent);
+        }  else if ("CSV".equalsIgnoreCase(rawdataType)) {
+            // 如果是 CSV，则 rawEvent 可以是字符串或列表
+            if (rawEvent instanceof String) {
+                String rawString = (String) rawEvent;
+                List<String> rawList = Arrays.asList(rawString.split(","));
+                return convertListToPayload(rawList);
+            } else if (rawEvent instanceof List) {
+                return convertListToPayload((List<?>) rawEvent);
+            } else {
+                throw new IllegalArgumentException("For CSV data, rawEvent should be of type String or List");
+            }
         } else {
-            throw new IllegalArgumentException("Unsupported raw event format");
+            throw new IllegalArgumentException("Unsupported rawdataType: " + rawdataType);
         }
 
         return payload;
