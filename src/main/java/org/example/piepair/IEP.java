@@ -11,6 +11,7 @@ public class IEP {
     private PointEvent latterPieEnd;           // latterPie的结束事件 (可以为 null)
     private Long formerStartTime;     // 前事件的开始时间
     private Long latterStartTime;     // 后事件的开始时间
+    private boolean isCompleted;
 
     // 构造函数
     public IEP(TemporalRelations.AllRel relation,
@@ -31,6 +32,8 @@ public class IEP {
         // 允许 formerPieEnd 和 latterPieEnd 为 null
         this.formerPieEnd = formerPieEnd;
         this.latterPieEnd = latterPieEnd;
+
+        this.isCompleted=false;
     }
     // 构造函数，从 PreciseRel 构造
     public IEP(TemporalRelations.PreciseRel relation,
@@ -118,14 +121,14 @@ public class IEP {
 
     @Override
     public String toString() {
+        String formerPieEndTime=formerPieEnd==null?"not finish": String.valueOf(formerPieEnd.getTimestamp());
+        String latterPieEndTime=latterPieEnd==null?"not finish": String.valueOf(latterPieEnd.getTimestamp());
         return "IEP{" +
-                "relation=" + relation +
-                ", formerPieStart=" + formerPieStart +
-                ", latterPieStart=" + latterPieStart +
-                ", formerPieEnd=" + formerPieEnd +
-                ", latterPieEnd=" + latterPieEnd +
-                ", formerStartTime=" + formerStartTime +
-                ", latterStartTime=" + latterStartTime +
+                relation +
+                ", " + formerPieStart.getTimestamp() +
+                ", " + latterPieStart.getTimestamp() +
+                ", " + formerPieEndTime +
+                ", " + latterPieEndTime +
                 '}';
     }
     @Override
@@ -154,6 +157,8 @@ public class IEP {
                 Objects.equals(formerStartTime, iep.formerStartTime) &&
                 Objects.equals(latterStartTime, iep.latterStartTime);
     }
-
+    public void complete(){
+        this.isCompleted =true;
+    }
 
 }

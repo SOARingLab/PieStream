@@ -1,26 +1,30 @@
 package org.example.engine;
 
+import org.example.events.PointEventIterator;
 import org.example.events.Schema;
 import org.example.events.PointEvent;
+import org.example.piepair.IEP;
 import org.example.piepair.PIEPair;
 import org.example.parser.MPIEPairSource;
+import org.example.utils.CircularQueue;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import java.util.List;
 
 public class Worker {
 
     private final MPIEPairsManager mpiEPairsManager;
-    private final Schema schema;
-    private final String partitionValue;
-    private final EventPreprocessor processor;
     private final List<PIEPair> AllPiePairs;
+    private final ExecutorService executor;
 
-    public Worker(List<MPIEPairSource> MPPSourceList, Schema schema, String partitionValue, int QCapacity) {
+    public Worker(List<MPIEPairSource> MPPSourceList,  int QCapacity) {
         this.mpiEPairsManager =new MPIEPairsManager(MPPSourceList,QCapacity)  ;
-        this.schema = schema;
-        this.partitionValue = partitionValue;
-        this.processor=new EventPreprocessor(schema);
         this.AllPiePairs= mpiEPairsManager.getAllPiePairs();
+        // 初始化 ExecutorService，线程池大小可以根据需求调整
+        this.executor = Executors.newFixedThreadPool(AllPiePairs.size());
     }
 
     // 获取 MPIEPairsManager
@@ -28,15 +32,6 @@ public class Worker {
         return mpiEPairsManager;
     }
 
-    // 获取 Schema
-    public Schema getSchema() {
-        return schema;
-    }
-
-    // 获取 partitionValue
-    public String getPartitionValue() {
-        return partitionValue;
-    }
 
     // 执行事件处理，使用 MPIEPairsManager 来处理事件
     public void processEvent(Object event) {
@@ -48,19 +43,43 @@ public class Worker {
     }
 
 
-    public void run(Object rawdata) {
-        AllPiePairs.forEach(pair -> pair.stepByPE(processor.preprocess(rawdata)));
-    }
 
     /**
      * 打印 mpiEPairsManager 中的每个 MPIEPair 及其对应的 CircularQueue (Q) 的内容。
      */
     public void printQ() {
-        mpiEPairsManager.getMPIEPairList().forEach(mpiEPair -> {
-            System.out.println("\n\nMPIEPair: \n" + mpiEPair);
-            System.out.println("Q (CircularQueue): \n"  );
-            mpiEPair.getQ().printQueue();
-        });
+        mpiEPairsManager.printAllQueuesContents();
     }
 
+    public void runOneByOne(PointEvent pe) {
+        AllPiePairs.forEach(pair -> pair.stepByPE(pe));
+    }
+
+    // 并发执行 stepByPE 方法
+//    public void run(PointEvent pe) {
+//        AllPiePairs.forEach(piePair -> executor.submit(() -> piePair.stepByPE(pe)));
+//    }
+
+    public void run(  PointEvent pe) {
+
+        for (int i = 0; i < AllPiePairs.size(); i++) {
+            final PIEPair piePair = AllPiePairs.get(i);
+
+            executor.submit(() -> {
+                piePair.stepByPE(pe);
+            });
+        }
+    }
+
+    public void run(  PointEventIterator peItr) {
+
+
+
+    }
+
+    // 在应用程序结束时，记得关闭 ExecutorService
+    public void shutdown() {
+        executor.shutdown();
+        // 如果需要立即停止所有正在执行的任务，可以使用 executor.shutdownNow();
+    }
 }

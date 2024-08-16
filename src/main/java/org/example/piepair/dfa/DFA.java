@@ -117,6 +117,10 @@ public class DFA {
                 relation == TemporalRelations.PreciseRel.EQUALS) {
             return isTrigger();
         } else {
+//            从final状态到非final状态的转变不是complete，而是
+//            对于触发时LatterPIE未结束的PIEPair来说LatterPIE结束了，
+//            对于 对于触发时FormerPIE未结束的PIEPair来说，FormerPIE结束了。
+
             return (lastState != null && lastState.isFinalState() && currentState != null && !currentState.isFinalState());
         }
     }

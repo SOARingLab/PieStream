@@ -14,6 +14,21 @@ public class FileDataSource implements DataSource {
     }
 
     @Override
+    public boolean hasNext() {
+        try {
+            reader.mark(1); // 标记当前位置
+            if (reader.readLine() == null) {
+                return false; // 文件没有更多内容
+            }
+            reader.reset(); // 重置到标记的位置
+            return true; // 文件中还有更多内容
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading from file", e);
+        }
+    }
+
+
+    @Override
     public String readNext() {
         try {
             return reader.readLine();

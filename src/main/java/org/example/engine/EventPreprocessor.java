@@ -1,7 +1,9 @@
 package org.example.engine;
 
+import org.example.datasource.DataSource;
 import org.example.events.Attribute;
 import org.example.events.PointEvent;
+import org.example.events.PointEventIterator;
 import org.example.events.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
@@ -11,22 +13,25 @@ import java.util.Arrays;
 
 public class EventPreprocessor {
     private final Schema schema;
-    private static long timestampCounter = 0; // 用于递增时间戳
+    private static long timestampCounter = 1; // 用于递增时间戳
     private static final ObjectMapper objectMapper = new ObjectMapper(); // 用于解析 JSON
+    private  PointEventIterator pointEventIterator ;
 
-    public EventPreprocessor(Schema schema) {
+
+    public EventPreprocessor(Schema schema)  {
         this.schema = schema;
+        this.pointEventIterator=new PointEventIterator();
     }
 
     /**
      * 标准化单个事件，并为缺少时间戳的事件分配时间戳。
      *
-     * @param rawEvent 原始事件
+     * @param rawPointEvent 原始事件
      * @return 标准化后的 PointEvent
      */
-    public PointEvent preprocess(Object rawEvent) {
+    public PointEvent preprocess(String rawPointEvent) {
         // 解析原始事件并构建 payload
-        Map<Attribute, Object> payload = parseRawEventToPayload(rawEvent);
+        Map<Attribute, Object> payload = parseRawEventToPayload(rawPointEvent);
 
         long timestamp;
         // 如果 Schema 中有原生时间戳字段，则使用原生时间戳
@@ -125,4 +130,22 @@ public class EventPreprocessor {
         }
         return payload;
     }
+
+    /**
+     * 预处理数据源，返回预处理后的 PointEvent 迭代器。
+     *
+     * @param dataS 数据源
+     * @return 预处理后的 PointEvent 迭代器
+     */
+    public PointEventIterator preprocessSource(DataSource dataS) {
+
+        while (dataS.hasNext() ) {
+            String rawPointEvent = dataS.readNext();
+            PointEvent pointEvent = preprocess(rawPointEvent);
+            pointEventIterator.addEvent(pointEvent);
+        }
+
+        return pointEventIterator;
+    }
+
 }

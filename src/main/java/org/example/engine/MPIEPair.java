@@ -15,8 +15,7 @@ public class MPIEPair {
     private final EBA latterPred;  // latter EBA（事件属性表达式）
     private final int QCapacity;  // CircularQueue 的容量
     private final List<PIEPair> piePairs;  // PIEPair 的列表
-    private final CircularQueue<IEP> Q;  // CircularQueue 对象
-
+    private final List<CircularQueue<IEP>> QList;  // CircularQueue 对象
     /**
      * 构造函数，初始化 MPIEPair，并根据传入的 PreciseRel 列表创建多个 PIEPair。
      *
@@ -30,11 +29,13 @@ public class MPIEPair {
         this.formerPred = formerPred;
         this.latterPred = latterPred;
         this.QCapacity = QCapacity;
-        this.Q = new CircularQueue<>(QCapacity);
         this.piePairs = new ArrayList<>();
+        this.QList= new ArrayList<>();
 
         for (TemporalRelations.PreciseRel relation : relations) {
-            this.piePairs.add(new PIEPair(relation, formerPred, latterPred, Q));
+            PIEPair pp=new PIEPair(relation, formerPred, latterPred, QCapacity);
+            this.piePairs.add(pp);
+            this.QList.add(pp.getQ());
         }
     }
 
@@ -79,8 +80,8 @@ public class MPIEPair {
      *
      * @return CircularQueue 对象
      */
-    public CircularQueue<IEP> getQ() {
-        return Q;
+    public List<CircularQueue<IEP>> getQList() {
+        return QList;
     }
 
     /**

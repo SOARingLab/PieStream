@@ -19,27 +19,28 @@ public class TemporalRelations {
     }
 
     public enum PreciseRel {
-        OVERLAPS(true, false),
-        OVERLAPPED_BY(false, true),
-        STARTS(true, false),
-        STARTED_BY(false, true),
-        DURING(true, false),
-        CONTAINS(false, true),
-        FINISHES(false, false),
-        FINISHED_BY(false, false),
-        EQUALS(false, false),
-        MEETS(true, false),
-        MET_BY(false, true),
-        FOLLOWED_BY(true, false),
-        FOLLOW(false, true);
+        OVERLAPS(true, false,false),
+        OVERLAPPED_BY(false, true,false),
+        STARTS(true, false,false),
+        STARTED_BY(false, true,false),
+        DURING(true, false,false),
+        CONTAINS(false, true,false),
+        FINISHES(false, false,true),
+        FINISHED_BY(false, false,true),
+        EQUALS(false, false,true),
+        MEETS(true, false,false),
+        MET_BY(false, true,false),
+        FOLLOWED_BY(true, false,false),
+        FOLLOW(false, true,false);
 
         private final boolean triggerWithoutLatterPieEnd;
         private final boolean triggerWithoutFormerPieEnd;
-
+        private final boolean triggerWithCompleted;
         // 构造函数
-        PreciseRel(boolean triggerWithoutLatterPieEnd, boolean triggerWithoutFormerPieEnd) {
+        PreciseRel(boolean triggerWithoutLatterPieEnd, boolean triggerWithoutFormerPieEnd,boolean triggerWithCompleted) {
             this.triggerWithoutLatterPieEnd = triggerWithoutLatterPieEnd;
             this.triggerWithoutFormerPieEnd = triggerWithoutFormerPieEnd;
+            this.triggerWithCompleted=triggerWithCompleted;
         }
 
         // 判断是否需要在没有 LatterPieEnd 的情况下触发
@@ -50,6 +51,11 @@ public class TemporalRelations {
         // 判断是否需要在没有 FormerPieEnd 的情况下触发
         public boolean triggerWithoutFormerPieEnd() {
             return triggerWithoutFormerPieEnd;
+        }
+
+        // 判断是否需要在没有 FormerPieEnd 的情况下触发
+        public boolean triggerWithCompleted() {
+            return triggerWithCompleted;
         }
     }
 

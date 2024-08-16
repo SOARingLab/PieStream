@@ -21,7 +21,7 @@ public class KafkaStreamProcessor {
      * @param inputTopic       输入的 Kafka 主题
      * @param engine           用于处理每条记录的处理函数
      */
-    public KafkaStreamProcessor(String bootstrapServers, String applicationId, String inputTopic, ForeachAction<String, String> engine) {
+    public KafkaStreamProcessor(String bootstrapServers, String applicationId, String inputTopic, Engine engine) {
         // 配置 Kafka Streams
         Properties props = new Properties();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationId);
@@ -35,6 +35,12 @@ public class KafkaStreamProcessor {
 
         // 处理流中的每条记录，使用提供的 Engine 处理函数
         stream.foreach(engine);
+
+        // 数据处理
+        KStream<String, String> processedStream = stream
+//                .filter((key, value) -> value.contains("important"))
+                .mapValues(  value -> engine.run(  value) );
+
 
         // 初始化 KafkaStreams 实例
         streams = new KafkaStreams(builder.build(), props);

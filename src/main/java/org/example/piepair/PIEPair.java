@@ -22,7 +22,7 @@ public class PIEPair {
     private Alphabet currentAlphabet;
     public CircularQueue<IEP> Q;
     private TemporalRelations.PreciseRel relation;
-
+    private boolean onTriggering ;
     /**
      * 构造函数，根据时间关系和两个EBA条件初始化PIEPair。
      *
@@ -30,11 +30,13 @@ public class PIEPair {
      * @param formerPred former EBA（事件属性表达式）
      * @param latterPred latter EBA（事件属性表达式）
      */
-    public PIEPair(TemporalRelations.PreciseRel relation, EBA formerPred, EBA latterPred,CircularQueue<IEP> Q ) {
+    public PIEPair(TemporalRelations.PreciseRel relation, EBA formerPred, EBA latterPred , int QCapacity) {
         this.relation=relation;
-        this.Q=Q;
+        this.Q=new CircularQueue<IEP>(QCapacity );
         this.dfa = Dot2DFA.createDFAFromRelation(relation); // 根据给定的时间关系生成DFA
         this.classifier = new EventClassifier(formerPred, latterPred); // 使用former和latter的EBA初始化事件分类器
+        this.onTriggering=false;
+
     }
 
     /**
@@ -42,19 +44,24 @@ public class PIEPair {
      *
      * @param event 输入的事件（PointEvent）
      */
-    public Alphabet stepByPE(PointEvent event) {
-        lastAlphabet = currentAlphabet;
-        currentAlphabet = classifier.classify(event); // 将事件分类为相应的字母（Alphabet）
-        dfa.step(currentAlphabet); // 根据字母推进DFA的状态
-        recordEndPoint(event); // 根据当前的状态记录事件的起止点
-        if(isTrigger()){
-            System.out.println("\nTrigger!\n");
-            enQueueByTrigger();
-        }
-        if(isCompleted()){
-            System.out.println("\nCompleted!\n");
-            updeteQueueByCompleted();
-        }
+    public    Alphabet stepByPE(PointEvent event) {
+        Alphabet newAlphabet = classifier.classify(event); // 将事件分类为相应的字母（Alphabet）
+
+            lastAlphabet = currentAlphabet;
+            currentAlphabet =newAlphabet;
+            dfa.step(currentAlphabet); // 根据字母推进DFA的状态
+            recordEndPoint(event); // 根据当前的状态记录事件的起止点
+            if (isTrigger()) {
+                this.onTriggering = true;
+                System.out.println("\nTrigger!\n");
+                enQueueByTrigger();
+            }
+            if (isCompleted()) {
+                System.out.println("\nCompleted!\n");
+                this.onTriggering = false;
+                updeteQueueByCompleted();
+            }
+
 
         return currentAlphabet;
     }
@@ -145,7 +152,10 @@ public class PIEPair {
      * @return 如果DFA完成则返回true，否则返回false
      */
     public boolean isCompleted() {
-        return dfa.isCompleted();
+
+        return this.onTriggering==true && (( relation.triggerWithoutFormerPieEnd() && isFormerPieEndTransition() )
+                ||  relation.triggerWithoutLatterPieEnd() && isLatterPieEndTransition() || relation.triggerWithCompleted() );
+
     }
 
     /**
@@ -211,6 +221,7 @@ public class PIEPair {
                 IEP iep = Q.searchFromRear(n + 1);
                 if (iep.getLatterStartTime() != null && iep.getLatterStartTime().equals(currentStartEvent.getTimestamp())) {
                     iep.setLatterPieEnd(latterPieEnd);
+                    iep.complete();
                     n++;
                 } else {
                     break; // 一旦找到不相等的 IEP，结束更新
@@ -223,7 +234,9 @@ public class PIEPair {
                 s--;
                 IEP iep = Q.searchFromRear(n + 1);
                 if (iep.getFormerStartTime().equals(currentStartEvent.getTimestamp())) {
+
                     iep.setFormerPieEnd(formerPieEnd);
+                    iep.complete();
                     n++;
                 } else {
                     break; // 一旦找到不相等的 IEP，结束更新
@@ -240,6 +253,10 @@ public class PIEPair {
     }
     public TemporalRelations.PreciseRel getRelation(){
         return relation;
+    }
+
+    public CircularQueue<IEP> getQ(){
+        return Q;
     }
 
 }

@@ -18,7 +18,7 @@ public class MPIEPairsManager {
     private final int QCapacity;
     private final List<MPIEPair> MPIEPairList;
     private final Map<MPIEPairSource, MPIEPair> MPPSourceToPairMap;  // MPPSource到MPIEPair的映射
-    private final Map<MPIEPairSource, CircularQueue<IEP>> MPPSourceToQueueMap;  // MPPSource到Q的映射
+    private final Map<MPIEPairSource, List<CircularQueue<IEP>>> MPPSourceToQListMap;  // MPPSource到Q的映射
     private final List<PIEPair> AllPiePairs;  // 新增的AllPiePairs成员
 
 
@@ -27,14 +27,14 @@ public class MPIEPairsManager {
         this.QCapacity = QCapacity;
         this.MPIEPairList = new ArrayList<>();
         this.MPPSourceToPairMap = new HashMap<>();  // 初始化MPIEPair映射
-        this.MPPSourceToQueueMap = new HashMap<>();  // 初始化Queue映射
+        this.MPPSourceToQListMap = new HashMap<>();  // 初始化Queue映射
         this.AllPiePairs = new ArrayList<>();  // 初始化AllPiePairs
 
         for (MPIEPairSource MPPSource : MPPSourceList) {
             MPIEPair mpiePair = new MPIEPair(MPPSource.getRelations(), MPPSource.getFormerPred(), MPPSource.getLatterPred(), QCapacity);
             this.MPIEPairList.add(mpiePair);
             this.MPPSourceToPairMap.put(MPPSource, mpiePair);  // 将 MPIEPairSource 和对应的 MPIEPair 放入映射中
-            this.MPPSourceToQueueMap.put(MPPSource, mpiePair.getQ());  // 将 MPIEPairSource 和对应的 Queue 放入映射中
+            this.MPPSourceToQListMap.put(MPPSource, mpiePair.getQList());  // 将 MPIEPairSource 和对应的 Queue 放入映射中
             this.AllPiePairs.addAll(mpiePair.getPiePairs());  // 将 MPIEPair 中的所有 PIEPair 添加到 AllPiePairs 中
         }
     }
@@ -60,8 +60,8 @@ public class MPIEPairsManager {
     }
 
     // 获取 MPPSource 到 Queue 的映射
-    public Map<MPIEPairSource, CircularQueue<IEP>> getMPPSourceToQueueMap() {
-        return MPPSourceToQueueMap;
+    public Map<MPIEPairSource, List<CircularQueue<IEP>>> getMPPSourceToQListMap() {
+        return MPPSourceToQListMap;
     }
 
     // 获取 AllPiePairs
@@ -75,8 +75,8 @@ public class MPIEPairsManager {
     }
 
     // 根据 MPIEPairSource 获取对应的 Queue
-    public CircularQueue<IEP> getQueueBySource(MPIEPairSource source) {
-        return MPPSourceToQueueMap.get(source);
+    public List<CircularQueue<IEP>> getQueueBySource(MPIEPairSource source) {
+        return MPPSourceToQListMap.get(source);
     }
 
 //    // 并发运行每个 PIEPair 的 stepByPE 方法
@@ -93,17 +93,19 @@ public class MPIEPairsManager {
     }
 
     /**
-     * 输出 MPPSourceToQueueMap 中所有 CircularQueue<IEP> 中的 IEP。
+     * 输出 MPPSourceToQListMap 中所有 CircularQueue<IEP> 中的 IEP。
      */
     public void printAllQueuesContents() {
-        for (Map.Entry<MPIEPairSource, CircularQueue<IEP>> entry : MPPSourceToQueueMap.entrySet()) {
+        for (Map.Entry<MPIEPairSource, List<CircularQueue<IEP>>> entry : MPPSourceToQListMap.entrySet()) {
             MPIEPairSource source = entry.getKey();
-            CircularQueue<IEP> queue = entry.getValue();
+            List<CircularQueue<IEP>> QLsit= entry.getValue();
 
             System.out.println("MPIEPairSource: " + source);
             System.out.println("CircularQueue Contents:");
+            for (CircularQueue<IEP> Q : QLsit){
+                Q.printQueue();
+            }
 
-            queue.printQueue();
 
             System.out.println("-----------------------------");
         }
