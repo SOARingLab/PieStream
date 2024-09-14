@@ -81,7 +81,7 @@ public class Dot2DFA {
     }
 
     public static void main(String[] args) {
-        String dotFilePath = "src/main/resources/dotFiles/OVERLAPS.dot";
+        String dotFilePath = "src/main/resources/dotFiles/FINISHED_BY.dot";
 
         DFA dfa = parseDotFile(dotFilePath);
 

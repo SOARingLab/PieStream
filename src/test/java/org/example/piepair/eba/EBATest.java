@@ -1,8 +1,8 @@
 //package org.example.piepair.eba;
 //import org.example.piepair.eba.EBA;
-//import org.example.piepair.eba.predicate.Equals;
-//import org.example.piepair.eba.predicate.Greater;
-//import org.example.piepair.eba.predicate.Less;
+//import org.example.piepair.predicate.Equals;
+//import org.example.piepair.predicate.Greater;
+//import org.example.piepair.predicate.Less;
 //import org.example.events.Attribute;
 //import org.example.events.PointEvent;
 //import org.junit.jupiter.api.Test;

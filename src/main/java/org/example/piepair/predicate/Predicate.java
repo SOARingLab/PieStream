@@ -1,4 +1,4 @@
-package org.example.piepair.eba.predicate;
+package org.example.piepair.predicate;
 
 import org.example.events.Attribute;
 import org.example.events.PointEvent;

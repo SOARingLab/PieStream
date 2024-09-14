@@ -141,14 +141,21 @@ public class DFA {
                     checkAndUpdateStateChange();
                 }
             }
+            // Proceed with normal step operation
+            Node nextState = findNextState(currentState, alphabet);
+            lastState = currentState;
+            currentState = nextState;
+            return currentState;
+
+        }else{
+            // Proceed with normal step operation
+            Node nextState = findNextState(currentState, alphabet);
+            lastState = currentState;
+            currentState = nextState;
+            checkAndUpdateStateChange();
+            return currentState;
         }
 
-        // Proceed with normal step operation
-        Node nextState = findNextState(currentState, alphabet);
-        lastState = currentState;
-        currentState = nextState;
-        checkAndUpdateStateChange();
-        return currentState;
     }
 
     private Node findNextState(Node currentState, Alphabet alphabet) {

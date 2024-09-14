@@ -95,6 +95,7 @@ public class TemporalRelations {
             this.preciseRel = preciseRel;
         }
 
+
         // 判断 AllRel 是否包含 AllenRel
         public boolean isAllenRel() {
             return this.allenRel != null;
@@ -134,5 +135,17 @@ public class TemporalRelations {
             }
             throw new IllegalArgumentException("No matching AllRel for AllenRel: " + allenRel);
         }
+        // 根据字符串构造 AllRel
+        public static AllRel fromString(String relStr) {
+            // Normalize the string (convert to uppercase and replace spaces with underscores)
+            String normalizedRelStr = relStr.toUpperCase().replace(" ", "").replace("-", "_");
+            for (AllRel rel : AllRel.values()) {
+                if (rel.name().equals(normalizedRelStr)) {
+                    return rel;
+                }
+            }
+            throw new IllegalArgumentException("No matching AllRel for string: " + relStr);
+        }
+
     }
 }

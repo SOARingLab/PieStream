@@ -6,7 +6,8 @@ public class CircularQueue<T> {
     private int rear;   // 指向队列尾部的下一个索引
     private int size;   // 当前队列中的元素个数
     private final int capacity;
-
+    private int version; // 版本号
+    private int latVersion; // 版本号
     @SuppressWarnings("unchecked")
     public CircularQueue(int capacity) {
         this.capacity = capacity;
@@ -14,6 +15,16 @@ public class CircularQueue<T> {
         this.front = 0;
         this.rear = 0;
         this.size = 0;
+        this.version=0;
+        this.latVersion=0;
+    }
+
+    public void versionChange(){
+        latVersion=version;
+        version++;
+    }
+    public boolean isVersionChange(){
+        return !(latVersion==version);
     }
 
     // 检查队列是否为空

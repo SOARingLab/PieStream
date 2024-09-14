@@ -2,8 +2,11 @@ package org.example.piepair;
 
 import java.util.Objects;
 import org.example.events.PointEvent;
+import org.example.piepair.eba.EBA;
 
 public class IEP {
+    private EBA formerPie;
+    private EBA latterPie;
     private TemporalRelations.AllRel relation; // 时间关系
     private PointEvent formerPieStart;         // formerPie的开始事件
     private PointEvent latterPieStart;         // latterPie的开始事件 (可以为 null)
@@ -15,6 +18,8 @@ public class IEP {
 
     // 构造函数
     public IEP(TemporalRelations.AllRel relation,
+               EBA formerPie,
+               EBA latterPie,
                PointEvent formerPieStart,
                PointEvent latterPieStart,
                PointEvent formerPieEnd,
@@ -32,11 +37,15 @@ public class IEP {
         // 允许 formerPieEnd 和 latterPieEnd 为 null
         this.formerPieEnd = formerPieEnd;
         this.latterPieEnd = latterPieEnd;
-
+        this.formerPie = formerPie;
+        this.latterPie = latterPie;
         this.isCompleted=false;
     }
+
     // 构造函数，从 PreciseRel 构造
     public IEP(TemporalRelations.PreciseRel relation,
+               EBA formerPie,
+               EBA latterPie,
                PointEvent formerPieStart,
                PointEvent latterPieStart,
                PointEvent formerPieEnd,
@@ -45,10 +54,12 @@ public class IEP {
                Long latterStartTime) {
 
         // 对不允许为null的参数进行检查
-        this(TemporalRelations.AllRel.fromPreciseRel(relation),formerPieStart,latterPieStart,formerPieEnd,latterPieEnd,formerStartTime,latterStartTime);
+        this(TemporalRelations.AllRel.fromPreciseRel(relation),formerPie,latterPie,formerPieStart,latterPieStart,formerPieEnd,latterPieEnd,formerStartTime,latterStartTime);
     }
     // 构造函数，从 AllenRel 构造
     public IEP(TemporalRelations.AllenRel relation,
+               EBA formerPie,
+               EBA latterPie,
                PointEvent formerPieStart,
                PointEvent latterPieStart,
                PointEvent formerPieEnd,
@@ -57,10 +68,16 @@ public class IEP {
                Long latterStartTime) {
 
         // 对不允许为null的参数进行检查
-        this(TemporalRelations.AllRel.fromAllenRel(relation),formerPieStart,latterPieStart,formerPieEnd,latterPieEnd,formerStartTime,latterStartTime);
+        this(TemporalRelations.AllRel.fromAllenRel(relation),formerPie,latterPie,formerPieStart,latterPieStart,formerPieEnd,latterPieEnd,formerStartTime,latterStartTime);
     }
 
+    public EBA getFormerPie(){
+            return formerPie;
+    }
 
+    public EBA getLatterPie(){
+        return latterPie;
+    }
 
     // Getters and setters
     public TemporalRelations.AllRel getRelation() {
@@ -103,16 +120,35 @@ public class IEP {
         this.latterPieEnd = latterPieEnd;
     }
 
-    public Long getFormerStartTime() {
-        return formerStartTime;
-    }
-
     public void setFormerStartTime(Long formerStartTime) {
         this.formerStartTime = formerStartTime;
     }
 
+    public Long getFormerStartTime() {
+        return formerStartTime ;
+    }
+
+
     public Long getLatterStartTime() {
-        return latterStartTime;
+        return latterStartTime ;
+    }
+
+    public String getFormerEndTime() {
+        if (formerPieEnd==null){
+            return "NF";
+        }
+        else{
+            return String.valueOf(formerPieEnd.getTimestamp());
+        }
+    }
+
+    public String getLatterEndTime() {
+        if (latterPieEnd==null){
+            return "NF";
+        }
+        else{
+            return String.valueOf(latterPieEnd.getTimestamp());
+        }
     }
 
     public void setLatterStartTime(Long latterStartTime) {
@@ -159,6 +195,16 @@ public class IEP {
     }
     public void complete(){
         this.isCompleted =true;
+    }
+
+    public Long getStartTime(EBA pred) {
+        if (pred == formerPie) {
+            return formerStartTime;
+        } else if (pred == latterPie) {
+            return latterStartTime;
+        } else {
+            throw new IllegalArgumentException("The provided EBA predicate does not match formerPie or latterPie.");
+        }
     }
 
 }

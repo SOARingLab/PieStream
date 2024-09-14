@@ -6,8 +6,8 @@
 //import org.example.piepair.TemporalRelations;
 //import org.example.piepair.IEP;
 //import org.example.piepair.eba.EBA;
-//import org.example.piepair.eba.predicate.Greater;
-//import org.example.piepair.eba.predicate.Less;
+//import org.example.piepair.predicate.Greater;
+//import org.example.piepair.predicate.Less;
 //import org.example.parser.MPIEPairSource;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;

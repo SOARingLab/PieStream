@@ -1,8 +1,4 @@
-package org.example.factory;
-
-import org.example.datasource.DataSource;
-import org.example.datasource.FileDataSource;
-import org.example.datasource.StreamDataSource;
+package org.example.datasource;
 
 import java.io.InputStream;
 

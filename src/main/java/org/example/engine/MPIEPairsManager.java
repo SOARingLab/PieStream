@@ -1,55 +1,47 @@
 package org.example.engine;
 
+import org.example.merger.IEPQ;
 import org.example.parser.MPIEPairSource;
 import org.example.piepair.PIEPair;
-import org.example.piepair.IEP;
-import org.example.utils.CircularQueue;
+import org.example.utils.IEPCol;
 import org.example.events.PointEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class MPIEPairsManager {
-    private final List<MPIEPairSource> MPPSourceList;
-    private final int QCapacity;
-    private final List<MPIEPair> MPIEPairList;
+
+    private final List<MPIEPairSource> MPPSourceList;  // MPIEPair 源列表
+    private final List<MPIEPair> MPIEPairList;  // MPIEPair 列表
     private final Map<MPIEPairSource, MPIEPair> MPPSourceToPairMap;  // MPPSource到MPIEPair的映射
-    private final Map<MPIEPairSource, List<CircularQueue<IEP>>> MPPSourceToQListMap;  // MPPSource到Q的映射
-    private final List<PIEPair> AllPiePairs;  // 新增的AllPiePairs成员
+    private final List<PIEPair> AllPiePairs;  // 所有 PIEPair 对象的列表
+    private final Map<MPIEPairSource, IEPCol> source2Col;  // MPIEPairSource 到 IEPCol 的映射
 
-
-    public MPIEPairsManager(List<MPIEPairSource> MPPSourceList , int QCapacity) {
+    // 构造函数，初始化 MPIEPairsManager
+    public MPIEPairsManager(List<MPIEPairSource> MPPSourceList, Map<MPIEPairSource, IEPCol> source2Col) {
         this.MPPSourceList = MPPSourceList;
-        this.QCapacity = QCapacity;
         this.MPIEPairList = new ArrayList<>();
-        this.MPPSourceToPairMap = new HashMap<>();  // 初始化MPIEPair映射
-        this.MPPSourceToQListMap = new HashMap<>();  // 初始化Queue映射
-        this.AllPiePairs = new ArrayList<>();  // 初始化AllPiePairs
+        this.MPPSourceToPairMap = new HashMap<>();
+        this.source2Col = source2Col;
+        this.AllPiePairs = new ArrayList<>();
 
+        // 初始化每个 MPIEPairSource 和对应的 MPIEPair，并将其添加到相应的列表和映射中
         for (MPIEPairSource MPPSource : MPPSourceList) {
-            MPIEPair mpiePair = new MPIEPair(MPPSource.getRelations(), MPPSource.getFormerPred(), MPPSource.getLatterPred(), QCapacity);
+            MPIEPair mpiePair = new MPIEPair(MPPSource.getRelations(), MPPSource.getFormerPred(), MPPSource.getLatterPred(), source2Col.get(MPPSource));
             this.MPIEPairList.add(mpiePair);
-            this.MPPSourceToPairMap.put(MPPSource, mpiePair);  // 将 MPIEPairSource 和对应的 MPIEPair 放入映射中
-            this.MPPSourceToQListMap.put(MPPSource, mpiePair.getQList());  // 将 MPIEPairSource 和对应的 Queue 放入映射中
-            this.AllPiePairs.addAll(mpiePair.getPiePairs());  // 将 MPIEPair 中的所有 PIEPair 添加到 AllPiePairs 中
+            this.MPPSourceToPairMap.put(MPPSource, mpiePair);  // MPPSource与MPIEPair的映射
+            this.AllPiePairs.addAll(mpiePair.getPiePairs());  // 将MPIEPair中的所有PIEPairs加入AllPiePairs
         }
     }
 
-    // 获取 MPPSourceList
+    // 获取 MPPSource 列表
     public List<MPIEPairSource> getMPPSourceList() {
         return MPPSourceList;
     }
 
-    // 获取 QCapacity
-    public int getQCapacity() {
-        return QCapacity;
-    }
-
-    // 获取 MPIEPairList
+    // 获取 MPIEPair 列表
     public List<MPIEPair> getMPIEPairList() {
         return MPIEPairList;
     }
@@ -59,12 +51,7 @@ public class MPIEPairsManager {
         return MPPSourceToPairMap;
     }
 
-    // 获取 MPPSource 到 Queue 的映射
-    public Map<MPIEPairSource, List<CircularQueue<IEP>>> getMPPSourceToQListMap() {
-        return MPPSourceToQListMap;
-    }
-
-    // 获取 AllPiePairs
+    // 获取所有的 PIEPair 对象
     public List<PIEPair> getAllPiePairs() {
         return AllPiePairs;
     }
@@ -74,45 +61,25 @@ public class MPIEPairsManager {
         return MPPSourceToPairMap.get(source);
     }
 
-    // 根据 MPIEPairSource 获取对应的 Queue
-    public List<CircularQueue<IEP>> getQueueBySource(MPIEPairSource source) {
-        return MPPSourceToQListMap.get(source);
-    }
-
-//    // 并发运行每个 PIEPair 的 stepByPE 方法
-//    public void runByPEConcurrently(PointEvent event) {
-//        for (PIEPair piePair : AllPiePairs) {
-//            executorService.submit(() -> piePair.stepByPE(event));
-//        }
-//    }
-
+    // 通过 PointEvent 依次执行所有 PIEPair 的 stepByPE 方法
     public void runByPE(PointEvent event) {
         for (PIEPair piePair : AllPiePairs) {
             piePair.stepByPE(event);  // 串行执行
         }
     }
 
-    /**
-     * 输出 MPPSourceToQListMap 中所有 CircularQueue<IEP> 中的 IEP。
-     */
-    public void printAllQueuesContents() {
-        for (Map.Entry<MPIEPairSource, List<CircularQueue<IEP>>> entry : MPPSourceToQListMap.entrySet()) {
+    // 输出 source2Col 中所有 IEPCol 的内容
+    public void print() {
+        for (Map.Entry<MPIEPairSource, IEPCol> entry : source2Col.entrySet()) {
             MPIEPairSource source = entry.getKey();
-            List<CircularQueue<IEP>> QLsit= entry.getValue();
+            IEPCol col = entry.getValue();
 
             System.out.println("MPIEPairSource: " + source);
             System.out.println("CircularQueue Contents:");
-            for (CircularQueue<IEP> Q : QLsit){
-                Q.printQueue();
-            }
 
+            col.print();  // 打印 IEPCol 的内容
 
             System.out.println("-----------------------------");
         }
     }
-
-//    // 关闭线程池
-//    public void shutdown() {
-//        executorService.shutdown();
-//    }
 }

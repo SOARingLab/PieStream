@@ -30,14 +30,18 @@ public class EventPreprocessor {
      * @return 标准化后的 PointEvent
      */
     public PointEvent preprocess(String rawPointEvent) {
+
+        return preprocess(rawPointEvent, false);
+    }
+
+    public PointEvent preprocess(String rawPointEvent,boolean useNativeTimestamp ) {
         // 解析原始事件并构建 payload
         Map<Attribute, Object> payload = parseRawEventToPayload(rawPointEvent);
 
         long timestamp;
-        // 如果 Schema 中有原生时间戳字段，则使用原生时间戳
-        if (schema.hasNativeTimestamp()) {
+        if (useNativeTimestamp && schema.hasNativeTimestamp()){
             timestamp = extractTimestampFromPayload(payload);
-        } else {
+        }else{
             // 如果没有原生时间戳，则分配递增时间戳
             synchronized (EventPreprocessor.class) {
                 timestamp = timestampCounter++;
@@ -46,6 +50,8 @@ public class EventPreprocessor {
 
         return new PointEvent(payload, timestamp);
     }
+
+
 
     /**
      * 从 payload 中提取时间戳。
@@ -65,6 +71,11 @@ public class EventPreprocessor {
         if (timestampObj == null) {
             throw new IllegalArgumentException("Timestamp field not found in event payload");
         }
+        if ("long".equalsIgnoreCase(timestampAttribute.getType())) {
+            return (Long) timestampObj;
+        }
+
+
         return Long.parseLong(timestampObj.toString());
     }
 
@@ -105,7 +116,23 @@ public class EventPreprocessor {
             } else {
                 throw new IllegalArgumentException("For CSV data, rawEvent should be of type String or List");
             }
-        } else {
+        } else if ("BIN".equalsIgnoreCase(rawdataType)) {
+            // 如果是 JSON，则假设 rawEvent 是 JSON 格式的字符串
+            if (rawEvent instanceof String) {
+                try {
+                    // 解析 JSON 字符串为 Map
+                    Map<String, Object> rawMap = objectMapper.readValue((String) rawEvent, Map.class);
+                    for (Attribute attribute : schema.getAttributes()) {
+                        payload.put(attribute, rawMap.get(attribute.getName()));
+                    }
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("Failed to parse JSON string", e);
+                }
+            } else {
+                throw new IllegalArgumentException("For JSON data, rawEvent should be a JSON formatted string");
+            }
+        }
+        else {
             throw new IllegalArgumentException("Unsupported rawdataType: " + rawdataType);
         }
 
