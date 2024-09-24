@@ -1,12 +1,8 @@
 package org.example.utils;
 
-import org.example.events.Attribute;
 import org.example.events.Schema;
-import org.example.engine.MPIEPairsManager;
-import org.example.merger.IEPQ;
 import org.example.parser.MPIEPairSource;
 import org.example.parser.QueryParser;
-import org.example.piepair.IEP;
 import org.example.piepair.eba.EBA;
 
 import java.util.*;
