@@ -1,4 +1,4 @@
-package org.example.utils;
+package org.example.merger;
 
 public class CircularQueue<T> {
     private final T[] queue;

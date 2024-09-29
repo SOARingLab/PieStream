@@ -4,7 +4,7 @@ import org.example.datasource.DataSource;
 import org.example.datasource.FileDataSource;
 import org.example.engine.Engine;
 import org.example.events.Attribute;
-import org.example.events.Schema;
+import org.example.parser.Schema;
 
 import java.io.IOException;
 
@@ -23,10 +23,10 @@ public class Main {
         String query = "SELECT s.ts, s.te " +
                 "FROM CarStream " +
                 "DEFINE X AS XWay > 2, S AS SPEED > 30,D AS ACCEL <= -0.5 " +
-                "PATTERN S follow;followed-by;meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  X  " +
-                "AND S follow;followed-by;meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  D "+
-                "AND D follow;followed-by;meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  X "+
-                "WINDOW 5 min";
+                "PATTERN S  follow;followed-by;meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals   X  " +
+                "AND S follow;followed-by;meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals    D "+
+                "AND D follow;followed-by;meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals   X "+
+                "WINDOW 10000";
 
         //         查询语句
 //        String query = "SELECT s.ts, s.te " +
@@ -38,10 +38,9 @@ public class Main {
         // 定义属性
         Attribute partAtb = new Attribute("VID", "int");
 
-        int QCapacity = 10000; // 设置队列容量
 
         // 创建 Engine 实例
-        Engine engine = new Engine(schema, partAtb, QCapacity, query);
+        Engine engine = new Engine(schema, query);
 
         // 文件数据源，读取数据并应用到 Engine 中
         try (DataSource dataSource = new FileDataSource("src/main/resources/data/fake.csv")) {
@@ -51,6 +50,7 @@ public class Main {
                 engine.apply("", line); // 处理每一行数据
             }
         } catch (IOException e) {
+
             System.err.println("Failed to open file: " + e.getMessage());
         }
     }

@@ -1,6 +1,6 @@
-package org.example.utils;
+package org.example.merger;
 
-import org.example.events.Schema;
+import org.example.parser.Schema;
 import org.example.parser.MPIEPairSource;
 import org.example.parser.QueryParser;
 import org.example.piepair.eba.EBA;
@@ -11,23 +11,27 @@ public class BinTree {
 
     private List<MPIEPairSource> sourceList;
     private Map<MPIEPairSource, IEPCol> source2Col;
-    private Map<MPIEPairSource, TreeNode> sourceToNodeMap;
+    private Map<MPIEPairSource, TreeNode> sourceToNode;
     private Map<IEPCol, TreeNode> Col2Node;
-    private int QCapacity;
+    private long QCapacity;
+    private long bef_aftQCapacity;
     private TreeNode root;
     private TreeNode bottomLeaf;
+    private List<TreeNode>  mergedNodes;
     private Map<EBA, String> EBA2String;
 
     // 构造函数初始化常用的变量
-    public BinTree(List<MPIEPairSource> sourceList, int QCapacity, Map<EBA, String> EBA2String) {
+    public BinTree(List<MPIEPairSource> sourceList, long QCapacity, Map<EBA, String> EBA2String) {
         this.sourceList = sourceList;
         this.QCapacity = QCapacity;
         this.source2Col = new HashMap<>();
-        this.sourceToNodeMap = new HashMap<>();
+        this.sourceToNode  = new HashMap<>();
         this.Col2Node = new HashMap<>();
         this.root = null;
         this.bottomLeaf = null;
         this.EBA2String = EBA2String;
+        this.bef_aftQCapacity= (( QCapacity +3)* QCapacity )/6;
+        this.mergedNodes=new ArrayList<>();
     }
 
     // 构建二叉树的方法
@@ -52,10 +56,12 @@ public class BinTree {
             predSet.add(source.getLatterPred());  // 添加后继谓词
             // 创建叶子节点
             IEPCol Col = new IEPCol(QCapacity);
-            TreeNode node = new TreeNode(predSet, new HashSet<>(), null, null, null, null, source, 0, true, null, Col);
+//            TreeNode node = new TreeNode(predSet, new HashSet<>(), null, null, null, null, source, 0, true, null, Col);
+            TreeNode node = new TreeNode(predSet,  source, QCapacity);
+
             source2Col.put(source, Col);
             Col2Node.put(Col, node);
-            sourceToNodeMap.put(source, node);  // 将源和节点映射
+            sourceToNode.put(source, node);  // 将源和节点映射
             nodes.add(node);
         }
         return nodes;
@@ -63,9 +69,7 @@ public class BinTree {
 
     // 将节点合并成二叉树
     private TreeNode createTree(List<TreeNode> nodes) throws Exception {
-        if (nodes.isEmpty()) {
-            throw new IllegalArgumentException("无节点可合并");
-        }
+
 
         int heightCnt = 0;  // 初始化高度计数器
         TreeNode hNode = nodes.remove(0);  // 取第一个节点作为起始节点
@@ -75,6 +79,7 @@ public class BinTree {
         heightCnt++;
         TreeNode mergedNode = createParentNode(hNode, null, heightCnt);  // 合并两个节点
         hNode = mergedNode;
+        mergedNodes.add(hNode);
 
         while (!nodes.isEmpty()) {
             boolean mergedCurrent = false;
@@ -87,6 +92,7 @@ public class BinTree {
                     TreeNode parentNode = createParentNode(hNode, otherNode, heightCnt);  // 合并两个节点
                     heightCnt++;
                     hNode = parentNode;  // 更新当前节点
+                    mergedNodes.add(hNode);
                     nodes.remove(i);  // 移除合并后的节点
                     mergedCurrent = true;
                     break;
@@ -130,9 +136,9 @@ public class BinTree {
             hNode.brother = otherNode;
         }
 
-        Table pt =new Table();
 
-        TreeNode mergedNode = new TreeNode(newPredSet, newKeyPredSet, hNode, otherNode, null, null, null, heightCnt + 1, false, pt, null);
+//        TreeNode mergedNode = new TreeNode(newPredSet, newKeyPredSet, hNode, otherNode, null, null, null, heightCnt + 1, false, pt, null);
+        TreeNode mergedNode = new TreeNode(newPredSet, newKeyPredSet, hNode, otherNode, heightCnt + 1,QCapacity);
 
         hNode.parent = mergedNode;
         if (otherNode != null) {
@@ -143,11 +149,14 @@ public class BinTree {
     }
 
     public void mergeTree() {
-        TreeNode startNode = getStartMergeNode();
+//        TreeNode startNode = getStartMergeNode();
+
+        TreeNode startNode = bottomLeaf;
         if(startNode!=null ){//为null则不用更新
-            mergeTreeFrom(startNode);
+            mergeNewTableFrom(startNode);
         }
     }
+
 
     private TreeNode getStartMergeNode() {
 
@@ -172,22 +181,23 @@ public class BinTree {
 
     }
 
-    private void mergeTreeFrom(TreeNode startNode) {
+    private void mergeNewTableFrom(TreeNode startNode) {
         TreeNode leafNode = startNode;
         TreeNode mergedNode=leafNode.brother;
         TreeNode pn = leafNode.parent;
         if(leafNode == bottomLeaf){    //最底层
 
-            pn.T=merge(leafNode.Col);
+            getNewTableOfLeafNode(leafNode );
+            pn.newT.concatenate(leafNode.leafNewT);
+//            pn.newT.printTable();
             mergedNode=pn;
             pn=pn.parent;
             leafNode=mergedNode.brother;
         }
 
         while (pn != null ) {
-
-            pn.T=merge(mergedNode.T,leafNode.Col);
-
+            getNewTabeOfLeafAndMergedNode(pn ,mergedNode ,leafNode );
+//            pn.newT.printTable();
             mergedNode=pn;
             pn=pn.parent;
             leafNode=mergedNode.brother;
@@ -195,25 +205,99 @@ public class BinTree {
 
     }
 
+    private void getNewTableOfLeafNode( TreeNode leafNode){
 
-    private Table merge( IEPCol  col){
-        return new Table(col.getIepList(),EBA2String);
-    }
-
-    private Table merge( Table  mgTb,IEPCol  col){
-        if(mgTb.getRows().size()!=0 && col.getSize()!=0 ){
-            Table colTb= new Table(col.getIepList(),EBA2String);
-            return HashJoiner.hashJoin(mgTb,colTb);
-        }else{
-            return new Table();
+        leafNode.leafNewT.concatenate( new Table(leafNode.getCol().getNewIEPList(),EBA2String  ) );
+        if (leafNode.isHasBefore()){
+            leafNode.leafNewT.concatenate( new Table( leafNode.getBefCol().getNewIEPList(),EBA2String ) );
+        }
+        if (leafNode.isHasAfter()){
+            leafNode.leafNewT.concatenate( new Table( leafNode.getAftCol().getNewIEPList(),EBA2String ) );
         }
     }
 
-    public void printResult(){
-//        root.T.printTable();
-        int cnt=root.T.getRowCount();
+    private void getNewTabeOfLeafAndMergedNode(TreeNode ParnetNode, TreeNode   mergedNode,TreeNode leafNode){
+        Table mergedNewTab = mergedNode.getNewT();
+        getNewTableOfLeafNode(leafNode);
+        Table leafNewTable=leafNode.leafNewT;
+        Table leafOldTable=new Table( leafNode.getCol().getIepList(),EBA2String  );
+        ParnetNode.newT.concatenate(HashJoiner.hashJoin( mergedNewTab,leafNewTable));
+        ParnetNode.newT.concatenate( HashJoiner.hashJoin( mergedNewTab, leafOldTable ) );
+        ParnetNode.newT.concatenate( HashJoiner.hashJoin( leafNewTable, mergedNode.getT()  ) );
+    }
+
+    public void deriveBeforeAfterRel( ) {
+        for (Map.Entry<IEPCol, TreeNode> entry : Col2Node.entrySet()) {
+            //只对叶子结点推导
+
+            entry.getValue().deriveBeforeAfterRel();
+
+        }
+    }
+
+    public void printResultCNT(){
+        long cnt=root.T.getRowCount();
         System.out.println("RESULT:"+cnt);
     }
+
+    public void printDetailResult(){
+        root.T.printTable();
+    }
+
+    public void printDetailResultFormat(){
+        root.T.printTableFormat();
+    }
+
+
+    public void updateMergedNodeData(){
+        for (TreeNode node:mergedNodes){
+            node.T.concatenate(node.newT);
+        }
+    }
+
+    public void updateLeafNodeData(){
+
+        for  (Map.Entry<IEPCol, TreeNode> entry : Col2Node.entrySet()) {
+//            MPIEPairSource key = entry.getKey();
+            TreeNode node= entry.getValue();
+
+            node.getCol().updateIEP2List();
+            if(node.isHasBefore()){
+                node.getBefCol().updateIEP2List();
+            }
+            if(node.isHasAfter()){
+                node.getAftCol().updateIEP2List();
+            }
+
+        }
+
+    }
+
+    public void  clearLeafNodeData(){
+        for   (Map.Entry<IEPCol, TreeNode> entry : Col2Node.entrySet()) {
+//            MPIEPairSource key = entry.getKey();
+            TreeNode leafNode = entry.getValue();
+            leafNode.getCol().resetIsTrigger();
+            leafNode.leafNewT.clear();
+            if(leafNode.isHasBefore()){
+                leafNode.getBefCol().resetIsTrigger();
+            }
+            if(leafNode.isHasAfter()){
+                leafNode.getAftCol().resetIsTrigger();
+            }
+
+        }
+    }
+
+    public void  clearMergedNodeData(){
+        for (TreeNode node:mergedNodes){
+            Table newT= node.newT;
+            if (newT.getRowCount()!=0){
+                newT.clear();
+            }
+        }
+    }
+
 
     // Getter 方法
     public List<MPIEPairSource> getSourceList() {
@@ -224,15 +308,15 @@ public class BinTree {
         return source2Col;
     }
 
-    public Map<MPIEPairSource, TreeNode> getSourceToNodeMap() {
-        return sourceToNodeMap;
+    public Map<MPIEPairSource, TreeNode> getSourceToNode() {
+        return sourceToNode;
     }
 
     public Map<IEPCol, TreeNode> getCol2Node() {
         return Col2Node;
     }
 
-    public int getQCapacity() {
+    public long getQCapacity() {
         return QCapacity;
     }
 

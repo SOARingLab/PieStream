@@ -1,4 +1,4 @@
-package org.example.utils;
+package org.example.merger;
 
 public class LinkList<T> {
 
@@ -13,16 +13,19 @@ public class LinkList<T> {
             this.next = next;
             this.prev = prev;
         }
+        public T getData(){
+            return data;
+        }
     }
 
     private Node head;    // 头指针
     private Node tail;    // 尾指针
-    private int capacity; // 链表的总容量
+    private long capacity; // 链表的总容量
     private int size;     // 当前元素个数
 //    private boolean isTrigger;     // 当前元素个数
 
     // 构造函数，初始化链表，容量是传入的参数
-    public LinkList(int capacity) {
+    public LinkList(long capacity) {
         this.capacity = capacity;
         this.size = 0;
         this.head = null;
@@ -209,7 +212,7 @@ public class LinkList<T> {
     }
 
     // 获取链表的容量
-    public int getCapacity() {
+    public long getCapacity() {
         return capacity;
     }
 

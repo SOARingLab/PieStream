@@ -2,7 +2,7 @@ package org.example.datasource;
 
 import org.example.engine.Engine;
 import org.example.events.Attribute;
-import org.example.events.Schema;
+import org.example.parser.Schema;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -80,15 +80,11 @@ public class FileDataSource implements DataSource {
                 "PATTERN S follow;followed-by;meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  X  " +
                 "AND S follow;followed-by;meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  D "+
                 "AND D follow;followed-by;meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  X "+
-                "WINDOW 5 min";
+                "WINDOW 1000000";
 
-        // 定义属性
-        Attribute partAtb = new Attribute("VID", "int");
-
-        int QCapacity = 10000; // 设置队列容量
 
         // 创建 Engine 实例
-        Engine engine = new Engine(schema, partAtb, QCapacity, query);
+        Engine engine = new Engine(schema,   query);
 
         // 文件数据源，读取数据并应用到 Engine 中
         try (DataSource dataSource = new FileDataSource("src/main/resources/data/fake.csv")) {

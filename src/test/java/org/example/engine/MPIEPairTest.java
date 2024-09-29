@@ -8,7 +8,7 @@
 //import org.example.events.PointEvent;
 //import org.example.piepair.predicate.Greater;
 //import org.example.piepair.predicate.Less;
-//import org.example.utils.CircularQueue;
+//import org.example.merger.CircularQueue;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //import java.util.concurrent.CountDownLatch;

@@ -1,7 +1,8 @@
-package org.example.utils;
+package org.example.merger;
 
 import java.util.*;
 
+import org.example.events.PointEvent;
 import org.example.piepair.IEP;
 import org.example.piepair.eba.EBA;
 
@@ -10,63 +11,68 @@ public class IEPCol {
     private LinkList<IEP> iepList;   // 包含 IEP 的链表
     public Map<EBA, Map<Long, List<IEP>>> colMap; // 建立在 IEPList 上的索引
     private boolean isTrigger;
-    private IEP triggerIEP;
-    private Map<EBA, Map<Long, List<IEP>>> triggerMap;
-
-//    private EBA triggerPred1;
-//    private Long triggerStartTime1;
-//    private EBA triggerPred2;
-//    private Long triggerStartTime2;
+    private LinkList<IEP> newIEPList;
+    private Map<EBA, Map<Long, List<IEP>>> newIEPMap;
 
     public LinkList<IEP> getIepList(){
         return iepList;
     }
 
-    public IEP getTriggerIEP() {
-        return triggerIEP;
+
+    // 构造函数，初始化 LinkList 和索引
+    public IEPCol(long capacity) {
+        this.iepList = new LinkList<>(capacity);
+        this.colMap = new HashMap<>();
+        this.isTrigger = false;
+        this.newIEPList = new LinkList<>(capacity);
+        this.newIEPMap = new HashMap<>();
     }
 
-    public Map<EBA, Map<Long, List<IEP>>> getTriggerMap() {
-        return triggerMap;
+    public LinkList<IEP> getNewIEPList(){
+        return newIEPList;
+    }
+
+    public Map<EBA, Map<Long, List<IEP>>>  getNewIEPMap(){
+        return newIEPMap;
     }
 
     public void resetIsTrigger() {
-        isTrigger = false;
-        triggerMap.clear();
+        if(isTrigger==true){
+            isTrigger = false;
+            newIEPList.clear();
+            newIEPMap.clear();
+        }
     }
 
     public boolean getIsTrigger() {
         return isTrigger;
     }
 
-    // 构造函数，初始化 LinkList 和索引
-    public IEPCol(int capacity) {
-        this.iepList = new LinkList<>(capacity);
-        this.colMap = new HashMap<>();
-        this.isTrigger = false;
-        this.triggerIEP = null;
-        this.triggerMap = new HashMap<>();
-
-    }
 
     public void setTriggerMSG(EBA pred1, Long startTime1, EBA pred2, Long startTime2, IEP iep){
-        if (isTrigger) {
-            throw new IllegalStateException("The trigger has already been set."); // 抛出异常，表示已经触发过
-        }
-        this.triggerIEP=iep;
-        this.isTrigger = true;
-        Map<Long, List<IEP>> predIndex1 = triggerMap.computeIfAbsent(pred1, k -> new HashMap<>());
-        predIndex1.computeIfAbsent(startTime1, k -> new ArrayList<>()).add(iep);
-        Map<Long, List<IEP>> predIndex2 = triggerMap.computeIfAbsent(pred2, k -> new HashMap<>());
-        predIndex2.computeIfAbsent(startTime2, k -> new ArrayList<>()).add(iep);
 
+        this.newIEPList.add(iep);
+        this.isTrigger = true;
+        Map<Long, List<IEP>> predIndex1 = newIEPMap.computeIfAbsent(pred1, k -> new HashMap<>());
+        predIndex1.computeIfAbsent(startTime1, k -> new ArrayList<>()).add(iep);
+        Map<Long, List<IEP>> predIndex2 = newIEPMap.computeIfAbsent(pred2, k -> new HashMap<>());
+        predIndex2.computeIfAbsent(startTime2, k -> new ArrayList<>()).add(iep);
+    }
+
+    public void setTriggerMSG(  IEP iep){
+        this.newIEPList.add(iep);
+        Map<Long, List<IEP>> predIndex1 = newIEPMap.computeIfAbsent(iep.getFormerPie(), k -> new HashMap<>());
+        predIndex1.computeIfAbsent(iep.getFormerStartTime(), k -> new ArrayList<>()).add(iep);
+        Map<Long, List<IEP>> predIndex2 = newIEPMap.computeIfAbsent(iep.getLatterPie(), k -> new HashMap<>());
+        predIndex2.computeIfAbsent(iep.getLatterStartTime(), k -> new ArrayList<>()).add(iep);
+        this.isTrigger = true;
     }
 
     // 添加 IEP 到链表和索引中，支持两个 EBA 和两个 startTime
     public void updateIEP2List() {
         if(isTrigger){
-            iepList.add(triggerIEP);  // 添加到链表
-            MapMerger.mergeNestedMaps(colMap,triggerMap );
+            iepList.concat(newIEPList);  // 添加到链表
+            MapMerger.mergeNestedMaps(colMap,newIEPMap );
         }
     }
 
@@ -77,6 +83,15 @@ public class IEPCol {
         }
         return new ArrayList<>();
     }
+
+    // 根据 EBA 和  Long -> IEP Map
+    public  Map< Long , List<IEP>> getLong2IEPListMap(EBA eba ) {
+        if (colMap.containsKey(eba)  ) {
+            return colMap.get(eba);
+        }
+        return   null;
+    }
+
 
     // 删除 IEP，根据两个 EBA 和对应的 startTime 更新索引
     public void deleteIEP(EBA pred1, Long startTime1, EBA pred2, Long startTime2, IEP iep) {
@@ -132,6 +147,18 @@ public class IEPCol {
         }
     }
 
+    public void updateCompletedMSG(String thePred,EBA pred, Long startTime , PointEvent endEvent ){
+        if(thePred=="former"){
+            for ( IEP iep: this.getIEP(pred,startTime) ){
+                iep.setFormerPieEnd( endEvent);
+            }
+        }else if(thePred=="latter"){
+            for ( IEP iep: this.getIEP(pred,startTime) ){
+                iep.setLatterPieEnd( endEvent);
+            }
+        }
+    }
+
     // 新增：打印 iepList 链表中的所有 IEP
     public void printCol() {
         iepList.printList();
@@ -143,7 +170,7 @@ public class IEPCol {
     }
 
     // 获取链表的容量
-    public int getCapacity() {
+    public long getCapacity() {
         return iepList.getCapacity();
     }
 

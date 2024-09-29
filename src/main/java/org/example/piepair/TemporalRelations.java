@@ -1,6 +1,12 @@
 package org.example.piepair;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public class TemporalRelations {
+
+
 
     public enum AllenRel {
         BEFORE,
@@ -33,6 +39,7 @@ public class TemporalRelations {
         FOLLOWED_BY(true, false,false),
         FOLLOW(false, true,false);
 
+
         private final boolean triggerWithoutLatterPieEnd;
         private final boolean triggerWithoutFormerPieEnd;
         private final boolean triggerWithCompleted;
@@ -58,6 +65,35 @@ public class TemporalRelations {
             return triggerWithCompleted;
         }
     }
+
+    // 获取关系组合的方法  FormerIE.te <= LatterPredIE.te
+    public static Set<PreciseRel> getRelSetBefore() {
+        return new HashSet<>(Arrays.asList(
+//                PreciseRel.FOLLOWED_BY,
+                PreciseRel.MEETS,
+                PreciseRel.OVERLAPS,
+                PreciseRel.STARTS,
+                PreciseRel.DURING,
+                PreciseRel.FINISHES,
+                PreciseRel.FINISHED_BY,
+                PreciseRel.EQUALS
+        ));
+    }
+
+    //      LatterPredIE.ts <= FormerIE.ts
+    public static Set<PreciseRel> getRelSetAfter() {
+        return new HashSet<>(Arrays.asList(
+//                PreciseRel.FOLLOW,
+                PreciseRel.MET_BY,
+                PreciseRel.OVERLAPPED_BY,
+                PreciseRel.DURING,
+                PreciseRel.FINISHES,
+                PreciseRel.STARTS,
+                PreciseRel.STARTED_BY,
+                PreciseRel.EQUALS
+        ));
+    }
+
 
     public enum AllRel {
         BEFORE(AllenRel.BEFORE),

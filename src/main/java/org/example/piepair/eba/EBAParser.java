@@ -1,9 +1,9 @@
 package org.example.piepair.eba;
 
 import org.example.events.Attribute;
-import org.example.events.Schema;
+import org.example.parser.Schema;
 import org.example.piepair.predicate.Predicate;
-import org.example.piepair.predicate.PredicateFactory;
+import org.example.piepair.predicate.PredicateUtils;
 
 import java.util.List;
 import java.util.Stack;
@@ -108,7 +108,7 @@ public class EBAParser {
         String value = parts[2];
 
         Attribute attribute = new Attribute(attributeStr, finadValueType(attributeStr,schema));
-        Predicate predicate = PredicateFactory.fromOperator(operator);
+        Predicate predicate = PredicateUtils.fromOperator(operator);
         Object parameter = parseValue(value);
 
         return new  PredicateEBA(predicate, attribute, parameter);

@@ -1,5 +1,5 @@
 # rawdataType is one of { JSON , CSV , BIN }.
-rawdataType: BIN
+rawdataType: CSV
 
 # the name of fields need to be same with the Json RawData, or the order of the fields need to be same with the csv RowData.
 fields:
@@ -20,10 +20,10 @@ fields:
     type: byte
   - name: Pos
     type: int
-  - name: ts
-    type: long
-  - name: te
-    type: long
+#  - name: ts
+#    type: long
+#  - name: te
+#    type: long
 
 # timestamp is a field name of fields or null.
 timestamp: ts

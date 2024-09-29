@@ -1,5 +1,6 @@
-package org.example.events;
+package org.example.parser;
 
+import org.example.events.Attribute;
 import org.example.utils.Config;
 
 import java.io.IOException;

@@ -1,7 +1,7 @@
 //package org.example.engine;
 //
 //import org.example.events.PointEvent;
-//import org.example.events.Schema;
+//import org.example.parser.Schema;
 //import org.junit.jupiter.api.*;
 //
 //import java.io.FileWriter;

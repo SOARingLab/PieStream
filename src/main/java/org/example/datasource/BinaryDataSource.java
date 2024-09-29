@@ -3,7 +3,7 @@ package org.example.datasource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.engine.Engine;
 import org.example.events.Attribute;
-import org.example.events.Schema;
+import org.example.parser.Schema;
 
 import java.io.*;
 import java.util.*;
@@ -118,25 +118,32 @@ public class BinaryDataSource implements DataSource {
                 "FROM CarStream " +
                 "DEFINE D AS ACCEL <= -0.00455 , S AS SPEED >= 32 , A AS ACCEL >= 0.0050 " +
                 "PATTERN " +
-                "A  meets; overlaps; starts; during   S  " +
-                "AND S  meets; contains; followed-by; overlaps   D  " +
-                "WINDOW 5 min";
+                "A  meets; overlaps; starts; during ; before    S  " +
+                "AND S  meets; contains; followed-by; overlaps;after;before   D  " +
+                "WINDOW 1000000";
 
-        int QCapacity = 10000; // 设置队列容量
+         // 设置队列容量
 
         // 创建 Engine 实例
-        Engine engine = new Engine(schema, QCapacity, query);
-        int cnt = 0;
-        try (BinaryDataSource dataSource = new BinaryDataSource(binaryFilePath, schema)) {
+        Engine engine = new Engine(schema, query);
+
+        try (DataSource dataSource = new BinaryDataSource(binaryFilePath, schema)) {
+            long time = -System.nanoTime();
             while (dataSource.hasNext()) {
                 String record = dataSource.readNext();
                 // 输出 JSON 格式的记录
-                System.out.println(record);
+//                System.out.println(record);
                 engine.apply("", record); // 处理每一行数据
-                cnt++;
             }
+
+            time += System.nanoTime();
+
+            engine.formatResult();
+            engine.printResultCNT();
+            System.out.println( (time / 1_000_000) + "ms");
         } catch (IOException e) {
             e.printStackTrace();
         }
+
     }
 }

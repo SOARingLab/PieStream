@@ -8,7 +8,7 @@
 //import org.example.piepair.dfa.DFA;
 //import org.example.piepair.eba.EBA;
 //import org.example.piepair.eba.predicate.*;
-//import org.example.utils.CircularQueue;
+//import org.example.merger.CircularQueue;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.Test;
 //

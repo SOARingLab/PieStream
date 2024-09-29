@@ -1,0 +1,29 @@
+# rawdataType is one of { JSON , CSV , BIN }.
+rawdataType: BIN
+
+# the name of fields need to be same with the Json RawData, or the order of the fields need to be same with the csv RowData.
+fields:
+
+  - name: VID
+    type: int
+  - name: SPEED
+    type: int
+  - name: ACCEL
+    type: double
+  - name: XWay
+    type: int
+  - name: Lane
+    type: byte
+  - name: Dir
+    type: byte
+  - name: Seg
+    type: byte
+  - name: Pos
+    type: int
+  - name: ts
+    type: long
+  - name: te
+    type: long
+
+## timestamp is a field name of fields or null.
+timestamp: ts

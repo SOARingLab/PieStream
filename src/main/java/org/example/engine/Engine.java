@@ -1,14 +1,12 @@
 package org.example.engine;
 
 import org.apache.kafka.streams.kstream.ForeachAction;
-import org.example.datasource.DataSource;
 import org.example.events.PointEvent;
-import org.example.events.Schema;
+import org.example.parser.Schema;
 import org.example.events.Attribute;
 import org.example.parser.MPIEPairSource;
 import org.example.parser.QueryParser;
 import org.example.piepair.eba.EBA;
-import org.example.utils.IEPCol;
 
 import java.util.List;
 
@@ -21,7 +19,7 @@ public class Engine implements ForeachAction<String, String> {
 
 
     // 构造函数，初始化相关属性
-    public Engine(Schema schema, Attribute partitionAttribute, int QCapacity, String query) {
+    public Engine(Schema schema, Attribute partitionAttribute, String query) {
         this.parser = new QueryParser(query,schema);
         try {
             // 解析查询
@@ -30,13 +28,15 @@ public class Engine implements ForeachAction<String, String> {
             System.err.println("Failed to parse query: " + e.getMessage());
         }
         this.MPPSourceList = parser.getPatternClause();  // 获取解析后的模式子句
+        long QCapacity=parser.getwindowClause();
         this.processor = new EventPreprocessor(schema);  // 初始化事件预处理器
         this.partitionAttribute = partitionAttribute;  // 设置分区属性
+
         this.worker = new Worker(MPPSourceList, QCapacity,parser.getEBA2String() );  // 创建 Worker 实例
     }
 
-    public Engine(Schema schema, int QCapacity, String query){
-         this(schema,null,QCapacity,query);
+    public Engine(Schema schema,  String query){
+         this(schema,null, query);
     }
 
     // 处理 Kafka 记录
@@ -48,9 +48,15 @@ public class Engine implements ForeachAction<String, String> {
         // 逐条处理事件
         worker.resetBeforeRun();
         worker.runOneByOne(pe);
-        worker.updateData();
+        worker.deriveBeforeAfterRel();
         worker.mergeAfterRun();
-//        worker.printAllCol();
-        worker.printResult();
+        worker.updateData();
+    }
+
+    public void printResultCNT(){
+        worker.printResultCNT();
+    }
+    public void formatResult(){
+        worker.printResultFormat();
     }
 }

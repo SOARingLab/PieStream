@@ -1,9 +1,9 @@
 package org.example.engine;
 
-import org.example.merger.IEPQ;
+import org.example.merger.TreeNode;
 import org.example.parser.MPIEPairSource;
 import org.example.piepair.PIEPair;
-import org.example.utils.IEPCol;
+import org.example.merger.IEPCol;
 import org.example.events.PointEvent;
 
 import java.util.ArrayList;
@@ -17,19 +17,20 @@ public class MPIEPairsManager {
     private final List<MPIEPair> MPIEPairList;  // MPIEPair 列表
     private final Map<MPIEPairSource, MPIEPair> MPPSourceToPairMap;  // MPPSource到MPIEPair的映射
     private final List<PIEPair> AllPiePairs;  // 所有 PIEPair 对象的列表
-    private final Map<MPIEPairSource, IEPCol> source2Col;  // MPIEPairSource 到 IEPCol 的映射
+//    private final Map<MPIEPairSource, IEPCol> source2Col;  // MPIEPairSource 到 IEPCol 的映射
+    private Map<MPIEPairSource, TreeNode> source2Node = new HashMap<>();  // 源到节点的映射
 
     // 构造函数，初始化 MPIEPairsManager
-    public MPIEPairsManager(List<MPIEPairSource> MPPSourceList, Map<MPIEPairSource, IEPCol> source2Col) {
+    public MPIEPairsManager(List<MPIEPairSource> MPPSourceList, Map<MPIEPairSource, TreeNode> source2Node) {
         this.MPPSourceList = MPPSourceList;
         this.MPIEPairList = new ArrayList<>();
         this.MPPSourceToPairMap = new HashMap<>();
-        this.source2Col = source2Col;
+        this.source2Node = source2Node;
         this.AllPiePairs = new ArrayList<>();
 
         // 初始化每个 MPIEPairSource 和对应的 MPIEPair，并将其添加到相应的列表和映射中
         for (MPIEPairSource MPPSource : MPPSourceList) {
-            MPIEPair mpiePair = new MPIEPair(MPPSource.getRelations(), MPPSource.getFormerPred(), MPPSource.getLatterPred(), source2Col.get(MPPSource));
+            MPIEPair mpiePair = new MPIEPair(MPPSource.getOriginRelations(), MPPSource.getFormerPred(), MPPSource.getLatterPred(), source2Node.get(MPPSource));
             this.MPIEPairList.add(mpiePair);
             this.MPPSourceToPairMap.put(MPPSource, mpiePair);  // MPPSource与MPIEPair的映射
             this.AllPiePairs.addAll(mpiePair.getPiePairs());  // 将MPIEPair中的所有PIEPairs加入AllPiePairs
@@ -63,16 +64,16 @@ public class MPIEPairsManager {
 
     // 通过 PointEvent 依次执行所有 PIEPair 的 stepByPE 方法
     public void runByPE(PointEvent event) {
-        for (PIEPair piePair : AllPiePairs) {
-            piePair.stepByPE(event);  // 串行执行
+        for (MPIEPair mpp : MPIEPairList) {
+            mpp.run(event);  // 串行执行
         }
     }
 
     // 输出 source2Col 中所有 IEPCol 的内容
     public void print() {
-        for (Map.Entry<MPIEPairSource, IEPCol> entry : source2Col.entrySet()) {
+        for (Map.Entry<MPIEPairSource, TreeNode> entry : source2Node.entrySet()) {
             MPIEPairSource source = entry.getKey();
-            IEPCol col = entry.getValue();
+            IEPCol col = entry.getValue().getCol();
 
             System.out.println("MPIEPairSource: " + source);
             System.out.println("CircularQueue Contents:");

@@ -4,7 +4,7 @@ import org.example.datasource.DataSource;
 import org.example.events.Attribute;
 import org.example.events.PointEvent;
 import org.example.events.PointEventIterator;
-import org.example.events.Schema;
+import org.example.parser.Schema;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.Map;
 import java.util.List;

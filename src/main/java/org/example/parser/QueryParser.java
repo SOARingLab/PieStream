@@ -1,12 +1,8 @@
 package org.example.parser;
 
-import org.example.events.Schema;
-import org.example.piepair.IEP;
-import org.example.piepair.PIEPair;
 import org.example.piepair.TemporalRelations;
 import org.example.piepair.eba.EBA;
 import org.example.piepair.eba.EBAParser;
-import org.example.utils.CircularQueue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +20,7 @@ public class QueryParser {
     private List<Map<String, EBA>> defineClause = new ArrayList<>();
     private Map<EBA,String> EBA2String =new HashMap<>();
     private List<MPIEPairSource> patternClause = new ArrayList<>();  // 更改为 MPIEPairSource 的 List
-    private String windowClause;
+    private long windowClause;
 
     public List<MPIEPairSource> getPatternClause(){
         return  this.patternClause;
@@ -34,6 +30,9 @@ public class QueryParser {
         return  this.EBA2String;
     }
 
+    public long getwindowClause(){
+        return  this.windowClause;
+    }
 
     public QueryParser(String query, Schema schema) {
         // Tokenize the input query by spaces, parentheses, and special symbols
@@ -139,7 +138,7 @@ public class QueryParser {
         if (token.matches("\\w+")) {
             // 处理简单的谓词，例如 accel > 8
             expressionBuilder.append(token);
-            if (peek(">") || peek("<") || peek(">=") || peek("<=") || peek("==") || peek("!=")) {
+            if (peek(">") || peek("<") || peek(">=") || peek("<=") || peek("==")|| peek("=") || peek("!=")) {
                 expressionBuilder.append(" ").append(consume()); // append comparator
                 expressionBuilder.append(" ").append(consume()); // append value
             }
@@ -174,7 +173,7 @@ public class QueryParser {
         String alias1 = consume(); // PIE alias 1
         EBA formerPred = getEbaByAlias(alias1); // 获取第一个 PIE 的 EBA
 
-        List<TemporalRelations.PreciseRel> relations = parseRelations(); // 解析时间关系
+        List<TemporalRelations.AllRel> relations = parseAllRelations(); // 解析时间关系
 
         String alias2 = consume(); // PIE alias 2
         EBA latterPred = getEbaByAlias(alias2); // 获取第二个 PIE 的 EBA
@@ -208,10 +207,26 @@ public class QueryParser {
         } while (true);
         return relations;
     }
+    private List<TemporalRelations.AllRel> parseAllRelations() throws ParseException {
+        List<TemporalRelations.AllRel> relations = new ArrayList<>();
+        do {
+            String relation = consume().toUpperCase();
+            relation=relation.replace("-","_");
+            // Consume relation like "meets", "overlaps", etc.
+            relations.add(TemporalRelations.AllRel.fromString(relation));
+            if (peek(";")) {
+                consume(); // Consume semicolon
+            } else {
+                break;
+            }
+        } while (true);
+        return relations;
+    }
+
 
     private void parseWindowClause() throws ParseException {
         expect("WINDOW");
-        windowClause = consume(); // time value, e.g., 5 min
+        windowClause = Long.parseLong(consume()); // time value, e.g., 5 min
     }
 
     // Helper methods

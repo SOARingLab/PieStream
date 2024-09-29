@@ -1,5 +1,6 @@
 package org.example.utils;
 
+import org.example.merger.CircularQueue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

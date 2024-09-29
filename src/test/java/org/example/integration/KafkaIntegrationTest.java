@@ -6,7 +6,7 @@
 //import org.apache.kafka.clients.consumer.ConsumerRecords;
 //import org.apache.kafka.clients.consumer.ConsumerRecord;
 //import org.example.engine.EventPreprocessor;
-//import org.example.events.Schema;
+//import org.example.parser.Schema;
 //import org.example.events.PointEvent;
 //import org.junit.jupiter.api.Test;
 //

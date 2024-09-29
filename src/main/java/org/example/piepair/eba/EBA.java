@@ -1,11 +1,6 @@
 package org.example.piepair.eba;
 
-import org.example.events.Attribute;
 import org.example.events.PointEvent;
-import org.example.piepair.predicate.Predicate;
-import org.example.piepair.predicate.PredicateFactory;
-
-import java.util.Stack;
 
 public abstract class EBA {
 

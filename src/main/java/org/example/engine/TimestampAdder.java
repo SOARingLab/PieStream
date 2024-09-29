@@ -2,7 +2,7 @@ package org.example.engine;
 
 import org.example.events.Attribute;
 import org.example.events.PointEvent;
-import org.example.events.Schema;
+import org.example.parser.Schema;
 
 import java.util.Map;
 

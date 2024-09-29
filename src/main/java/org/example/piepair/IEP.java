@@ -14,7 +14,9 @@ public class IEP {
     private PointEvent latterPieEnd;           // latterPie的结束事件 (可以为 null)
     private Long formerStartTime;     // 前事件的开始时间
     private Long latterStartTime;     // 后事件的开始时间
-    private boolean isCompleted;
+    private PointEvent triggerEvent;
+    private Long triggerTime;
+//    private boolean isCompleted;
 
     // 构造函数
     public IEP(TemporalRelations.AllRel relation,
@@ -25,7 +27,9 @@ public class IEP {
                PointEvent formerPieEnd,
                PointEvent latterPieEnd,
                Long formerStartTime,
-               Long latterStartTime) {
+               Long latterStartTime,
+               PointEvent triggerEvent,
+               Long triggerTime) {
 
         // 对不允许为null的参数进行检查
         this.relation = Objects.requireNonNull(relation, "relation cannot be null");
@@ -33,13 +37,16 @@ public class IEP {
         this.latterPieStart = Objects.requireNonNull(latterPieStart, "latterPieStart cannot be null");
         this.formerStartTime = Objects.requireNonNull(formerStartTime, "formerStartTime cannot be null");
         this.latterStartTime = Objects.requireNonNull(latterStartTime, "latterStartTime cannot be null");
+        this.triggerEvent = Objects.requireNonNull(triggerEvent, "triggerEvent cannot be null");
+        this.triggerTime = Objects.requireNonNull(triggerTime, "triggerTime cannot be null");
+
 
         // 允许 formerPieEnd 和 latterPieEnd 为 null
         this.formerPieEnd = formerPieEnd;
         this.latterPieEnd = latterPieEnd;
         this.formerPie = formerPie;
         this.latterPie = latterPie;
-        this.isCompleted=false;
+//        this.isCompleted=false;
     }
 
     // 构造函数，从 PreciseRel 构造
@@ -51,10 +58,12 @@ public class IEP {
                PointEvent formerPieEnd,
                PointEvent latterPieEnd,
                Long formerStartTime,
-               Long latterStartTime) {
+               Long latterStartTime,
+               PointEvent triggerEvent,
+               Long triggerTime) {
 
         // 对不允许为null的参数进行检查
-        this(TemporalRelations.AllRel.fromPreciseRel(relation),formerPie,latterPie,formerPieStart,latterPieStart,formerPieEnd,latterPieEnd,formerStartTime,latterStartTime);
+        this(TemporalRelations.AllRel.fromPreciseRel(relation),formerPie,latterPie,formerPieStart,latterPieStart,formerPieEnd,latterPieEnd,formerStartTime,latterStartTime,triggerEvent,triggerTime);
     }
     // 构造函数，从 AllenRel 构造
     public IEP(TemporalRelations.AllenRel relation,
@@ -65,10 +74,12 @@ public class IEP {
                PointEvent formerPieEnd,
                PointEvent latterPieEnd,
                Long formerStartTime,
-               Long latterStartTime) {
+               Long latterStartTime,
+               PointEvent triggerEvent,
+               Long triggerTime) {
 
         // 对不允许为null的参数进行检查
-        this(TemporalRelations.AllRel.fromAllenRel(relation),formerPie,latterPie,formerPieStart,latterPieStart,formerPieEnd,latterPieEnd,formerStartTime,latterStartTime);
+        this(TemporalRelations.AllRel.fromAllenRel(relation),formerPie,latterPie,formerPieStart,latterPieStart,formerPieEnd,latterPieEnd,formerStartTime,latterStartTime,triggerEvent,triggerTime);
     }
 
     public EBA getFormerPie(){
@@ -84,25 +95,18 @@ public class IEP {
         return relation;
     }
 
-    public void setRelation(TemporalRelations.AllRel relation) {
-        this.relation = relation;
-    }
+
 
     public PointEvent getFormerPieStart() {
         return formerPieStart;
     }
 
-    public void setFormerPieStart(PointEvent formerPieStart) {
-        this.formerPieStart = formerPieStart;
-    }
+
 
     public PointEvent getLatterPieStart() {
         return latterPieStart;
     }
 
-    public void setLatterPieStart(PointEvent latterPieStart) {
-        this.latterPieStart = latterPieStart;
-    }
 
     public PointEvent getFormerPieEnd() {
         return formerPieEnd;
@@ -119,6 +123,8 @@ public class IEP {
     public void setLatterPieEnd(PointEvent latterPieEnd) {
         this.latterPieEnd = latterPieEnd;
     }
+
+
 
     public void setFormerStartTime(Long formerStartTime) {
         this.formerStartTime = formerStartTime;
@@ -193,9 +199,9 @@ public class IEP {
                 Objects.equals(formerStartTime, iep.formerStartTime) &&
                 Objects.equals(latterStartTime, iep.latterStartTime);
     }
-    public void complete(){
-        this.isCompleted =true;
-    }
+//    public void complete(){
+//        this.isCompleted =true;
+//    }
 
     public Long getStartTime(EBA pred) {
         if (pred == formerPie) {
