@@ -59,6 +59,12 @@ public class Worker {
     public void printResultCNT() {
         tree.printResultCNT();
     }
+
+    public long getResultCNT() {
+        return tree.getResultCNT();
+    }
+
+
     public void printDetailResult() {
         tree.printDetailResult();
     }
@@ -67,7 +73,9 @@ public class Worker {
         tree.printDetailResultFormat();
     }
 
-
+    public void printResultOrdered() {
+        tree.printDetailResultOrdered();
+    }
 
 
 

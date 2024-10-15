@@ -1,5 +1,6 @@
 package org.example.merger;
 
+import com.fasterxml.jackson.databind.util.LinkedNode;
 import org.example.engine.MPIEPair;
 import org.example.events.PointEvent;
 import org.example.parser.MPIEPairSource;
@@ -254,8 +255,9 @@ public class TreeNode {
                 befCol.setTriggerMSG( new IEP(TemporalRelations.AllenRel.BEFORE,mpp.getFormerPred(),mpp.getLatterPred(),
                         lastFormerIE.getStartEvent(),latterPieStart,lastFormerIE.getEndEvent(),null,
                         lastFormerIE.getStartTime(),latterPieStart.getTimestamp(),latterPieStart,latterPieStart.getTimestamp() )   );
+                LinkList.Node newTail= tail.prev;
                 formerIEList.deleteNode(tail);
-                tail = formerIEList.getTail();
+                tail = newTail;
             }
 
         }
@@ -312,8 +314,10 @@ public class TreeNode {
                 aftCol.setTriggerMSG( new IEP(TemporalRelations.AllenRel.AFTER,mpp.getFormerPred(),mpp.getLatterPred(),
                         formerPieStart,lastLatterIE.getStartEvent(),null,lastLatterIE.getEndEvent(),
                         formerPieStart.getTimestamp(),lastLatterIE.getStartTime(),formerPieStart,formerPieStart.getTimestamp()));
+                LinkList.Node newTail= tail.prev;
                 latterIEList.deleteNode(tail);
-                tail = latterIEList.getTail();
+                tail = newTail;
+
             }
         }
     }

@@ -48,6 +48,14 @@ public class IEPCol {
         return isTrigger;
     }
 
+    public void printNewIEPList() {
+        if (newIEPList.getSize()!=0){
+            System.out.println("    +"+newIEPList.getSize());
+
+//            newIEPList.printList();
+        }
+    }
+
 
     public void setTriggerMSG(EBA pred1, Long startTime1, EBA pred2, Long startTime2, IEP iep){
 

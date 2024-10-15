@@ -223,7 +223,8 @@ public class BinTree {
         Table leafOldTable=new Table( leafNode.getCol().getIepList(),EBA2String  );
         ParnetNode.newT.concatenate(HashJoiner.hashJoin( mergedNewTab,leafNewTable));
         ParnetNode.newT.concatenate( HashJoiner.hashJoin( mergedNewTab, leafOldTable ) );
-        ParnetNode.newT.concatenate( HashJoiner.hashJoin( leafNewTable, mergedNode.getT()  ) );
+        Table tb=HashJoiner.hashJoin( leafNode.leafNewT, mergedNode.getT()  );
+        ParnetNode.newT.concatenate( tb );
     }
 
     public void deriveBeforeAfterRel( ) {
@@ -240,12 +241,21 @@ public class BinTree {
         System.out.println("RESULT:"+cnt);
     }
 
+    public long getResultCNT(){
+        return  root.T.getRowCount();
+
+    }
+
     public void printDetailResult(){
         root.T.printTable();
     }
 
     public void printDetailResultFormat(){
         root.T.printTableFormat();
+    }
+
+    public void printDetailResultOrdered(){
+        root.T.printTableOrdered();
     }
 
 
@@ -261,11 +271,17 @@ public class BinTree {
 //            MPIEPairSource key = entry.getKey();
             TreeNode node= entry.getValue();
 
+//            node.getCol().printNewIEPList();
             node.getCol().updateIEP2List();
+
+
             if(node.isHasBefore()){
+//                node.getBefCol().printNewIEPList();
                 node.getBefCol().updateIEP2List();
+
             }
             if(node.isHasAfter()){
+//                node.getAftCol().printNewIEPList();
                 node.getAftCol().updateIEP2List();
             }
 

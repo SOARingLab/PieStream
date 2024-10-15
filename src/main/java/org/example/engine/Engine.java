@@ -56,7 +56,15 @@ public class Engine implements ForeachAction<String, String> {
     public void printResultCNT(){
         worker.printResultCNT();
     }
+
+
+    public long getResultCNT(){
+        return worker.getResultCNT();
+    }
+
+
     public void formatResult(){
-        worker.printResultFormat();
+//        worker.printResultFormat();
+        worker.printResultOrdered();
     }
 }

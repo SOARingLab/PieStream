@@ -1,13 +1,14 @@
 package org.example.merger;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class HashJoiner {
 
     // 使用哈希连接两个表，基于多个 joinColumns 进行连接
     public static Table hashJoin(Table table1, Table table2) {
 
-        if(table1.getRows().size() * table2.getRows().size()==0){
+        if(table1.getRowCount() * table2.getRowCount()==0){
             return new Table(0);
         }
         // 获取两个表中列的交集
@@ -42,7 +43,11 @@ public class HashJoiner {
     public static Set<String> getJoinColumns(Table table1, Table table2) {
 
         Set<String> cols= new HashSet<>();
-        Set<String> table1Columns = table1.getColumnNames();
+//        Set<String> table1Columns = table1.getColumnNames();
+        // 获取 table1 中以 "ST" 结尾的列名
+        Set<String> table1Columns = table1.getColumnNames().stream()
+                .filter(column -> column.endsWith("ST"))
+                .collect(Collectors.toSet());
         Set<String> table2Columns = table2.getColumnNames();
 
         // 计算两个集合的交集

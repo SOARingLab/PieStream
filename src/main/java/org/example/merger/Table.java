@@ -124,6 +124,115 @@ public class Table {
     }
 
 
+    public void printTableOrdered() {
+        if (rows.isEmpty()) {
+            System.out.println("The table is empty.");
+        } else {
+            // Get the column names
+            Set<String> columnNameSet = getColumnNames();
+
+            // Identify stCols and otherCols
+            List<String> stCols = new ArrayList<>();
+            List<String> otherCols = new ArrayList<>();
+
+            for (String colName : columnNameSet) {
+                if (colName.endsWith(".ST")) {
+                    stCols.add(colName);
+                } else {
+                    otherCols.add(colName);
+                }
+            }
+
+            // Sort stCols according to the character before ".ST"
+            stCols.sort(new Comparator<String>() {
+                @Override
+                public int compare(String s1, String s2) {
+                    String c1 = s1.substring(0, s1.length() - 3); // Remove ".ST"
+                    String c2 = s2.substring(0, s2.length() - 3);
+                    return c1.compareTo(c2);
+                }
+            });
+
+            // Sort the rows according to the values in stCols
+            Collections.sort(rows, new Comparator<Row>() {
+                @Override
+                public int compare(Row r1, Row r2) {
+                    for (String col : stCols) {
+                        String v1 = r1.getValue(col);
+                        String v2 = r2.getValue(col);
+                        int cmp = compareValues(v1, v2);
+                        if (cmp != 0) {
+                            return cmp;
+                        }
+                    }
+                    return 0;
+                }
+
+                private int compareValues(String v1, String v2) {
+                    // Handle nulls
+                    if (v1 == null && v2 == null) {
+                        return 0;
+                    }
+                    if (v1 == null) {
+                        return -1;
+                    }
+                    if (v2 == null) {
+                        return 1;
+                    }
+                    // Try to parse as numbers
+                    try {
+                        double d1 = Double.parseDouble(v1);
+                        double d2 = Double.parseDouble(v2);
+                        return Double.compare(d1, d2);
+                    } catch (NumberFormatException e) {
+                        // Compare as strings
+                        return v1.compareTo(v2);
+                    }
+                }
+            });
+
+            // Combine stCols and otherCols
+            List<String> columnNames = new ArrayList<>();
+            columnNames.addAll(stCols);
+            columnNames.addAll(otherCols);
+
+            // Calculate the maximum width for each column
+            Map<String, Integer> columnWidths = new LinkedHashMap<>();
+            for (String columnName : columnNames) {
+                int maxWidth = columnName.length(); // Start with the length of the header
+                for (Row row : rows) {
+                    String value = row.getValue(columnName);
+                    if (value != null && value.length() > maxWidth) {
+                        maxWidth = value.length();
+                    }
+                }
+                columnWidths.put(columnName, maxWidth);
+            }
+
+            // Build the format string for each column
+            StringBuilder formatBuilder = new StringBuilder();
+            for (String columnName : columnNames) {
+                int width = columnWidths.get(columnName) + 2; // Add padding
+                formatBuilder.append("%-").append(width).append("s");
+            }
+            String format = formatBuilder.toString().trim(); // Remove trailing spaces
+
+            // Print the header
+            Object[] headerValues = columnNames.toArray();
+            System.out.printf(format + "%n", headerValues);
+
+            // Print each row
+            for (Row row : rows) {
+                List<String> values = new ArrayList<>();
+                for (String columnName : columnNames) {
+                    String value = row.getValue(columnName);
+                    values.add(value != null ? value : ""); // Handle null values
+                }
+                System.out.printf(format + "%n", values.toArray());
+            }
+        }
+    }
+
 
     // 返回表的当前行数
     public long getRowCount() {

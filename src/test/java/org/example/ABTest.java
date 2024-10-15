@@ -10,14 +10,14 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-public class ABCDTest {
+public class ABTest {
 
     @Test
     public void testEngineProcessing() {
 
 
         // Schema file path
-        String schemaFilePath ="src/test/resources/domain/abcdefg.yaml";
+        String schemaFilePath ="src/test/resources/domain/abcd.yaml";
         Schema schema = new Schema(schemaFilePath); // Load Schema
 
 //        // Query statement
@@ -33,37 +33,23 @@ public class ABCDTest {
         String query = "SELECT A.ts, B.te " +
                 "FROM CarStream " +
                 "DEFINE A AS a > 0 , B AS  b  > 0 , C AS  c == 1 , D AS  d == 1 " +
-                "PATTERN " +
-                "A    meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  B " +
-                "AND " +
-                " B    meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  C  " +
-                "AND " +
-                " C    meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  D "+
-//                "AND C   meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  D " +
+                "PATTERN B   meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals   C " +
                 "WINDOW 10000";
+
+//        meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals
         // Create Engine instance
         Engine engine = new Engine(schema, query);
 
-        String ab13FilePath = "src/test/resources/data/eg_abcdefg_8.csv";
+        String ab13FilePath = "src/test/resources/data/abcd_5000.csv";
         // File data source, read data and apply to Engine
         try (DataSource dataSource = new FileDataSource(ab13FilePath)) {
             String line;
             long cnt=1;
-            long lastResCNT=0;
-            long resCNT=0;
-
             while ((line = dataSource.readNext()) != null) {
 //                System.out.println("Line Read: " + line);
+//                System.out.println(cnt++);
                 engine.apply("", line); // Process each line of data
-                resCNT = engine.getResultCNT();
-                if(resCNT != lastResCNT){
-
-//                    System.out.println( " +  "+ (resCNT - lastResCNT)+ " |  "+ "Time : "+( cnt )+" Results : " + resCNT  );
-                    lastResCNT =  resCNT;
-                    engine.formatResult();
-                }
-                cnt++;
-
+//                engine.formatResult();
             }
 //            engine.formatResult();
             engine.printResultCNT();
