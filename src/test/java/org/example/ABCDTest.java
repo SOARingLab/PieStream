@@ -34,11 +34,11 @@ public class ABCDTest {
                 "FROM CarStream " +
                 "DEFINE A AS a > 0 , B AS  b  > 0 , C AS  c == 1 , D AS  d == 1 " +
                 "PATTERN " +
-                "A    meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  B " +
+                "A    met-by ;starts   B " +
                 "AND " +
-                " B    meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  C  " +
+                " B      overlaps C  " +
                 "AND " +
-                " C    meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  D "+
+                " C    equals  D "+
 //                "AND C   meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  D " +
                 "WINDOW 10000";
         // Create Engine instance

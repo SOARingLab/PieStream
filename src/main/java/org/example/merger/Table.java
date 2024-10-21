@@ -8,7 +8,7 @@ import java.util.*;
 public class Table {
     private List<Row> rows;
     private long capacity; // 表的最大容量
-    private long size;     // 当前行数
+    private long size; // 当前行数
 
     // 构造函数，接受容量参数
     public Table(long capacity) {
@@ -18,7 +18,7 @@ public class Table {
     }
 
     // 构造函数，接受 IEP 列表和 EBA2String 映射，以及容量参数
-    public Table(LinkList<IEP> iepList, Map<EBA, String> EBA2String ) {
+    public Table(LinkList<IEP> iepList, Map<EBA, String> EBA2String) {
         this.rows = new ArrayList<>();
         this.capacity = iepList.getSize();
         this.size = 0;
@@ -38,8 +38,6 @@ public class Table {
             current = current.next;
         }
     }
-
-
 
     // 添加一行到表中
     public void addRow(Row row) {
@@ -122,7 +120,6 @@ public class Table {
             }
         }
     }
-
 
     public void printTableOrdered() {
         if (rows.isEmpty()) {
@@ -233,7 +230,6 @@ public class Table {
         }
     }
 
-
     // 返回表的当前行数
     public long getRowCount() {
         return size;
@@ -243,18 +239,52 @@ public class Table {
     public long getCapacity() {
         return capacity;
     }
+
     // 合并另一个 Table 的所有行到当前 Table
+    // public void concatenate(Table otherTable) {
+    // if(otherTable.getRowCount()!=0){
+    // List<Row> otherRows = otherTable.getRows();
+    // for (Row row : otherRows) {
+    // this.addRow(row);
+    // }
+    // }
+    // }
+
     public void concatenate(Table otherTable) {
-        if(otherTable.getRowCount()!=0){
+        if (otherTable.getRowCount() != 0) {
             List<Row> otherRows = otherTable.getRows();
-            for (Row row : otherRows) {
-                this.addRow(row);
+            // Pre-allocate capacity if using ArrayList
+            if (rows instanceof ArrayList) {
+                ((ArrayList<Row>) rows).ensureCapacity((int) (size + otherRows.size()));
             }
+            // Add all rows from otherTable
+            rows.addAll(otherRows);
+            size += otherRows.size();
         }
     }
+
     // 清空表中的所有行
     public void clear() {
         rows.clear(); // 清空行列表
-        size = 0;     // 重置当前行数
+        size = 0; // 重置当前行数
+    }
+
+    public void concatenateList(LinkList<IEP> iepList, Map<EBA, String> EBA2String) {
+        if (iepList != null && iepList.getSize() > 0) {
+            // Pre-allocate capacity if using ArrayList
+            if (rows instanceof ArrayList) {
+                ((ArrayList<Row>) rows).ensureCapacity((int) (size + iepList.getSize()));
+            }
+
+            // Traverse the IEP list and convert each IEP to a Row
+            LinkList<IEP>.Node current = iepList.getHead();
+            while (current != null) {
+                IEP iep = current.data;
+                Row row = new Row(iep, EBA2String);
+                rows.add(row);
+                size++;
+                current = current.next;
+            }
+        }
     }
 }

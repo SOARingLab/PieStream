@@ -42,28 +42,39 @@ public class ABCDEFGTest {
         // Create Engine instance
         Engine engine = new Engine(schema, query);
 
-        String ab13FilePath = "src/test/resources/data/eg_abcdefg_8.csv";
+        String ab13FilePath = "src/test/resources/data/abcdefg_5000.csv";
         // File data source, read data and apply to Engine
         try (DataSource dataSource = new FileDataSource(ab13FilePath)) {
             String line;
             long cnt=1;
             long lastResCNT=0;
             long resCNT=0;
+            long startTime = System.currentTimeMillis(); // 开始计时
             while ((line = dataSource.readNext()) != null) {
 //                System.out.println("Line Read: " + line);
                 engine.apply("", line); // Process each line of data
-                resCNT = engine.getResultCNT();
+//                resCNT = engine.getResultCNT();
                 if(resCNT != lastResCNT){
 
-                    System.out.println( " +  "+ (resCNT - lastResCNT)+ " |  "+ "Time : "+( cnt )+" Results : " + resCNT  );
-                    lastResCNT =  resCNT;
-                    engine.formatResult();
+//                    System.out.println( " +  "+ (resCNT - lastResCNT)+ " |  "+ "Time : "+( cnt )+" Results : " + resCNT  );
+//                    lastResCNT =  resCNT;
+//                    System.out.println(cnt);
+//                    engine.formatResult();
                 }
                 cnt++;
 
             }
 //            engine.formatResult();
+            System.out.println( cnt);
+
             engine.printResultCNT();
+
+            long endTime = System.currentTimeMillis(); // 结束计时
+            long duration = endTime - startTime; // 计算持续时间
+            System.out.println("Processing time: " + duration + " ms");
+
+            engine.printAccumulatedTimes();
+
         } catch (IOException e) {
             System.err.println("Failed to open file: " + e.getMessage());
         }
