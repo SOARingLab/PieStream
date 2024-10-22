@@ -10,9 +10,13 @@ public class IEPCol {
 
     private LinkList<IEP> iepList;   // 包含 IEP 的链表
     public Map<EBA, Map<Long, List<IEP>>> colMap; // 建立在 IEPList 上的索引
+    private Table iepTable; // iepList对应的Table
+
     private boolean isTrigger;
     private LinkList<IEP> newIEPList;
     private Map<EBA, Map<Long, List<IEP>>> newIEPMap;
+    private Table newIEPTable; // newIEPList对应的Table
+
 
     public LinkList<IEP> getIepList(){
         return iepList;
@@ -20,12 +24,15 @@ public class IEPCol {
 
 
     // 构造函数，初始化 LinkList 和索引
-    public IEPCol(long capacity) {
+    public IEPCol(long capacity,Map<EBA, String> EBA2String ) {
         this.iepList = new LinkList<>(capacity);
         this.colMap = new HashMap<>();
+        this.iepTable=new Table(capacity);
         this.isTrigger = false;
         this.newIEPList = new LinkList<>(capacity);
         this.newIEPMap = new HashMap<>();
+        this.newIEPTable=new Table(capacity);
+
     }
 
     public LinkList<IEP> getNewIEPList(){
@@ -36,11 +43,20 @@ public class IEPCol {
         return newIEPMap;
     }
 
+    public Table getNewIEPTable(){
+        return newIEPTable;
+    }
+
+    public Table getIEPTable(){
+        return iepTable ;
+    }
+
     public void resetIsTrigger() {
         if(isTrigger==true){
             isTrigger = false;
             newIEPList.clear();
             newIEPMap.clear();
+            newIEPTable.clear();
         }
     }
 
@@ -57,15 +73,16 @@ public class IEPCol {
     }
 
 
-    public void setTriggerMSG(EBA pred1, Long startTime1, EBA pred2, Long startTime2, IEP iep){
-
-        this.newIEPList.add(iep);
-        this.isTrigger = true;
-        Map<Long, List<IEP>> predIndex1 = newIEPMap.computeIfAbsent(pred1, k -> new HashMap<>());
-        predIndex1.computeIfAbsent(startTime1, k -> new ArrayList<>()).add(iep);
-        Map<Long, List<IEP>> predIndex2 = newIEPMap.computeIfAbsent(pred2, k -> new HashMap<>());
-        predIndex2.computeIfAbsent(startTime2, k -> new ArrayList<>()).add(iep);
-    }
+//    public void setTriggerMSG(EBA pred1, Long startTime1, EBA pred2, Long startTime2, IEP iep){
+//
+//        this.newIEPList.add(iep);
+//        this.isTrigger = true;
+//        Map<Long, List<IEP>> predIndex1 = newIEPMap.computeIfAbsent(pred1, k -> new HashMap<>());
+//        predIndex1.computeIfAbsent(startTime1, k -> new ArrayList<>()).add(iep);
+//        Map<Long, List<IEP>> predIndex2 = newIEPMap.computeIfAbsent(pred2, k -> new HashMap<>());
+//        predIndex2.computeIfAbsent(startTime2, k -> new ArrayList<>()).add(iep);
+//        this.newIEPTable.addRow(iep, EBA2String);
+//    }
 
     public void setTriggerMSG(  IEP iep){
         this.newIEPList.add(iep);
@@ -74,6 +91,16 @@ public class IEPCol {
         Map<Long, List<IEP>> predIndex2 = newIEPMap.computeIfAbsent(iep.getLatterPie(), k -> new HashMap<>());
         predIndex2.computeIfAbsent(iep.getLatterStartTime(), k -> new ArrayList<>()).add(iep);
         this.isTrigger = true;
+
+    }
+
+    public void updateNewIepList2Table( Map<EBA, String> EBA2String,List<String> joinColumns){
+
+        LinkList<IEP>.Node current = this.newIEPList.getHead() ;
+        while (current != null) {
+            this.newIEPTable.addRow(current.getData(), EBA2String,joinColumns);
+            current = current.next;
+        }
     }
 
     // 添加 IEP 到链表和索引中，支持两个 EBA 和两个 startTime
@@ -81,6 +108,7 @@ public class IEPCol {
         if(isTrigger){
             iepList.concat(newIEPList);  // 添加到链表
             MapMerger.mergeNestedMaps(colMap,newIEPMap );
+            this.iepTable.concatenate(this.newIEPTable);
         }
     }
 

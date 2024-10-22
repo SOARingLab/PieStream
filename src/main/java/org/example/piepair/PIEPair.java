@@ -64,7 +64,7 @@ public class PIEPair {
         this.onTriggering = true;
 //        System.out.println("\nTrigger! "+relation.toString()+ "\n");
         IEP newIEP =createIEPonTrigger(event);
-        Col.setTriggerMSG(formerPred,newIEP.getFormerStartTime() ,latterPred, newIEP.getLatterStartTime(), newIEP);
+        Col.setTriggerMSG(  newIEP );
     }
 
 

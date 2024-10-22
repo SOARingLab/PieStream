@@ -19,6 +19,7 @@ public class BinTree {
     private TreeNode bottomLeaf;
     private List<TreeNode> mergedNodes;
     private Map<EBA, String> EBA2String;
+    private Map<TreeNode, List<String>> node2JoinedCols;
 
     // 构造函数初始化常用的变量
     public BinTree(List<MPIEPairSource> sourceList, long QCapacity, Map<EBA, String> EBA2String) {
@@ -32,6 +33,7 @@ public class BinTree {
         this.EBA2String = EBA2String;
         this.bef_aftQCapacity = ((QCapacity + 3) * QCapacity) / 6;
         this.mergedNodes = new ArrayList<>();
+        this.node2JoinedCols=new HashMap<>();
     }
 
     // 构建二叉树的方法
@@ -44,9 +46,33 @@ public class BinTree {
         }
 
         root = createTree(nodes); // Merge the nodes into a binary tree
+
+        //构建完成之后，构建每个Tbale的 joinedCols
+        buildJoinedCols(root);
         return root;
     }
 
+    private void  buildJoinedCols(TreeNode node){
+        if (node !=null && !node.isLeaf){
+            List<String> joinedCols=new ArrayList<>();
+            for (EBA eba : node.getKeyPredSet()){
+                joinedCols.add(EBA2String.get(eba));
+            }
+            TreeNode  left= node.getLeft();
+            TreeNode  right= node.getRight();
+            if (left!=null ) {
+                left.setJoinedCols(joinedCols);
+                this.node2JoinedCols.put(left,joinedCols);
+            }
+            if (right!=null ) {
+                right.setJoinedCols(joinedCols);
+                this.node2JoinedCols.put(right,joinedCols);
+            }
+
+            buildJoinedCols(left);
+            buildJoinedCols(right);
+        }
+    }
     // 创建叶子节点
     private List<TreeNode> createLeafNodes() {
         List<TreeNode> nodes = new ArrayList<>();
@@ -55,10 +81,10 @@ public class BinTree {
             predSet.add(source.getFormerPred()); // 添加前驱谓词
             predSet.add(source.getLatterPred()); // 添加后继谓词
             // 创建叶子节点
-            IEPCol Col = new IEPCol(QCapacity);
+            IEPCol Col = new IEPCol(QCapacity,  EBA2String);
             // TreeNode node = new TreeNode(predSet, new HashSet<>(), null, null, null,
             // null, source, 0, true, null, Col);
-            TreeNode node = new TreeNode(predSet, source, QCapacity);
+            TreeNode node = new TreeNode(predSet, source, QCapacity,  EBA2String);
 
             source2Col.put(source, Col);
             Col2Node.put(Col, node);
@@ -138,12 +164,14 @@ public class BinTree {
 
         // TreeNode mergedNode = new TreeNode(newPredSet, newKeyPredSet, hNode,
         // otherNode, null, null, null, heightCnt + 1, false, pt, null);
-        TreeNode mergedNode = new TreeNode(newPredSet, newKeyPredSet, hNode, otherNode, heightCnt + 1, QCapacity);
+        TreeNode mergedNode = new TreeNode(newPredSet, newKeyPredSet, hNode, otherNode, heightCnt + 1, QCapacity,  EBA2String);
 
         hNode.parent = mergedNode;
         if (otherNode != null) {
             otherNode.parent = mergedNode;
         }
+
+
 
         return mergedNode;
     }
@@ -186,8 +214,11 @@ public class BinTree {
         TreeNode pn = leafNode.parent;
         if (leafNode == bottomLeaf) { // 最底层
 
-            getNewTableOfLeafNode(leafNode);
-            pn.newT.concatenate(leafNode.leafNewT);
+//            getNewTableOfLeafNode(leafNode);
+            refreshNewIepTable_Leaf(leafNode);
+            pn.newT.concatenate(leafNode.getCol().getNewIEPTable(),
+                    node2JoinedCols.get(pn),
+                    node2JoinedCols.get(leafNode));
             // pn.newT.printTable();
             mergedNode = pn;
             pn = pn.parent;
@@ -205,40 +236,48 @@ public class BinTree {
     }
 
     // 将叶子结点的信息进行更新
-    private void getNewTableOfLeafNode(TreeNode leafNode) {
+//    private void getNewTableOfLeafNode(TreeNode leafNode) {
+//
+//        // leafNode.leafNewT.concatenate( new
+//        // Table(leafNode.getCol().getNewIEPList(),EBA2String ) );
+//        // if (leafNode.isHasBefore()){
+//        // leafNode.leafNewT.concatenate( new Table(
+//        // leafNode.getBefCol().getNewIEPList(),EBA2String ) );
+//        // }
+//        // if (leafNode.isHasAfter()){
+//        // leafNode.leafNewT.concatenate( new Table(
+//        // leafNode.getAftCol().getNewIEPList(),EBA2String ) );
+//        // }
+//
+//        leafNode.leafNewT.concatenateList( leafNode.getCol().getNewIEPList(), EBA2String);
+//        if (leafNode.isHasBefore()) {
+//            leafNode.leafNewT.concatenateList(leafNode.getBefCol().getNewIEPList(), EBA2String);
+//        }
+//        if (leafNode.isHasAfter()) {
+//            leafNode.leafNewT.concatenateList(leafNode.getAftCol().getNewIEPList(), EBA2String);
+//        }
+//
+//    }
 
-        // leafNode.leafNewT.concatenate( new
-        // Table(leafNode.getCol().getNewIEPList(),EBA2String ) );
-        // if (leafNode.isHasBefore()){
-        // leafNode.leafNewT.concatenate( new Table(
-        // leafNode.getBefCol().getNewIEPList(),EBA2String ) );
-        // }
-        // if (leafNode.isHasAfter()){
-        // leafNode.leafNewT.concatenate( new Table(
-        // leafNode.getAftCol().getNewIEPList(),EBA2String ) );
-        // }
-
-        leafNode.leafNewT.concatenateList(leafNode.getCol().getNewIEPList(), EBA2String);
-        if (leafNode.isHasBefore()) {
-            leafNode.leafNewT.concatenateList(leafNode.getBefCol().getNewIEPList(), EBA2String);
-        }
-        if (leafNode.isHasAfter()) {
-            leafNode.leafNewT.concatenateList(leafNode.getAftCol().getNewIEPList(), EBA2String);
-        }
-
+    private void refreshNewIepTable_Leaf(TreeNode leaf){
+        leaf.getCol().updateNewIepList2Table( EBA2String,  node2JoinedCols.get(leaf));
     }
 
     // 将中间结点的信息进行更新
     private void getNewTabeOfLeafAndMergedNode(TreeNode ParnetNode, TreeNode mergedNode, TreeNode leafNode) {
+
+        //        getNewTableOfLeafNode(leafNode);
+        refreshNewIepTable_Leaf(leafNode);
         Table mergedNewTab = mergedNode.getNewT();
-        getNewTableOfLeafNode(leafNode);
+
         if(mergedNewTab.getRowCount()!=0){
-            Table leafOldTable = new Table(leafNode.getCol().getIepList(), EBA2String);
-            ParnetNode.newT.concatenate( HashJoiner.hashJoin(mergedNewTab, leafNode.leafNewT) );
-            ParnetNode.newT.concatenate( HashJoiner.hashJoin(mergedNewTab,  leafOldTable  ) ) ;
+            Table t1= HashJoiner.hashJoin(mergedNewTab, leafNode.getCol().getNewIEPTable(),ParnetNode.getJoinedCols());
+            ParnetNode.newT.concatenate(t1);
+            Table t2=HashJoiner.hashJoin(mergedNewTab,  leafNode.getCol().getIEPTable(),ParnetNode.getJoinedCols()  );
+            ParnetNode.newT.concatenate( t2 ) ;
         }
-        if(leafNode.leafNewT.getRowCount()!=0){
-            Table tb = HashJoiner.hashJoin(leafNode.leafNewT, mergedNode.getT());
+        if( leafNode.getCol().getNewIEPTable().getRowCount()!=0){
+            Table tb = HashJoiner.hashJoin( leafNode.getCol().getNewIEPTable(), mergedNode.getT(),ParnetNode.getJoinedCols());
             ParnetNode.newT.concatenate(tb);
         }
     }
@@ -308,7 +347,7 @@ public class BinTree {
             // MPIEPairSource key = entry.getKey();
             TreeNode leafNode = entry.getValue();
             leafNode.getCol().resetIsTrigger();
-            leafNode.leafNewT.clear();
+//            leafNode.leafNewT.clear();
             if (leafNode.isHasBefore()) {
                 leafNode.getBefCol().resetIsTrigger();
             }

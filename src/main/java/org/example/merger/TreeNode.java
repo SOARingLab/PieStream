@@ -24,7 +24,7 @@ public class TreeNode {
     final IEPCol Col;            // 正常的指定的精确关系的检测结果队列
     Table T;                     // 表格，用于存储节点信息
     Table newT;
-    Table leafNewT;
+//    Table leafNewT;
     final IEPCol befCol;         // before关系的检测结果队列
     final IEPCol aftCol;         // after关系的检测结果队列
     final LinkList<IE> formerIEList;    // 辅助检测before关系的区间事件队列
@@ -32,12 +32,13 @@ public class TreeNode {
     final boolean isLeaf;        // 是否为叶子节点
     final boolean hasBefore;     // 是否包含before关系
     final boolean hasAfter;      // 是否包含after关系
+    final List<String> joinedCols;
     MPIEPair mpp;      // 是否包含after关系
 
     // 构造函数
     public TreeNode(Set<EBA> predSet, Set<EBA> keyPredSet, TreeNode left, TreeNode right,
                     TreeNode parent, TreeNode brother, MPIEPairSource source, int height,
-                    boolean isLeaf, long QCapacity) {
+                    boolean isLeaf, long QCapacity,Map<EBA, String> EBA2String) {
         this.predSet = predSet;
         this.keyPredSet = keyPredSet;
         this.left = left;
@@ -47,25 +48,26 @@ public class TreeNode {
         this.source = source;
         this.height = height;
         this.isLeaf = isLeaf;
+        this.joinedCols=new ArrayList<>();
         long bef_aftQCapacity = ((QCapacity + 3) * QCapacity) / 6;
 
 
         if (isLeaf) {
-            this.Col = new IEPCol(QCapacity);
+            this.Col = new IEPCol(QCapacity, EBA2String);
             this.T = null;
             this.newT = null;
 
-            if (source.isHasAfterRel() || source.isHasBeforeRel() ){
-                this.leafNewT=new Table(bef_aftQCapacity);
-            }else {
-                this.leafNewT=new Table(QCapacity);
-            }
+//            if (source.isHasAfterRel() || source.isHasBeforeRel() ){
+//                this.leafNewT=new Table(bef_aftQCapacity);
+//            }else {
+//                this.leafNewT=new Table(QCapacity);
+//            }
 
 
             if (source.isHasAfterRel()) {
                 this.hasAfter = true;
                 this.latterIEList = new LinkList<>(QCapacity);
-                this.aftCol = new IEPCol(bef_aftQCapacity);
+                this.aftCol = new IEPCol(bef_aftQCapacity,  EBA2String);
             } else {
                 this.hasAfter = false;
                 this.latterIEList = null;
@@ -75,7 +77,7 @@ public class TreeNode {
             if (source.isHasBeforeRel()) {
                 this.hasBefore = true;
                 this.formerIEList = new LinkList<>(QCapacity);
-                this.befCol = new IEPCol(bef_aftQCapacity);
+                this.befCol = new IEPCol(bef_aftQCapacity,EBA2String);
             } else {
                 this.hasBefore = false;
                 this.formerIEList = null;
@@ -96,16 +98,26 @@ public class TreeNode {
     }
 
     // 叶子节点的构造函数
-    public TreeNode(Set<EBA> predSet, MPIEPairSource source, long QCapacity) {
-        this(predSet, new HashSet<>(), null, null, null, null, source, 0, true, QCapacity);
+    public TreeNode(Set<EBA> predSet, MPIEPairSource source, long QCapacity,Map<EBA, String> EBA2String) {
+        this(predSet, new HashSet<>(), null, null, null, null, source, 0, true, QCapacity,  EBA2String);
     }
 
     // 父节点的构造函数
-    public TreeNode(Set<EBA> predSet, Set<EBA> keyPredSet, TreeNode left, TreeNode right, int height, long QCapacity) {
-        this(predSet, keyPredSet, left, right, null, null, null, height, false, QCapacity);
+    public TreeNode(Set<EBA> predSet, Set<EBA> keyPredSet, TreeNode left, TreeNode right, int height, long QCapacity,Map<EBA, String> EBA2String) {
+        this(predSet, keyPredSet, left, right, null, null, null, height, false, QCapacity, EBA2String);
     }
 
     // Getter 和 Setter 方法
+
+
+    public List<String> getJoinedCols() {
+        return joinedCols;
+    }
+
+    public void setJoinedCols(List<String> joinedCols ){
+        this.joinedCols.addAll(joinedCols);
+        this.joinedCols.sort(null);
+    }
 
     public Set<EBA> getPredSet() {
         return predSet;
