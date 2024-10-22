@@ -9,14 +9,14 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-public class AZTest {
+public class ATTest {
 
     @Test
     public void testEngineProcessing() {
 
 
         // Schema file path
-        String schemaFilePath ="src/test/resources/domain/az.yaml";
+        String schemaFilePath ="src/test/resources/domain/at.yaml";
         Schema schema = new Schema(schemaFilePath); // Load Schema
 
         // Query statement
@@ -25,8 +25,7 @@ public class AZTest {
                 "DEFINE A AS a > 0, B AS b > 0, C AS c > 0, D AS d > 0, E AS e > 0, F AS f > 0, G AS g > 0, " +
                 "H AS h > 0, I AS i > 0, J AS j > 0, K AS k > 0, L AS l > 0, M AS m > 0, " +
                 "N AS n > 0, O AS o > 0, P AS p > 0, Q AS q > 0, R AS r > 0, " +
-                "S AS s > 0, T AS t > 0, U AS u > 0, V AS v > 0, W AS w > 0, " +
-                "X AS x > 0, Y AS y > 0, Z AS z > 0 " +
+                "S AS s > 0, T AS t > 0 "+
                 "PATTERN A meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals B " +
                 "AND B meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals C " +
                 "AND C meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals D " +
@@ -46,18 +45,12 @@ public class AZTest {
                 "AND Q meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals R " +
                 "AND R meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals S " +
                 "AND S meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals T " +
-                "AND T meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals U " +
-                "AND U meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals V " +
-                "AND V meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals W " +
-                "AND W meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals X " +
-                "AND X meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals Y " +
-                "AND Y meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals Z " +
                 "WINDOW 10000";
 
         // Create Engine instance
         Engine engine = new Engine(schema, query);
 
-        String ab13FilePath = "src/test/resources/data/col26_row50.csv";
+        String ab13FilePath = "src/test/resources/data/col20_row50000.csv";
         // File data source, read data and apply to Engine
         try (DataSource dataSource = new FileDataSource(ab13FilePath)) {
             String line;
@@ -77,6 +70,9 @@ public class AZTest {
 //                    engine.formatResult();
                 }
                 cnt++;
+                if(cnt%1000==0){
+                    System.out.println(cnt);
+                }
 
             }
             engine.formatResult();

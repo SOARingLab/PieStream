@@ -42,7 +42,7 @@ public class ABCDEFGTest {
         // Create Engine instance
         Engine engine = new Engine(schema, query);
 
-        String ab13FilePath = "src/test/resources/data/abcdefg_50.csv";
+        String ab13FilePath = "src/test/resources/data/abcdefg_50000.csv";
         // File data source, read data and apply to Engine
         try (DataSource dataSource = new FileDataSource(ab13FilePath)) {
             String line;
@@ -64,7 +64,7 @@ public class ABCDEFGTest {
                 cnt++;
 
             }
-//            engine.formatResult();
+            engine.formatResult();
             System.out.println( cnt);
 
             engine.printResultCNT();
