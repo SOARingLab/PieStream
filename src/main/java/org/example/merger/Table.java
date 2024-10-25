@@ -80,6 +80,10 @@ public class Table {
         addRow(new Row(iep, EBA2String,joinColumns)  );
     }
 
+    public void addRow(IEP iep, Map<EBA, String> EBA2String, Set<String> joinColumns) {
+        addRow(new Row(iep, EBA2String,joinColumns)  );
+    }
+
     // 返回表的所有行
     public List<Row> getRows() {
         return rows;
@@ -117,7 +121,7 @@ public class Table {
             for (String columnName : columnNames) {
                 int maxWidth = columnName.length(); // Start with the length of the header
                 for (Row row : rows) {
-                    String value = row.getValue(columnName);
+                    String value = row.getValue(columnName).toString();
                     if (value != null && value.length() > maxWidth) {
                         maxWidth = value.length();
                     }
@@ -141,7 +145,7 @@ public class Table {
             for (Row row : rows) {
                 List<String> values = new ArrayList<>();
                 for (String columnName : columnNames) {
-                    String value = row.getValue(columnName);
+                    String value = row.getValue(columnName).toString();
                     values.add(value != null ? value : ""); // Handle null values
                 }
                 System.out.printf(format + "%n", values.toArray());
@@ -183,8 +187,8 @@ public class Table {
                 @Override
                 public int compare(Row r1, Row r2) {
                     for (String col : stCols) {
-                        String v1 = r1.getValue(col);
-                        String v2 = r2.getValue(col);
+                        String v1 = r1.getValue(col).toString();
+                        String v2 = r2.getValue(col).toString();
                         int cmp = compareValues(v1, v2);
                         if (cmp != 0) {
                             return cmp;
@@ -226,7 +230,7 @@ public class Table {
             for (String columnName : columnNames) {
                 int maxWidth = columnName.length(); // Start with the length of the header
                 for (Row row : rows) {
-                    String value = row.getValue(columnName);
+                    String value = row.getValue(columnName).toString();
                     if (value != null && value.length() > maxWidth) {
                         maxWidth = value.length();
                     }
@@ -250,7 +254,7 @@ public class Table {
             for (Row row : rows) {
                 List<String> values = new ArrayList<>();
                 for (String columnName : columnNames) {
-                    String value = row.getValue(columnName);
+                    String value = row.getValue(columnName).toString();
                     values.add(value != null ? value : ""); // Handle null values
                 }
                 System.out.printf(format + "%n", values.toArray());

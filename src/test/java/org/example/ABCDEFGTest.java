@@ -37,9 +37,9 @@ public class ABCDEFGTest {
                 "AND C   meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals   D " +
                 "AND D meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  E " +
                 "AND E meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  F " +
-//                "AND F meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  G " +
-                "AND G meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  A " +
-                "WINDOW 10000";
+                "AND F meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  G " +
+//                "AND G meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  A " +
+                "WINDOW 100000";
         // Create Engine instance
         Engine engine = new Engine(schema, query);
 

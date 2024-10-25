@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+
 public class Worker {
 
     private final MPIEPairsManager mpiEPairsManager;  // MPIEPairs 管理器
@@ -39,6 +41,7 @@ public class Worker {
         this.source2Node=tree.getSourceToNode();
         this.mpiEPairsManager = new MPIEPairsManager(MPPSourceList, source2Node);
         this.MPPS = mpiEPairsManager.getMPIEPairList();
+
     }
 
     // 获取 MPIEPairsManager

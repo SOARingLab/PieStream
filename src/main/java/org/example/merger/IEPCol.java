@@ -103,6 +103,15 @@ public class IEPCol {
         }
     }
 
+    public void updateNewIepList2Table( Map<EBA, String> EBA2String,Set<String> joinColumns){
+
+        LinkList<IEP>.Node current = this.newIEPList.getHead() ;
+        while (current != null) {
+            this.newIEPTable.addRow(current.getData(), EBA2String,joinColumns);
+            current = current.next;
+        }
+    }
+
     // 添加 IEP 到链表和索引中，支持两个 EBA 和两个 startTime
     public void updateIEP2List() {
         if(isTrigger){
