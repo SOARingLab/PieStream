@@ -42,7 +42,7 @@ public class ANTest {
         // Create Engine instance
         Engine engine = new Engine(schema, query);
 
-        String ab13FilePath = "src/test/resources/data/col14_row50000.csv";
+        String ab13FilePath = "src/test/resources/data/col14_row5000.csv";
         // File data source, read data and apply to Engine
         try (DataSource dataSource = new FileDataSource(ab13FilePath)) {
             String line;
@@ -67,7 +67,7 @@ public class ANTest {
                 }
 
             }
-            engine.formatResult();
+//            engine.formatResult();
             System.out.println( cnt);
 
             engine.printResultCNT();

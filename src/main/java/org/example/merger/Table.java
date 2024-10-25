@@ -69,7 +69,7 @@ public class Table {
 
         // 更新 hashIndex
         String newIndexKey = row.getIndexKey();
-        if(newIndexKey==null || newIndexKey ==""){
+        if(  newIndexKey ==""){
             throw new IllegalArgumentException("String parameter cannot be null");
         }
         hashIndex.computeIfAbsent(newIndexKey, k -> new ArrayList<>()).add(row);

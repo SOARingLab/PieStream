@@ -48,6 +48,8 @@ public class BinTree {
         root = createTree(nodes); // Merge the nodes into a binary tree
 
         //构建完成之后，构建每个Tbale的 joinedCols
+
+        this.node2JoinedCols.put(root,null);
         buildJoinedCols(root);
         return root;
     }
@@ -61,11 +63,11 @@ public class BinTree {
             TreeNode  left= node.getLeft();
             TreeNode  right= node.getRight();
             if (left!=null ) {
-                left.setJoinedCols(joinedCols);
+//                left.setJoinedCols(joinedCols);
                 this.node2JoinedCols.put(left,joinedCols);
             }
             if (right!=null ) {
-                right.setJoinedCols(joinedCols);
+//                right.setJoinedCols(joinedCols);
                 this.node2JoinedCols.put(right,joinedCols);
             }
 
@@ -271,13 +273,13 @@ public class BinTree {
         Table mergedNewTab = mergedNode.getNewT();
 
         if(mergedNewTab.getRowCount()!=0){
-            Table t1= HashJoiner.hashJoin(mergedNewTab, leafNode.getCol().getNewIEPTable(),ParnetNode.getJoinedCols());
+            Table t1= HashJoiner.hashJoin(mergedNewTab, leafNode.getCol().getNewIEPTable(),node2JoinedCols.get(ParnetNode));
             ParnetNode.newT.concatenate(t1);
-            Table t2=HashJoiner.hashJoin(mergedNewTab,  leafNode.getCol().getIEPTable(),ParnetNode.getJoinedCols()  );
+            Table t2=HashJoiner.hashJoin(mergedNewTab,  leafNode.getCol().getIEPTable(),node2JoinedCols.get(ParnetNode) );
             ParnetNode.newT.concatenate( t2 ) ;
         }
         if( leafNode.getCol().getNewIEPTable().getRowCount()!=0){
-            Table tb = HashJoiner.hashJoin( leafNode.getCol().getNewIEPTable(), mergedNode.getT(),ParnetNode.getJoinedCols());
+            Table tb = HashJoiner.hashJoin( leafNode.getCol().getNewIEPTable(), mergedNode.getT(),node2JoinedCols.get(ParnetNode));
             ParnetNode.newT.concatenate(tb);
         }
     }

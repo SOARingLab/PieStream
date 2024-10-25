@@ -57,7 +57,7 @@ public class AZTest {
         // Create Engine instance
         Engine engine = new Engine(schema, query);
 
-        String ab13FilePath = "src/test/resources/data/col26_row50.csv";
+        String ab13FilePath = "src/test/resources/data/col26_row5000.csv";
         // File data source, read data and apply to Engine
         try (DataSource dataSource = new FileDataSource(ab13FilePath)) {
             String line;
@@ -77,7 +77,9 @@ public class AZTest {
 //                    engine.formatResult();
                 }
                 cnt++;
-
+                if(cnt%100==0){
+                    System.out.println(cnt);
+                }
             }
             engine.formatResult();
             System.out.println( cnt);

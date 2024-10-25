@@ -25,18 +25,29 @@ public class HashJoiner {
         // 存储连接后的结果
         Table resultTable = new Table(capacity);
 
-        // 遍历较大的表，查找匹配的行
-        for (Row row : largerTable.getRows()) {
-            String joinKey = row.getIndexKey();  // 基于多个列生成哈希键
-
-            // 如果哈希表中存在匹配的行，则进行连接
-            if (hashIndex.containsKey(joinKey)) {
-                List<Row> matchingRows = hashIndex.get(joinKey);
-                for (Row matchingRow : matchingRows) {
-                    resultTable.addRow( row.join(matchingRow,parentJoinColumns));  // 将连接后的行添加到结果表中
+        for (  String indexKey:largerTable.getHashIndex().keySet()){
+            if (hashIndex.containsKey(indexKey)) {
+                for (Row row: largerTable.getHashIndex().get(indexKey)){
+                    List<Row> matchingRows = hashIndex.get(indexKey);
+                    for (Row matchingRow : matchingRows) {
+                        resultTable.addRow( row.join(matchingRow,parentJoinColumns));  // 将连接后的行添加到结果表中
+                    }
                 }
+
             }
         }
+        // 遍历较大的表，查找匹配的行
+//        for (Row row : largerTable.getRows()) {
+//            String joinKey = row.getIndexKey();  // 基于多个列生成哈希键
+//
+//            // 如果哈希表中存在匹配的行，则进行连接
+//            if (hashIndex.containsKey(joinKey)) {
+//                List<Row> matchingRows = hashIndex.get(joinKey);
+//                for (Row matchingRow : matchingRows) {
+//                    resultTable.addRow( row.join(matchingRow,parentJoinColumns));  // 将连接后的行添加到结果表中
+//                }
+//            }
+//        }
 
         return resultTable;
     }

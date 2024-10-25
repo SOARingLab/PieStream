@@ -50,7 +50,7 @@ public class ATTest {
         // Create Engine instance
         Engine engine = new Engine(schema, query);
 
-        String ab13FilePath = "src/test/resources/data/col20_row50000.csv";
+        String ab13FilePath = "src/test/resources/data/col20_row5000.csv";
         // File data source, read data and apply to Engine
         try (DataSource dataSource = new FileDataSource(ab13FilePath)) {
             String line;

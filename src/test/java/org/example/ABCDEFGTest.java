@@ -37,12 +37,13 @@ public class ABCDEFGTest {
                 "AND C   meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals   D " +
                 "AND D meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  E " +
                 "AND E meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  F " +
-                "AND F meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  G " +
+//                "AND F meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  G " +
+                "AND G meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  A " +
                 "WINDOW 10000";
         // Create Engine instance
         Engine engine = new Engine(schema, query);
 
-        String ab13FilePath = "src/test/resources/data/abcdefg_50000.csv";
+        String ab13FilePath = "src/test/resources/data/col7_row50000.csv";
         // File data source, read data and apply to Engine
         try (DataSource dataSource = new FileDataSource(ab13FilePath)) {
             String line;
@@ -62,9 +63,12 @@ public class ABCDEFGTest {
 //                    engine.formatResult();
                 }
                 cnt++;
+                if(cnt%1000==0){
+                    System.out.println( cnt);
+                }
 
             }
-            engine.formatResult();
+//            engine.formatResult();
             System.out.println( cnt);
 
             engine.printResultCNT();

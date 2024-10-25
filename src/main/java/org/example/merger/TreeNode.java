@@ -32,7 +32,7 @@ public class TreeNode {
     final boolean isLeaf;        // 是否为叶子节点
     final boolean hasBefore;     // 是否包含before关系
     final boolean hasAfter;      // 是否包含after关系
-    final List<String> joinedCols;
+//    final List<String> joinedCols;
     MPIEPair mpp;      // 是否包含after关系
 
     // 构造函数
@@ -48,7 +48,7 @@ public class TreeNode {
         this.source = source;
         this.height = height;
         this.isLeaf = isLeaf;
-        this.joinedCols=new ArrayList<>();
+//        this.joinedCols=new ArrayList<>();
         long bef_aftQCapacity = ((QCapacity + 3) * QCapacity) / 6;
 
 
@@ -110,14 +110,14 @@ public class TreeNode {
     // Getter 和 Setter 方法
 
 
-    public List<String> getJoinedCols() {
-        return joinedCols;
-    }
+//    public List<String> getJoinedCols() {
+//        return joinedCols;
+//    }
 
-    public void setJoinedCols(List<String> joinedCols ){
-        this.joinedCols.addAll(joinedCols);
-        this.joinedCols.sort(null);
-    }
+//    public void setJoinedCols(List<String> joinedCols ){
+//        this.joinedCols.addAll(joinedCols);
+//        this.joinedCols.sort(null);
+//    }
 
     public Set<EBA> getPredSet() {
         return predSet;

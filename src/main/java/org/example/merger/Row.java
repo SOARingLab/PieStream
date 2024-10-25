@@ -34,16 +34,16 @@ public class Row {
         // 生成列名和列值
         String formerPieSTKey = EBA2String.get(iep.getFormerPie()) + ".ST";  // formerPieST 列名
         String latterPieSTKey = EBA2String.get(iep.getLatterPie()) + ".ST";  // latterPieST 列名
-        String formerPieETKey = EBA2String.get(iep.getFormerPie()) + ".ET";  // formerPieET 列名
-        String latterPieETKey = EBA2String.get(iep.getLatterPie()) + ".ET";  // latterPieET 列名
-        String relationKey = "r(" +EBA2String.get(iep.getFormerPie()) +"," +  EBA2String.get(iep.getLatterPie())+")";  // 关系列名
+//        String formerPieETKey = EBA2String.get(iep.getFormerPie()) + ".ET";  // formerPieET 列名
+//        String latterPieETKey = EBA2String.get(iep.getLatterPie()) + ".ET";  // latterPieET 列名
+//        String relationKey = "r(" +EBA2String.get(iep.getFormerPie()) +"," +  EBA2String.get(iep.getLatterPie())+")";  // 关系列名
 
         // 将这些列和值放入 data 中
         this.data.put(formerPieSTKey, iep.getFormerStartTime().toString());
         this.data.put(latterPieSTKey, iep.getLatterStartTime().toString());
-        this.data.put(formerPieETKey, iep.getFormerEndTime() );
-        this.data.put(latterPieETKey, iep.getLatterEndTime() );
-        this.data.put(relationKey, iep.getRelation().toString());
+//        this.data.put(formerPieETKey, iep.getFormerEndTime() );
+//        this.data.put(latterPieETKey, iep.getLatterEndTime() );
+//        this.data.put(relationKey, iep.getRelation().toString());
 
         this.indexKey=generateKey(joinColumns);
     }
@@ -67,13 +67,16 @@ public class Row {
 
     // 根据多列生成哈希键，用于自然连接时的匹配
     private String generateKey(List<String> joinColumns) {
+        if (joinColumns==null){//root 不需要
+            return null;
+        }
         StringBuilder keyBuilder = new StringBuilder();
         for (String column : joinColumns) {
 
             keyBuilder.append(data.getOrDefault(column+".ST", "NULL")).append("|");
         }
         String str =  keyBuilder.toString();
-        if(str==null || str ==""){
+        if(  str ==""){
             throw new IllegalArgumentException("String parameter cannot be null");
         }
         return str;
