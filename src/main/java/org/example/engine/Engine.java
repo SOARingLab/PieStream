@@ -2,6 +2,7 @@ package org.example.engine;
 
 import org.apache.kafka.streams.kstream.ForeachAction;
 import org.example.events.PointEvent;
+import org.example.merger.HashJoiner;
 import org.example.parser.Schema;
 import org.example.events.Attribute;
 import org.example.parser.MPIEPairSource;
@@ -101,6 +102,10 @@ public class Engine implements ForeachAction<String, String> {
         System.out.println("Total derive before-after relationship time: " + deriveRelTime + " ms");
         System.out.println("Total merge after run time: " + mergeTime + " ms");
         System.out.println("Total update data time: " + updateTime + " ms");
+        System.out.println("Joined Time"+ this.worker.getTree().joinTime+"ms");
+        System.out.println("concat Time"+ this.worker.getTree().concat+"ms");
+
+        System.out.println("searchForJoin Time"+ HashJoiner.searchForJoin +"ms");
     }
 
 

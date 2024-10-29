@@ -17,9 +17,15 @@ public class Row {
 //    }
 
     // 构造函数，接受列名和列值的 Map
-    public Row(Map<String, Long> data, List<String> joinColumns) {
+    public Row(Map<String, Long> data, List<String> joinColumns,boolean needNewIndex) {
+
         this.data = data;
-        this.indexKey=generateKey(joinColumns);
+        if(needNewIndex){
+            this.indexKey=generateKey(joinColumns);
+        }else{
+            this.indexKey=null;
+        }
+
     }
     // 构造函数，接受列名和列值的 Map
     public Row(Map<String, Long> data, Set<String> acmltCols) {
@@ -47,7 +53,7 @@ public class Row {
 
     // 构造函数，接受单个 IEP 和 EBA2String
     public Row(IEP iep, Map<EBA, String> EBA2String, List<String> joinColumns) {
-        this(new HashMap<>(),new ArrayList<>());
+        this(new HashMap<>(),new ArrayList<>(),true);
 
         // 生成列名和列值
         String formerPieSTKey = EBA2String.get(iep.getFormerPie()) + ".ST";  // formerPieST 列名
@@ -109,7 +115,7 @@ public class Row {
     // 根据多列生成哈希键，用于自然连接时的匹配
     private String generateKey(List<String> joinColumns) {
         if (joinColumns==null){//root 不需要
-            return null;
+            throw new IllegalArgumentException("String parameter cannot be null");
         }
         StringBuilder keyBuilder = new StringBuilder();
         for (String column : joinColumns) {
@@ -132,10 +138,10 @@ public class Row {
 
 
     // 自然连接，将当前行与另一行进行连接
-    public Row join(Row other, List<String> parentJoinColumns) {
+    public Row join(Row other, List<String> parentJoinColumns,boolean needNewIndex) {
         Map<String, Long> joinedData = new HashMap<>(this.data);
         joinedData.putAll(other.data);
-        Row r= new Row(joinedData,parentJoinColumns);
+        Row r= new Row(joinedData,parentJoinColumns,needNewIndex);
         return r;
     }
 

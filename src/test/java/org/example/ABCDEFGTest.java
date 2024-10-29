@@ -43,7 +43,7 @@ public class ABCDEFGTest {
         // Create Engine instance
         Engine engine = new Engine(schema, query);
 
-        String ab13FilePath = "/Users/czq/Code/TPstream0/TPStream_DAPD/jepc-v2/col7_row20.csv";
+        String ab13FilePath = "/home/uzi/Code/TPS/jepc-v2/col7_row50000.csv";
         // File data source, read data and apply to Engine
         try (DataSource dataSource = new FileDataSource(ab13FilePath)) {
             String line;
@@ -55,17 +55,17 @@ public class ABCDEFGTest {
 //                System.out.println("Line Read: " + line);
                 engine.apply("", line); // Process each line of data
                 resCNT = engine.getResultCNT();
-                if(resCNT != lastResCNT){
-
-                    System.out.println( " +  "+ (resCNT - lastResCNT)+ " |  "+ "Time : "+( cnt )+" Results : " + resCNT  );
-                    lastResCNT =  resCNT;
-//                    System.out.println(cnt);
-                    engine.formatResult();
-                }
+//                if(resCNT != lastResCNT){
+//
+//                    System.out.println( " +  "+ (resCNT - lastResCNT)+ " |  "+ "Time : "+( cnt )+" Results : " + resCNT  );
+//                    lastResCNT =  resCNT;
+////                    System.out.println(cnt);
+//                    engine.formatResult();
+//                }
                 cnt++;
-                if(cnt%1000==0){
-                    System.out.println( cnt);
-                }
+//                if(cnt%1000==0){
+//                    System.out.println( cnt);
+//                }
 
             }
 //            engine.formatResult();

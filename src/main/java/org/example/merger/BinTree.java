@@ -25,6 +25,11 @@ public class BinTree {
 
     private Map<TreeNode, Set<String>> node2AcmltJoinedCols;
 
+    public long joinTime=0;
+    public long concat=0;
+    public long startTime=0;
+    public long endTime=0;
+
     // 构造函数初始化常用的变量
     public BinTree(List<MPIEPairSource> sourceList, long QCapacity, Map<EBA, String> EBA2String) {
         this.sourceList = sourceList;
@@ -243,6 +248,7 @@ public class BinTree {
         TreeNode leafNode = startNode;
         TreeNode mergedNode = leafNode.brother;
         TreeNode pn = leafNode.parent;
+
         if (leafNode == bottomLeaf) { // 最底层
 
 //            getNewTableOfLeafNode(leafNode);
@@ -291,19 +297,45 @@ public class BinTree {
         refreshNewIepTable_Leaf(leafNode);
         Table mergedNewTab = mergedNode.getNewT();
 
-        if(mergedNewTab.getRowCount()!=0){
-            Table t1= HashJoiner.hashJoin(mergedNewTab, leafNode.getCol().getNewIEPTable(),node2JoinedCols.get(ParnetNode));
+        long mergedNewTabCnt=mergedNewTab.getRowCount();
+        long leafNewTabCnt=leafNode.getCol().getNewIEPTable().getRowCount();
+        boolean needNewIndex=true;
+        if(ParnetNode==root){
+            needNewIndex=false;
+        }
+
+        if(mergedNewTab.getRowCount()!=0 ){
+            startTime = System.currentTimeMillis();
+
+
+            Table t1= HashJoiner.hashJoin(mergedNewTab, leafNode.getCol().getNewIEPTable(),node2JoinedCols.get(ParnetNode),needNewIndex);
 //            Table t1= HashJoiner.hashJoin(mergedNewTab, leafNode.getCol().getNewIEPTable(), JoinedCols,node2AcmltJoinedCols.get(ParnetNode));
-            ParnetNode.newT.concatenate(t1);
-            Table t2=HashJoiner.hashJoin(mergedNewTab,  leafNode.getCol().getIEPTable(),node2JoinedCols.get(ParnetNode) );
+
+            Table t2=HashJoiner.hashJoin(mergedNewTab,  leafNode.getCol().getIEPTable(),node2JoinedCols.get(ParnetNode),needNewIndex );
 //            Table t2=HashJoiner.hashJoin(mergedNewTab,  leafNode.getCol().getIEPTable(),JoinedCols,node2AcmltJoinedCols.get(ParnetNode) );
+            endTime = System.currentTimeMillis();
+            joinTime += (endTime - startTime);
+
+            startTime = System.currentTimeMillis();
+            ParnetNode.newT.concatenate(t1);
             ParnetNode.newT.concatenate( t2 ) ;
+            endTime = System.currentTimeMillis();
+            concat += (endTime - startTime);
 
         }
         if( leafNode.getCol().getNewIEPTable().getRowCount()!=0){
-            Table tb = HashJoiner.hashJoin( leafNode.getCol().getNewIEPTable(), mergedNode.getT(),node2JoinedCols.get(ParnetNode));
+
+            startTime = System.currentTimeMillis();
+            Table tb = HashJoiner.hashJoin( leafNode.getCol().getNewIEPTable(), mergedNode.getT(),node2JoinedCols.get(ParnetNode),needNewIndex);
+            endTime = System.currentTimeMillis();
+            joinTime += (endTime - startTime);
 //            Table tb = HashJoiner.hashJoin( leafNode.getCol().getNewIEPTable(), mergedNode.getT(),JoinedCols,node2AcmltJoinedCols.get(ParnetNode));
+
+
+            startTime = System.currentTimeMillis();
             ParnetNode.newT.concatenate(tb);
+            endTime = System.currentTimeMillis();
+            concat += (endTime - startTime);
         }
     }
 

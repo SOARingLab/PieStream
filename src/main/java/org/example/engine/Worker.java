@@ -44,6 +44,10 @@ public class Worker {
 
     }
 
+    public BinTree getTree(){
+        return tree;
+    }
+
     // 获取 MPIEPairsManager
     public MPIEPairsManager getMpiEPairsManager() {
         return mpiEPairsManager;
