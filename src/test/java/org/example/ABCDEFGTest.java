@@ -39,11 +39,11 @@ public class ABCDEFGTest {
                 "AND E meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  F " +
                 "AND F meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  G " +
 //                "AND G meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  A " +
-                "WINDOW 100000";
+                "WINDOW 10000";
         // Create Engine instance
         Engine engine = new Engine(schema, query);
 
-        String ab13FilePath = "/home/uzi/Code/TPS/jepc-v2/col7_row5000000.csv";
+        String ab13FilePath = "/Users/czq/Code/TPstream0/TPStream_DAPD/jepc-v2/col7_row5000000.csv";
         // File data source, read data and apply to Engine
         try (DataSource dataSource = new FileDataSource(ab13FilePath)) {
             String line;
@@ -63,7 +63,7 @@ public class ABCDEFGTest {
 //                    engine.formatResult();
 //                }
                 cnt++;
-                if(cnt%1000000==0){
+                if(cnt%100000==0){
                     System.out.println( cnt);
                 }
 

@@ -1,8 +1,10 @@
 package org.example.piepair.dfa;
 
 import org.example.piepair.TemporalRelations;
+import org.jgrapht.Graph;
 
 import java.io.*;
+import java.util.*;
 
 public class Dot2DFA {
 
@@ -66,6 +68,7 @@ public class Dot2DFA {
             if (dfa.getInitState() == null) {
                 throw new IllegalArgumentException("Initial state not found in the DOT file.");
             }
+            dfa.setTransMap(graph2TransMap(dfa.getGraph()));
 
             return dfa;
 
@@ -74,6 +77,46 @@ public class Dot2DFA {
             return null;
         }
     }
+
+    public static Map<Node, Map<Alphabet, Node>> graph2TransMap(Graph<Node,LabeledEdge> graph) {
+        Map<Node, Map<String, Node>> tempTransitionMap = new HashMap<>();
+
+        graph.edgeSet().forEach(edge -> {
+            Node sourceNode = graph.getEdgeSource(edge);
+            Node targetNode = graph.getEdgeTarget(edge);
+            String trans = ((LabeledEdge) edge).getTrans() ;  // Get the label from LabeledEdge
+
+            // If the source node does not already have a transition map, create one
+            tempTransitionMap.computeIfAbsent(sourceNode, k -> new HashMap<>());
+
+            // Add the transition and target node to the source node's transition map
+            tempTransitionMap.get(sourceNode).put(trans, targetNode);
+        });
+        Set<String> allAlphabetSet = new HashSet<>(Arrays.asList("O", "I", "Z", "E"));
+
+        Map<Node, Map<Alphabet, Node>> transitionMap = new HashMap<>();
+
+        for( Map.Entry<Node, Map<String,Node>> entry   : tempTransitionMap.entrySet()){
+            Node sourceNode=entry.getKey();
+            Map<String, Node> trans2NodeMap= entry.getValue();
+            Set<String> sameSet = new HashSet<>(allAlphabetSet);
+            sameSet.retainAll(trans2NodeMap.keySet());
+            Set<String> differenceSet = new HashSet<>(allAlphabetSet);
+            differenceSet.removeAll(trans2NodeMap.keySet());
+            for(String sKey : sameSet){
+                transitionMap.computeIfAbsent(sourceNode, k -> new HashMap<>());
+                transitionMap.get(sourceNode).put( Alphabet.fromString(sKey),trans2NodeMap.get(sKey)  );
+            }
+            for(String dKey : differenceSet){
+                transitionMap.computeIfAbsent(sourceNode, k -> new HashMap<>());
+                transitionMap.get(sourceNode).put( Alphabet.fromString(dKey),trans2NodeMap.get("X")  );
+            }
+
+        }
+
+        return transitionMap;
+    }
+
 
     public static DFA createDFAFromRelation(TemporalRelations.PreciseRel relation) {
         String dotFilePath = "src/main/resources/dotFiles/" + relation.name() + ".dot";

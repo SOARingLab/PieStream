@@ -19,6 +19,7 @@ public class DFA {
     private boolean isStateChanged;
     private Alphabet lastAlphabet;
     private Alphabet currentAlphabet;
+    private Map<Node, Map<Alphabet, Node>> transMap;
 
     public DFA() {
         this.graph = new DefaultDirectedGraph<>(LabeledEdge.class);
@@ -39,6 +40,9 @@ public class DFA {
         this.initState = dfa.getInitState();
     }
 
+    public void setTransMap(Map<Node, Map<Alphabet, Node>> transMap){
+        this.transMap=transMap;
+    }
     public Graph<Node, LabeledEdge> getGraph() {
         return graph;
     }
@@ -159,22 +163,31 @@ public class DFA {
     }
 
     private Node findNextState(Node currentState, Alphabet alphabet) {
-        Set<LabeledEdge> outgoingEdges = graph.outgoingEdgesOf(currentState);
-        for (LabeledEdge edge : outgoingEdges) {
-            if (edge.getTrans().equals(alphabet.toString())) {
-                return graph.getEdgeTarget(edge);
-            }
-        }
 
-        for (LabeledEdge edge : outgoingEdges) {
-            if (edge.getTrans().equals("X")) {
-                return graph.getEdgeTarget(edge);
-            }
-        }
+         return  transMap.get(currentState).get(alphabet);
 
         // If no valid transition is found, throw an exception or log an error
-        throw new IllegalArgumentException("No valid transition found for datasource: " + alphabet);
+//        throw new IllegalArgumentException("No valid transition found for datasource: " + alphabet);
     }
+
+//
+//    private Node findNextState(Node currentState, Alphabet alphabet) {
+//        Set<LabeledEdge> outgoingEdges = graph.outgoingEdgesOf(currentState);
+//        for (LabeledEdge edge : outgoingEdges) {
+//            if (edge.getTrans().equals(alphabet.toString())) {
+//                return graph.getEdgeTarget(edge);
+//            }
+//        }
+//
+//        for (LabeledEdge edge : outgoingEdges) {
+//            if (edge.getTrans().equals("X")) {
+//                return graph.getEdgeTarget(edge);
+//            }
+//        }
+//
+//        // If no valid transition is found, throw an exception or log an error
+//        throw new IllegalArgumentException("No valid transition found for datasource: " + alphabet);
+//    }
 
     private void checkAndUpdateStateChange() {
         isStateChanged = !currentState.equals(lastState);
