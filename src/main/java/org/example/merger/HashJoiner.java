@@ -7,6 +7,8 @@ public class HashJoiner {
     public static long searchForJoin=0;
     public static long startTime=0;
     public static long endTime=0;
+
+    public static long joinCNT=0;
     // 使用哈希连接两个表，基于多个 joinColumns 进行连接
     public static Table hashJoin(Table table1, Table table2, List<String> parentJoinColumns,boolean needNewIndex) {
 
@@ -42,6 +44,7 @@ public class HashJoiner {
             for (Row largeRow: largeHashIndex.get(indexKey)){
                 for(Row smallRow: smallHashIndex.get(indexKey)){
                     resultTable.addRow( largeRow.join(smallRow,parentJoinColumns, needNewIndex));
+                    joinCNT++;
                 }
             }
         }

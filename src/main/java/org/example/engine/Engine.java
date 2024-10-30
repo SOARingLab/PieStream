@@ -106,6 +106,8 @@ public class Engine implements ForeachAction<String, String> {
         System.out.println("concat Time"+ this.worker.getTree().concat+"ms");
 
         System.out.println("searchForJoin Time"+ HashJoiner.searchForJoin +"ms");
+
+        System.out.println("joinedCNT "+ HashJoiner.joinCNT +" times");
     }
 
 
