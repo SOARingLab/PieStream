@@ -76,12 +76,12 @@ public class LinkList<T> {
     }
 
     // 删除头部节点
-    public void deleteHead() {
+    public T deleteHead() {
         if (isEmpty()) {
             System.out.println("The list is empty. No elements to delete.");
-            return;
+            return null;
         }
-
+        T deletedData=head.getData();
         // 将头指针指向下一个节点
         head = head.next;
         if (head != null) {
@@ -90,6 +90,7 @@ public class LinkList<T> {
             tail = null;
         }
         size--;
+        return deletedData;
     }
 
     // 从链表中删除一个节点
@@ -161,6 +162,24 @@ public class LinkList<T> {
             current = current.next;
         }
         System.out.println("null");
+    }
+
+    public void addAll(LinkList<T> otherLinkList){
+        if(otherLinkList.getSize()==0){
+            return;
+        }
+        if(this.size+otherLinkList.getSize()>this.capacity){
+            throw new IllegalArgumentException("Excess size exceeds capacity of LinkList.");
+        }
+        if (this.size==0){
+            this.head=otherLinkList.head;
+        }else{
+            this.tail.next=otherLinkList.head;
+            otherLinkList.head.prev=this.tail;
+        }
+        this.tail=otherLinkList.tail;
+        this.size+=otherLinkList.getSize();
+
     }
 
 

@@ -16,8 +16,8 @@ public class HashJoiner {
             return new Table(0);
         }
 
-        Table smallerTable = table1.getRows().size() <= table2.getRows().size() ? table1 : table2;
-        Table largerTable = table1.getRows().size() > table2.getRows().size() ? table1 : table2;
+        Table smallerTable = table1.getRows().getSize() <= table2.getRows().getSize() ? table1 : table2;
+        Table largerTable = table1.getRows().getSize() > table2.getRows().getSize() ? table1 : table2;
 
         startTime = System.currentTimeMillis();
 
@@ -83,8 +83,8 @@ public class HashJoiner {
 //        Set<String> joinColumns = getJoinColumns(table1, table2);
 
         // 构建哈希索引
-        Table smallerTable = table1.getRows().size() <= table2.getRows().size() ? table1 : table2;
-        Table largerTable = table1.getRows().size() > table2.getRows().size() ? table1 : table2;
+        Table smallerTable = table1.getRows().getSize() <= table2.getRows().getSize() ? table1 : table2;
+        Table largerTable = table1.getRows().getSize() > table2.getRows().getSize() ? table1 : table2;
 //        Map<String, List<Row>> hashIndex = buildHashIndex(smallerTable, joinColumns);
 
         Map<String, List<Row>> hashIndex = smallerTable.getHashIndex();

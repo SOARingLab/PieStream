@@ -1,8 +1,11 @@
 package org.example.engine;
 
 import org.apache.kafka.streams.kstream.ForeachAction;
+import org.apache.kafka.streams.kstream.Merger;
 import org.example.events.PointEvent;
 import org.example.merger.HashJoiner;
+import org.example.merger.MapMerger;
+import org.example.merger.Table;
 import org.example.parser.Schema;
 import org.example.events.Attribute;
 import org.example.parser.MPIEPairSource;
@@ -97,17 +100,30 @@ public class Engine implements ForeachAction<String, String> {
 
     // 可以在适当的时候调用这个方法来输出累积时间
     public void printAccumulatedTimes() {
-        System.out.println("Total preprocess time: " + preprocessTime + " ms");
-        System.out.println("Total run one by one time: " + runOneByOneTime + " ms");
-        System.out.println("Total derive before-after relationship time: " + deriveRelTime + " ms");
-        System.out.println("Total merge after run time: " + mergeTime + " ms");
-        System.out.println("Total update data time: " + updateTime + " ms");
-        System.out.println("Joined Time"+ this.worker.getTree().joinTime+"ms");
-        System.out.println("concat Time"+ this.worker.getTree().concat+"ms");
+        long duration = preprocessTime+runOneByOneTime +deriveRelTime+mergeTime+updateTime;
+        System.out.println("ALL Processing time: " + (double)duration/1000 + " s");
+        System.out.println("Total preprocess time: " + (double)preprocessTime /1000 + " s");
 
-        System.out.println("searchForJoin Time"+ HashJoiner.searchForJoin +"ms");
+        System.out.println("Total run one by one time: " + (double)runOneByOneTime/1000 + " s (" + Math.round ((double)runOneByOneTime/(double)duration *100)+"%");
+        System.out.println("Total derive before-after relationship time: " + (double)deriveRelTime/1000 + " s (" + Math.round ((double)deriveRelTime/(double)duration *100)+"%");
+        System.out.println("Total merge after run time: " + (double)mergeTime/1000 + " s (" + Math.round ((double)mergeTime/(double)duration *100)+"%");
+        System.out.println("    Joined Time"+ (double)this.worker.getTree().joinTime/1000 + " s (" + Math.round ( (double)this.worker.getTree().joinTime/(double)duration *100)+"%");
+        System.out.println("        searchForJoin Time: "+ (double)HashJoiner.searchForJoin /1000 + " s (" +Math.round ( (double)HashJoiner.searchForJoin/(double)duration *100)+"%");
+//        System.out.println("    joinedCNT "+ HashJoiner.joinCNT +" times");
+        System.out.println("    concat Time"+ (double)this.worker.getTree().concat/1000 + " s (" +Math.round ( (double)this.worker.getTree().concat/(double)duration *100)+"%");
+        System.out.println("Total update data time: " + (double)updateTime/1000 + " s (" +Math.round ( (double)updateTime/(double)duration *100)+"%");
+        System.out.println("    update_merged Time "+(double)this.worker.getTree().update_merged /1000 + " s (" + Math.round ((double)this.worker.getTree().update_merged/(double)duration *100)+"%");
 
-        System.out.println("joinedCNT "+ HashJoiner.joinCNT +" times");
+        System.out.println("        concateTime Time "+ (double)Table.concateTime  /1000 + " s (" +Math.round ( (double)Table.concateTime  /(double)duration *100)+"%");
+        System.out.println("            addRowMergeTime Time "+ (double)Table.addRowMergeTime  /1000 + " s (" +Math.round ( (double)Table.addRowMergeTime  /(double)duration *100)+"%");
+        System.out.println("                clearRowsTime Time "+ (double)Table.clearRowsTime  /1000 + " s (" +Math.round ( (double)Table.clearRowsTime  /(double)duration *100)+"%");
+
+        System.out.println("                removeRowsAndIndexTime Time "+ (double)Table.removeRowsAndIndexTime  /1000 + " s (" +Math.round ( (double)Table.removeRowsAndIndexTime  /(double)duration *100)+"%");
+        System.out.println("                addRowsTime Time "+ (double)Table.addRowsTime  /1000 + " s (" + Math.round ((double)Table.addRowsTime  /(double)duration *100)+"%");
+
+        System.out.println("                merge_simple Time "+ (double)MapMerger.merge_simple /1000 + " s (" + Math.round ((double)MapMerger.merge_simple/(double)duration *100)+"%");
+        System.out.println("    update_leaf Time "+(double)this.worker.getTree().update_leaf /1000 + " s (" +Math.round ( (double)this.worker.getTree().update_leaf/(double)duration *100)+"%");
+
     }
 
 

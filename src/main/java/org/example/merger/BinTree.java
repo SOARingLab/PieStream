@@ -27,6 +27,8 @@ public class BinTree {
 
     public long joinTime=0;
     public long concat=0;
+    public long update_merged=0;
+    public long update_leaf=0;
     public long startTime=0;
     public long endTime=0;
 
@@ -359,25 +361,31 @@ public class BinTree {
     }
 
     public void printDetailResult() {
-        root.T.printTable();
+//        root.T.printTable();
     }
 
     public void printDetailResultFormat() {
-        root.T.printTableFormat();
+
+//        root.T.printTableFormat();
     }
 
     public void printDetailResultOrdered() {
-        root.T.printTableOrdered();
+
+//        root.T.printTableOrdered();
     }
 
     public void updateMergedNodeData() {
+        startTime = System.currentTimeMillis();
         for (TreeNode node : mergedNodes) {
             node.T.concatenate(node.newT);
+
         }
+        endTime = System.currentTimeMillis();
+        update_merged+=endTime-startTime;
     }
 
     public void updateLeafNodeData() {
-
+        startTime = System.currentTimeMillis();
         for (Map.Entry<IEPCol, TreeNode> entry : Col2Node.entrySet()) {
             // MPIEPairSource key = entry.getKey();
             TreeNode node = entry.getValue();
@@ -396,6 +404,8 @@ public class BinTree {
             }
 
         }
+        endTime = System.currentTimeMillis();
+        update_leaf+=endTime-startTime;
 
     }
 
