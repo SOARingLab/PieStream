@@ -1,10 +1,12 @@
 package org.example.piepair;
 
 import java.util.Objects;
+
+import org.example.events.Expirable;
 import org.example.events.PointEvent;
 import org.example.piepair.eba.EBA;
 
-public class IEP {
+public class IEP implements Expirable {
     private EBA formerPie;
     private EBA latterPie;
     private TemporalRelations.AllRel relation; // 时间关系
@@ -199,9 +201,10 @@ public class IEP {
                 Objects.equals(formerStartTime, iep.formerStartTime) &&
                 Objects.equals(latterStartTime, iep.latterStartTime);
     }
-//    public void complete(){
-//        this.isCompleted =true;
-//    }
+
+    public Long getTriggerTime(){
+        return triggerTime;
+    }
 
     public Long getStartTime(EBA pred) {
         if (pred == formerPie) {
@@ -211,6 +214,11 @@ public class IEP {
         } else {
             throw new IllegalArgumentException("The provided EBA predicate does not match formerPie or latterPie.");
         }
+    }
+
+    @Override
+    public  boolean isExpired(long deadLine){
+        return triggerTime<deadLine;
     }
 
 }

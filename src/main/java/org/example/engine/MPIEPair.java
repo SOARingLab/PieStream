@@ -158,6 +158,7 @@ public class MPIEPair {
     }
 
     private void recordIntervalEvent(PointEvent event) {
+
         if (isFormerPieStartTransition()) {
             formerPieStart = event;
             formerPieEnd = null;
@@ -166,7 +167,7 @@ public class MPIEPair {
         if (isFormerPieEndTransition()) {
             formerPieEnd = event;
             if (hasBefore) {
-                formerIEList.add(new IE(formerPred, formerPieStart, formerPieEnd));
+                formerIEList.safeAdd(new IE(formerPred, formerPieStart, formerPieEnd,event.getTimestamp()));
             }
             if (hasAfter) {
                 node.getAftCol().updateCompletedMSG("former",formerPred,formerPieStart.getTimestamp(),formerPieEnd);
@@ -181,7 +182,7 @@ public class MPIEPair {
         if (isLatterPieEndTransition()) {
             latterPieEnd = event;
             if (hasAfter) {
-                latterIEList.add(new IE(latterPred, latterPieStart, latterPieEnd));
+                latterIEList.safeAdd(new IE(latterPred, latterPieStart, latterPieEnd,event.getTimestamp()));
             }
             if (hasBefore) {
 

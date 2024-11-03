@@ -1,7 +1,14 @@
 package org.example.merger;
 
-public class LinkList<T> {
+import org.example.engine.WindowType;
+import org.example.events.Expirable;
 
+import java.util.ArrayList;
+import java.util.List;
+
+public class LinkList<T extends Expirable> {
+
+    //TODO: 在TimeWindow下最好严格排序。
     // 节点类，定义链表的每个节点，包含双向指针
     public class Node {
         T data;       // 节点的数据
@@ -20,35 +27,29 @@ public class LinkList<T> {
 
     private Node head;    // 头指针
     private Node tail;    // 尾指针
-    private long capacity; // 链表的总容量
+    private final long capacity; // 链表的总容量
     private int size;     // 当前元素个数
-//    private boolean isTrigger;     // 当前元素个数
+    private final WindowType winType;
 
     // 构造函数，初始化链表，容量是传入的参数
     public LinkList(long capacity) {
+        this.winType=WindowType.COUNT_WINDOW;
         this.capacity = capacity;
         this.size = 0;
         this.head = null;
         this.tail = null;
-//        this.isTrigger = false;
     }
-
-
-//    public void resetIsTrigger() {
-//        this.isTrigger =false;
-//    }
-//
-//    public boolean getIsTrigger() {
-//        return isTrigger;
-//    }
-//
-//    public void setIsTrigger() {
-//        this.isTrigger =true;
-//    }
+    public LinkList( ) {
+        this.winType=WindowType.TIME_WINDOW;
+        this.capacity = 0;
+        this.size = 0;
+        this.head = null;
+        this.tail = null;
+    }
 
     // 检查链表是否已满
     public boolean isFull() {
-        return size == capacity;
+        return winType == WindowType.COUNT_WINDOW && size == capacity;
     }
 
     // 检查链表是否为空
@@ -56,8 +57,9 @@ public class LinkList<T> {
         return size == 0;
     }
 
+
     // 向链表中添加元素（添加到尾部），如果已满，删除头部元素
-    public void add(T data) {
+    public void safeAdd(T data) {
         // 如果链表满了，删除头部节点
         if (isFull()) {
             deleteHead();
@@ -76,12 +78,12 @@ public class LinkList<T> {
     }
 
     // 删除头部节点
-    public T deleteHead() {
+    public T  deleteHead() {
         if (isEmpty()) {
             System.out.println("The list is empty. No elements to delete.");
             return null;
         }
-        T deletedData=head.getData();
+        T  deletedData=head.getData();
         // 将头指针指向下一个节点
         head = head.next;
         if (head != null) {
@@ -126,28 +128,6 @@ public class LinkList<T> {
         size--;
     }
 
-    // 按值删除节点
-    public void delete(T data) {
-        if (isEmpty()) {
-            System.out.println("The list is empty. No elements to delete.");
-            return;
-        }
-
-        Node current = head;
-
-        // 找到要删除的元素
-        while (current != null && !current.data.equals(data)) {
-            current = current.next;
-        }
-
-        if (current == null) {
-            System.out.println("Element not found in the list.");
-            return;
-        }
-
-        // 使用 deleteNode 方法删除找到的节点
-        deleteNode(current);
-    }
 
     // 打印链表中的所有元素
     public void printList() {
@@ -164,42 +144,27 @@ public class LinkList<T> {
         System.out.println("null");
     }
 
-    public void addAll(LinkList<T> otherLinkList){
+    public void concat(LinkList<T > otherLinkList){
         if(otherLinkList.getSize()==0){
             return;
         }
-        if(this.size+otherLinkList.getSize()>this.capacity){
+        if(winType==WindowType.COUNT_WINDOW && this.size+otherLinkList.getSize()>this.capacity){
             throw new IllegalArgumentException("Excess size exceeds capacity of LinkList.");
         }
+
+        //change head
         if (this.size==0){
             this.head=otherLinkList.head;
         }else{
             this.tail.next=otherLinkList.head;
             otherLinkList.head.prev=this.tail;
         }
+        //change tail
         this.tail=otherLinkList.tail;
+
+        //change size
         this.size+=otherLinkList.getSize();
 
-    }
-
-
-    // 在 LinkList 类中实现 concat 方法
-    public void concat(LinkList<T> other) {
-        // 遍历 other 表中的每个元素，并将它们添加到当前表中
-        Node current = other.head;
-
-        // 依次将 other 的每个节点添加到当前链表中
-        while (current != null) {
-            // 如果当前链表的大小已达到容量，删除头部元素以腾出空间
-            if (this.size >= this.capacity) {
-                this.deleteHead();
-            }
-            // 将当前节点的数据添加到链表中
-            this.add(current.data);
-
-            // 移动到 other 链表中的下一个节点
-            current = current.next;
-        }
     }
 
     public void clear() {
@@ -207,23 +172,7 @@ public class LinkList<T> {
         head = null;
         tail = null;
         size = 0;
-//        System.out.println("The list has been cleared.");
     }
-
-
-//
-//    // 从尾部向前搜索第 n 个元素
-//    public T searchFromRear(int n) {
-//        if (n <= 0 || n > size) {
-//            throw new IllegalArgumentException("Invalid value of n: " + n);
-//        }
-//
-//        Node current = tail;
-//        for (int i = 1; i < n; i++) {
-//            current = current.prev;
-//        }
-//        return current.data;
-//    }
 
     // 获取链表的大小
     public int getSize() {
@@ -244,4 +193,20 @@ public class LinkList<T> {
     public Node getTail() {
         return tail;
     }
+
+    public List<T> refresh(long deadLine ){
+        List<T> dataList= new ArrayList<T>();
+        Node current=head;
+        long cnt=0;
+        while(current!=null && current.data.isExpired(deadLine)){
+            dataList.add(current.data);
+            current=current.next;
+            cnt++;
+        }
+        head=current;
+        size-=cnt;
+
+        return dataList;
+    }
+
 }

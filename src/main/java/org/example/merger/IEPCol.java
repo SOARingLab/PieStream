@@ -2,11 +2,12 @@ package org.example.merger;
 
 import java.util.*;
 
+import org.example.events.Expirable;
 import org.example.events.PointEvent;
 import org.example.piepair.IEP;
 import org.example.piepair.eba.EBA;
 
-public class IEPCol {
+public class IEPCol   {
 
     private LinkList<IEP> iepList;   // 包含 IEP 的链表
     public Map<EBA, Map<Long, List<IEP>>> colMap; // 建立在 IEPList 上的索引
@@ -85,7 +86,7 @@ public class IEPCol {
 //    }
 
     public void setTriggerMSG(  IEP iep){
-        this.newIEPList.add(iep);
+        this.newIEPList.safeAdd(iep);
         Map<Long, List<IEP>> predIndex1 = newIEPMap.computeIfAbsent(iep.getFormerPie(), k -> new HashMap<>());
         predIndex1.computeIfAbsent(iep.getFormerStartTime(), k -> new ArrayList<>()).add(iep);
         Map<Long, List<IEP>> predIndex2 = newIEPMap.computeIfAbsent(iep.getLatterPie(), k -> new HashMap<>());
@@ -103,14 +104,7 @@ public class IEPCol {
         }
     }
 
-    public void updateNewIepList2Table( Map<EBA, String> EBA2String,Set<String> joinColumns){
 
-        LinkList<IEP>.Node current = this.newIEPList.getHead() ;
-        while (current != null) {
-            this.newIEPTable.addRow(current.getData(), EBA2String,joinColumns);
-            current = current.next;
-        }
-    }
 
     // 添加 IEP 到链表和索引中，支持两个 EBA 和两个 startTime
     public void updateIEP2List() {
@@ -138,48 +132,6 @@ public class IEPCol {
     }
 
 
-    // 删除 IEP，根据两个 EBA 和对应的 startTime 更新索引
-    public void deleteIEP(EBA pred1, Long startTime1, EBA pred2, Long startTime2, IEP iep) {
-        iepList.delete(iep);  // 从链表中删除
-
-        // 删除在第一个 EBA 和 startTime1 上的索引
-        if (colMap.containsKey(pred1)) {
-            Map<Long, List<IEP>> timeMap1 = colMap.get(pred1);
-            if (timeMap1.containsKey(startTime1)) {
-                List<IEP> iepListAtTime1 = timeMap1.get(startTime1);
-                iepListAtTime1.remove(iep);  // 从索引中删除 IEP
-
-                // 如果该时间点下的 IEP 列表为空，则移除该时间点
-                if (iepListAtTime1.isEmpty()) {
-                    timeMap1.remove(startTime1);
-                }
-
-                // 如果 EBA1 对应的所有时间点都为空，则移除该 EBA1
-                if (timeMap1.isEmpty()) {
-                    colMap.remove(pred1);
-                }
-            }
-        }
-
-        // 删除在第二个 EBA 和 startTime2 上的索引
-        if (colMap.containsKey(pred2)) {
-            Map<Long, List<IEP>> timeMap2 = colMap.get(pred2);
-            if (timeMap2.containsKey(startTime2)) {
-                List<IEP> iepListAtTime2 = timeMap2.get(startTime2);
-                iepListAtTime2.remove(iep);  // 从索引中删除 IEP
-
-                // 如果该时间点下的 IEP 列表为空，则移除该时间点
-                if (iepListAtTime2.isEmpty()) {
-                    timeMap2.remove(startTime2);
-                }
-
-                // 如果 EBA2 对应的所有时间点都为空，则移除该 EBA2
-                if (timeMap2.isEmpty()) {
-                    colMap.remove(pred2);
-                }
-            }
-        }
-    }
 
     // 打印 colMap 的内容
     public void print() {
@@ -228,4 +180,45 @@ public class IEPCol {
     public IEP getTailIEP() {
         return iepList.getTail().data;
     }
+
+    private void deleteHashindexByIEP(IEP iep){
+        // 更新 hashIndex 中的索引
+        EBA formerPie = iep.getFormerPie();
+        long formerStart=iep.getFormerStartTime();
+        Map<Long, List<IEP>> formerMap= colMap.get(formerPie);
+        List<IEP> sameIndexIEPList = formerMap.get(formerStart);
+        if (sameIndexIEPList != null) {
+            sameIndexIEPList.remove(iep);
+            if (sameIndexIEPList.isEmpty()) {
+                formerMap.remove(formerStart);
+            }
+        }
+
+
+        EBA latterPie = iep.getLatterPie();
+        long latterStart=iep.getLatterStartTime();
+        Map<Long, List<IEP>> latterMap= colMap.get(latterPie);
+        sameIndexIEPList = latterMap.get(latterStart);
+        if (sameIndexIEPList != null) {
+            sameIndexIEPList.remove(iep);
+            if (sameIndexIEPList.isEmpty()) {
+                latterMap.remove(latterStart);
+            }
+        }
+    }
+
+
+    public void refreshIndex(long deadLine,List<IEP> toDelIeps ){
+
+        for(IEP iep:toDelIeps){
+            deleteHashindexByIEP(iep);
+        }
+    }
+
+    public void  refresh(long deadLine ){
+        List<IEP> toDelIeps=iepList.refresh(deadLine);
+        refreshIndex(deadLine,toDelIeps);
+    }
+
+    //TODO: COUNTWINDOW 下好像没删除过 IEPList的索引。
 }

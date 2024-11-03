@@ -18,18 +18,19 @@ public class Worker {
 
     private final MPIEPairsManager mpiEPairsManager;  // MPIEPairs 管理器
     private final List<MPIEPair> MPPS;  // 所有的 PIEPair 对象
-
-//    private Map<MPIEPairSource, IEPCol> source2Col = new HashMap<>();  // 源到列的映射
-//    private final Map<IEPCol, TreeNode> Col2Node = new HashMap<>();  // 列到节点的映射
-    private Map<MPIEPairSource, TreeNode> source2Node = new HashMap<>();  // 源到节点的映射
-//    private final  Map<EBA,String> EBA2String = new HashMap<>();
+    private final Map<MPIEPairSource, TreeNode> source2Node ;  // 源到节点的映射
     private final  BinTree tree;
-//    private TreeNode root;  // 树的根节点
-//    private TreeNodeWrapper bottomLeafWrapper = new TreeNodeWrapper(null);  // 用包装类来包裹底层叶子节点
+    private final long  window;
+    private final WindowType  winType;
 
     // 构造函数，创建树并映射源到节点
-    public Worker(List<MPIEPairSource> MPPSourceList, long QCapacity, Map<EBA,String> EBA2String) {
-        this.tree=new BinTree(MPPSourceList,QCapacity,EBA2String);
+    public Worker(List<MPIEPairSource> MPPSourceList,WindowType winType, long window, Map<EBA,String> EBA2String) {
+
+        this.window=window;
+        this.winType=winType;
+
+        this.tree=new BinTree(MPPSourceList,winType,window,EBA2String);
+
         try {
             tree.constructTree();
             System.err.println("Tree constructed successfully.");
@@ -90,12 +91,16 @@ public class Worker {
 //        root.getTable().printTable();
     }
 
-    public void resetBeforeRun(){
+    public void resetBeforeRun(long currentTime){
 
-        tree.clearMergedNodeData();
-        tree.clearLeafNodeData();
+        tree.clearMergedNodeData_NewT();
+        tree.clearLeafNodeData_NewT();
 
-
+        if(winType==WindowType.TIME_WINDOW){
+            long deadLine=currentTime-window;
+            tree.refreshMergedNodeData_OldT(deadLine );
+            tree.refreshLeafNodeData_OldT(deadLine);
+        }
 
     }
 

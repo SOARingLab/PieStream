@@ -4,6 +4,7 @@ package org.example;
 import org.example.datasource.DataSource;
 import org.example.datasource.FileDataSource;
 import org.example.engine.Engine;
+import org.example.engine.WindowType;
 import org.example.parser.Schema;
 import org.junit.jupiter.api.Test;
 
@@ -39,11 +40,11 @@ public class ABCDEFGTest {
                 "AND E meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  F " +
                 "AND F meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  G " +
 //                "AND G meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  A " +
-                "WINDOW 1000";
+                "WINDOW 300000";
         // Create Engine instance
-        Engine engine = new Engine(schema, query);
+        Engine engine = new Engine(schema, query );
 
-        String ab13FilePath = "/Users/czq/Code/TPstream0/TPStream_DAPD/jepc-v2/col7_row800000.csv";
+        String ab13FilePath = "/home/uzi/Code/TPS/jepc-v2/col7_row800000.csv";
         // File data source, read data and apply to Engine
         try (DataSource dataSource = new FileDataSource(ab13FilePath)) {
             String line;
@@ -64,12 +65,12 @@ public class ABCDEFGTest {
 //                }
                 cnt++;
                 if(cnt%100000==0){
-                    System.out.println( cnt);
+                    System.out.println( cnt+", ");
                 }
 
             }
 //            engine.formatResult();
-            System.out.println( cnt);
+            System.out.println( "\nCNT:"+cnt);
 
             engine.printResultCNT();
 

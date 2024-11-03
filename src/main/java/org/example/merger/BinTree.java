@@ -1,5 +1,6 @@
 package org.example.merger;
 
+import org.example.engine.WindowType;
 import org.example.parser.Schema;
 import org.example.parser.MPIEPairSource;
 import org.example.parser.QueryParser;
@@ -15,12 +16,13 @@ public class BinTree {
     private Map<MPIEPairSource, IEPCol> source2Col;
     private Map<MPIEPairSource, TreeNode> sourceToNode;
     private Map<IEPCol, TreeNode> Col2Node;
-    private long QCapacity;
-    private long bef_aftQCapacity;
+    private long window;
+    private long bef_aftWin;
     private TreeNode root;
     private TreeNode bottomLeaf;
     private List<TreeNode> mergedNodes;
     private Map<EBA, String> EBA2String;
+    private final WindowType winType;
     private Map<TreeNode, List<String>> node2JoinedCols;
 
     private Map<TreeNode, Set<String>> node2AcmltJoinedCols;
@@ -32,24 +34,30 @@ public class BinTree {
     public long startTime=0;
     public long endTime=0;
 
-    // 构造函数初始化常用的变量
-    public BinTree(List<MPIEPairSource> sourceList, long QCapacity, Map<EBA, String> EBA2String) {
+
+    public BinTree(List<MPIEPairSource> sourceList, WindowType winType, long window, Map<EBA, String> EBA2String) {
+
+        this.winType=winType;
         this.sourceList = sourceList;
-        this.QCapacity = QCapacity;
+        this.window = window;
         this.source2Col = new HashMap<>();
         this.sourceToNode = new HashMap<>();
         this.Col2Node = new HashMap<>();
         this.root = null;
         this.bottomLeaf = null;
         this.EBA2String = EBA2String;
-        this.bef_aftQCapacity = ((QCapacity + 3) * QCapacity) / 6;
+        this.bef_aftWin = window;
         this.mergedNodes = new ArrayList<>();
         this.node2JoinedCols=new HashMap<>();
         this.node2AcmltJoinedCols=new HashMap<>();
+    }
+    // 构造函数初始化常用的变量
+    public BinTree(List<MPIEPairSource> sourceList, long window, Map<EBA, String> EBA2String) {
+        this(sourceList,WindowType.COUNT_WINDOW,window,EBA2String);
 
     }
 
-    // 构建二叉树的方法
+        // 构建二叉树的方法
     public TreeNode constructTree() throws Exception {
         List<TreeNode> nodes = createLeafNodes(); // Create leaf nodes from sources
 
@@ -119,10 +127,10 @@ public class BinTree {
             predSet.add(source.getFormerPred()); // 添加前驱谓词
             predSet.add(source.getLatterPred()); // 添加后继谓词
             // 创建叶子节点
-            IEPCol Col = new IEPCol(QCapacity,  EBA2String);
+            IEPCol Col = new IEPCol(window,  EBA2String);
             // TreeNode node = new TreeNode(predSet, new HashSet<>(), null, null, null,
             // null, source, 0, true, null, Col);
-            TreeNode node = new TreeNode(predSet, source, QCapacity,  EBA2String);
+            TreeNode node = new TreeNode(predSet, source, window,  EBA2String);
 
             source2Col.put(source, Col);
             Col2Node.put(Col, node);
@@ -202,7 +210,7 @@ public class BinTree {
 
         // TreeNode mergedNode = new TreeNode(newPredSet, newKeyPredSet, hNode,
         // otherNode, null, null, null, heightCnt + 1, false, pt, null);
-        TreeNode mergedNode = new TreeNode(newPredSet, newKeyPredSet, hNode, otherNode, heightCnt + 1, QCapacity,  EBA2String);
+        TreeNode mergedNode = new TreeNode(newPredSet, newKeyPredSet, hNode, otherNode, heightCnt + 1, window,  EBA2String);
 
         hNode.parent = mergedNode;
         if (otherNode != null) {
@@ -409,7 +417,7 @@ public class BinTree {
 
     }
 
-    public void clearLeafNodeData() {
+    public void clearLeafNodeData_NewT() {
         for (Map.Entry<IEPCol, TreeNode> entry : Col2Node.entrySet()) {
             // MPIEPairSource key = entry.getKey();
             TreeNode leafNode = entry.getValue();
@@ -425,12 +433,37 @@ public class BinTree {
         }
     }
 
-    public void clearMergedNodeData() {
+    public void clearMergedNodeData_NewT() {
         for (TreeNode node : mergedNodes) {
             Table newT = node.newT;
             if (newT.getRowCount() != 0) {
                 newT.clear();
             }
+        }
+    }
+
+    public void refreshMergedNodeData_OldT(long deadLine ){
+        for (TreeNode node : mergedNodes) {
+            Table oldT = node.T;
+            if (oldT.getRowCount() != 0) {
+                oldT.refresh(deadLine );
+            }
+        }
+    }
+
+    public void refreshLeafNodeData_OldT(long deadLine ){
+        for (Map.Entry<IEPCol, TreeNode> entry : Col2Node.entrySet()) {
+            // MPIEPairSource key = entry.getKey();
+            TreeNode leafNode = entry.getValue();
+            leafNode.getCol().refresh(deadLine);
+//            leafNode.leafNewT.clear();
+            if (leafNode.isHasBefore()) {
+                leafNode.getBefCol().refresh(deadLine);
+            }
+            if (leafNode.isHasAfter()) {
+                leafNode.getAftCol().refresh(deadLine);
+            }
+
         }
     }
 
@@ -451,9 +484,6 @@ public class BinTree {
         return Col2Node;
     }
 
-    public long getQCapacity() {
-        return QCapacity;
-    }
 
     public TreeNode getRoot() {
         return root;
@@ -467,46 +497,5 @@ public class BinTree {
         return EBA2String;
     }
 
-    // 主方法测试
-    public static void main(String[] args) {
-        String query = "SELECT s.ts, s.te " +
-                "FROM CarStream " +
-                "DEFINE l AS Lane > 2, s AS SPEED > 30 , x AS XWay > 2 " +
-                "PATTERN s follow;followed-by;meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals l "
-                +
-                "AND x contains l " +
-                "AND s overlaps x " +
-                "WINDOW 5 min";
-
-        // 解析查询
-        String schemaFilePath = "src/main/resources/domain/linear_accel.yaml";
-        Schema schema = new Schema(schemaFilePath); // 加载 Schema
-
-        QueryParser parser = new QueryParser(query, schema);
-        try {
-            parser.parse();
-        } catch (QueryParser.ParseException | EBA.ParseException e) {
-            System.err.println("解析查询失败: " + e.getMessage());
-            return;
-        }
-
-        List<MPIEPairSource> sources = parser.getPatternClause(); // 获取解析后的模式源
-
-        System.out.println("解析后的 MPIEPairSource:");
-        for (MPIEPairSource source : sources) {
-            System.out.println("FormerPred: " + source.getFormerPred() + ", LatterPred: " + source.getLatterPred());
-        }
-
-        int QCapacity = 100;
-
-        // 创建 BinTree 实例
-        BinTree binTree = new BinTree(sources, QCapacity, parser.getEBA2String());
-
-        try {
-            TreeNode root = binTree.constructTree(); // 构建二叉树
-            System.err.println("Build BinTree successfully!");
-        } catch (Exception e) {
-            System.err.println("Build BinTree failed! " + e.getMessage());
-        }
-    }
+    //TODO: 1. 继续转化从COUNT到TIME的WINDOW
 }

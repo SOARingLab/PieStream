@@ -1,5 +1,6 @@
 package org.example.merger;
 
+import org.example.engine.WindowType;
 import org.example.piepair.IEP;
 import org.example.piepair.eba.EBA;
 
@@ -10,12 +11,14 @@ public class Table {
     private final LinkList<Row> rows;
     private final long  capacity; // 表的最大容量
     private long size; // 当前行数
+    private final WindowType winType; // 当前行数
     private final Map<String, List<Row>> hashIndex;
 
     public static long removeRowsAndIndexTime;
     public static long concateTime;
+    public static long concateRebuilTime;
     public static long addRowsTime;
-    public static long  clearRowsTime;
+    public static long clearRowsTime;
     public static long addRowMergeTime;
     public static long startTime;
     public static long endTime;
@@ -23,132 +26,79 @@ public class Table {
     // 构造函数，接受容量参数
     public Table(long capacity) {
 //        this.rows = new ArrayList<>();
+        this.winType=WindowType.COUNT_WINDOW;
         this.capacity = capacity;
         this.size = 0;
         this.hashIndex=new HashMap<>();
         this.rows =new LinkList<Row>(capacity);
     }
 
-//    // 构造函数，接受 IEP 列表和 EBA2String 映射，以及容量参数
-//    public Table(LinkList<IEP> iepList, Map<EBA, String> EBA2String) {
-//        this.rows = new ArrayList<>();
-//        this.capacity = iepList.getSize();
-//        this.size = 0;
-//
-//        // 遍历 iepList 链表中的每个 IEP
-//        LinkList<IEP>.Node current = iepList.getHead(); // 获取链表的头节点
-//        while (current != null) {
-//            IEP iep = current.data; // 获取当前节点的 IEP
-//
-//            // 使用 Row(IEP iep, Map<EBA, String> EBA2String) 构造 Row
-//            Row row = new Row(iep, EBA2String);
-//
-//            // 添加到 Table 中
-//            this.addRow(row);
-//
-//            // 移动到下一个节点
-//            current = current.next;
-//        }
-//    }
+    // no capacity limited
+    public Table( ) {
+        this.winType=WindowType.TIME_WINDOW;
+        this.capacity = 0;
+        this.size = 0;
+        this.hashIndex=new HashMap<>();
+        this.rows =new LinkList<Row>();
+    }
+
 
     public  Map<String, List<Row>> getHashIndex(){
         return hashIndex;
     }
 
+    private void deleteRowsAndIndex(long toDelSize){
+        if (toDelSize > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Excess size exceeds Integer.MAX_VALUE, cannot proceed.");
+        }
+        int cnt=0;
+        while(cnt<toDelSize ){
+            Row oldestRow= this.rows.deleteHead();
+            deleteHashindexByRow(oldestRow);
+            cnt++;
+        }
+        size -= toDelSize;
+    }
+
+    private void deleteHashindexByRow(Row row){
+        // 更新 hashIndex 中的索引
+        String indexKey = row.getIndexKey();
+        List<Row> sameIndexRowList = hashIndex.get(indexKey);
+        if (sameIndexRowList != null) {
+            sameIndexRowList.remove(row);
+            if (sameIndexRowList.isEmpty()) {
+                hashIndex.remove(indexKey);
+            }
+        }
+    }
+
     public void addRowsWithoutGenIndex(LinkList<Row> rowsToAdd) {
         long excess = size + rowsToAdd.getSize()  - capacity;
-        if (excess > 0) {
-            // 使用 subList 批量删除最旧的行
-            if (excess > Integer.MAX_VALUE) {
-                throw new IllegalArgumentException("Excess size exceeds Integer.MAX_VALUE, cannot proceed.");
-            }
 
-
-
-
-
-            int cnt=0;
-
-            while(cnt<excess ){
-
-                Row oldestRow= this.rows.deleteHead();
-                // 更新 hashIndex 中的索引
-                startTime= System.currentTimeMillis();
-
-                String indexKey = oldestRow.getIndexKey();
-                List<Row> oldRowList = hashIndex.get(indexKey);
-                if (oldRowList != null) {
-                    oldRowList.remove(oldestRow);
-                    if (oldRowList.isEmpty()) {
-                        hashIndex.remove(indexKey);
-                    }
-                }
-
-
-                endTime= System.currentTimeMillis();
-                removeRowsAndIndexTime+=(endTime-startTime);
-
-                cnt++;
-            }
-
-
-            size -= excess;
+        if (winType==WindowType.COUNT_WINDOW && excess > 0) {
+            startTime= System.currentTimeMillis();
+            deleteRowsAndIndex(excess);
+            endTime= System.currentTimeMillis();
+            removeRowsAndIndexTime+=(endTime-startTime);
         }
 
         startTime= System.currentTimeMillis();
         // 批量添加新行
-        rows.addAll(rowsToAdd);
-
+        rows.concat(rowsToAdd);
         size += rowsToAdd.getSize() ;
         endTime= System.currentTimeMillis();
         addRowsTime+=(endTime-startTime);
     }
-//
-//
-//    public void addRowsWithoutGenIndex(List<Row> rowsToAdd) {
-//        // 批量删除旧行，直到有足够的空间
-//        while (size + rowsToAdd.size() > capacity) {
-//            // 容量已满，删除最旧的行（第一个元素）
-//            Row oldestRow = rows.remove(0);
-//            size--;
-//
-//            // 从 hashIndex 中删除旧的行
-//            String indexKey = oldestRow.getIndexKey();
-//            List<Row> oldRowList = hashIndex.get(indexKey);
-//            if (oldRowList != null) {
-//                oldRowList.remove(oldestRow);
-//                if (oldRowList.isEmpty()) {
-//                    hashIndex.remove(indexKey); // 如果列表为空，移除键
-//                }
-//            }
-//        }
-//
-//        // 批量添加新行
-//        rows.addAll(rowsToAdd);
-//        size += rowsToAdd.size(); // 更新 size
-//    }
 
     // 添加一行到表中
     public void addRow(Row row) {
         // 检查容量是否已满
-        if (size >= capacity) {
-            // 容量已满，删除最旧的行（第一个元素）
-            Row oldestRow=  rows.deleteHead();
-            size--;
-
-            // 从 hashIndex 中删除旧的行
-            String indexKey = oldestRow.getIndexKey();
-            List<Row> oldRowList = hashIndex.get(indexKey);
-            if (oldRowList != null) {
-                oldRowList.remove(oldestRow);
-                if (oldRowList.isEmpty()) {
-                    hashIndex.remove(indexKey); // 如果列表为空，移除键
-                }
-            }
+        if (winType==WindowType.COUNT_WINDOW&&size >= capacity) {
+           deleteRowsAndIndex(1);
         }
 
         // 添加新行
-        rows.add(row);
+        rows.safeAdd(row);
         size++;
 
         // 更新 hashIndex
@@ -164,9 +114,7 @@ public class Table {
         addRow(new Row(iep, EBA2String,joinColumns)  );
     }
 
-    public void addRow(IEP iep, Map<EBA, String> EBA2String, Set<String> joinColumns) {
-        addRow(new Row(iep, EBA2String,joinColumns)  );
-    }
+
 
     // 返回表的所有行
     public LinkList<Row> getRows() {
@@ -356,24 +304,13 @@ public class Table {
         return capacity;
     }
 
-    // 合并另一个 Table 的所有行到当前 Table
-    // public void concatenate(Table otherTable) {
-    // if(otherTable.getRowCount()!=0){
-    // List<Row> otherRows = otherTable.getRows();
-    // for (Row row : otherRows) {
-    // this.addRow(row);
-    // }
-    // }
-    // }
 
     public void concatenate(Table otherTable ) {
         long concatST=System.currentTimeMillis();
         if (otherTable.getRowCount() != 0) {
             LinkList<Row> otherRows = otherTable.getRows();
             // Pre-allocate capacity if using ArrayList
-//            if (rows instanceof ArrayList) {
-//                ((ArrayList<Row>) rows).ensureCapacity((int) (size + otherRows.size()));
-//            }
+
             // Add all rows from otherTable
             long addRowMergeST=System.currentTimeMillis();
             addRowsWithoutGenIndex(otherRows);
@@ -400,23 +337,20 @@ public class Table {
     //  有一些 concate 需要重建索引
 
     public void concatenateRebuildIndex(Table otherTable, List<String> newJoinColumns) {
+        long CRstartTime= System.currentTimeMillis();
         if (otherTable.getRowCount() != 0) {
             LinkList<Row> otherRows = otherTable.getRows();
-            // Pre-allocate capacity if using ArrayList
 
-//            // Add all rows from otherTable
-//            for (Row row : otherRows) {
-//
-//                addRow( new Row(row,newJoinColumns)   );
-//
-//            }
-// TODO: 还可以再加速
             LinkList<Row>.Node node=otherRows.getHead();
             while(node!=null){
-                addRow( new Row( node.getData() ,newJoinColumns)   );
+                Row row=node.getData();
+                addRow( new Row(row.getData(),newJoinColumns,row.getTriggerTime(), true )   );
                 node=node.next;
             }
         }
+
+        long CRendTime= System.currentTimeMillis();
+        concateRebuilTime+=(CRendTime-CRstartTime);
     }
 
 
@@ -426,23 +360,16 @@ public class Table {
         size = 0; // 重置当前行数
         hashIndex.clear();
     }
+    public void refreshIndex(long deadLine, List<Row> toDelRows){
+        for(Row row:toDelRows){
+            deleteHashindexByRow(row);
+        }
+    }
+    public void  refresh(long deadLine ){
+        List<Row> toDelRows=rows.refresh(deadLine);
+        size-=(toDelRows.size()) ;
+        refreshIndex(deadLine,toDelRows);
 
-//    public void concatenateList(LinkList<IEP> iepList, Map<EBA, String> EBA2String) {
-//        if (iepList != null && iepList.getSize() > 0) {
-//            // Pre-allocate capacity if using ArrayList
-//            if (rows instanceof ArrayList) {
-//                ((ArrayList<Row>) rows).ensureCapacity((int) (size + iepList.getSize()));
-//            }
-//
-//            // Traverse the IEP list and convert each IEP to a Row
-//            LinkList<IEP>.Node current = iepList.getHead();
-//            while (current != null) {
-//                IEP iep = current.data;
-//                Row row = new Row(iep, EBA2String);
-//                rows.add(row);
-//                size++;
-//                current = current.next;
-//            }
-//        }
-//    }
+    }
+
 }

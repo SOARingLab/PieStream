@@ -2,6 +2,7 @@ package org.example.engine;
 
 import org.apache.kafka.streams.kstream.ForeachAction;
 import org.apache.kafka.streams.kstream.Merger;
+import org.apache.kafka.streams.kstream.Windowed;
 import org.example.events.PointEvent;
 import org.example.merger.HashJoiner;
 import org.example.merger.MapMerger;
@@ -23,7 +24,7 @@ public class Engine implements ForeachAction<String, String> {
 
 
     // 构造函数，初始化相关属性
-    public Engine(Schema schema, Attribute partitionAttribute, String query) {
+    public Engine(Schema schema, Attribute partitionAttribute, String query, WindowType winType) {
         this.parser = new QueryParser(query,schema);
         try {
             // 解析查询
@@ -32,15 +33,20 @@ public class Engine implements ForeachAction<String, String> {
             System.err.println("Failed to parse query: " + e.getMessage());
         }
         this.MPPSourceList = parser.getPatternClause();  // 获取解析后的模式子句
-        long QCapacity=parser.getwindowClause();
+        long Window=parser.getwindowClause();
         this.processor = new EventPreprocessor(schema);  // 初始化事件预处理器
         this.partitionAttribute = partitionAttribute;  // 设置分区属性
 
-        this.worker = new Worker(MPPSourceList, QCapacity,parser.getEBA2String() );  // 创建 Worker 实例
+        this.worker = new Worker(MPPSourceList,winType, Window,parser.getEBA2String() );  // 创建 Worker 实例
+
     }
 
     public Engine(Schema schema,  String query){
-         this(schema,null, query);
+         this(schema,null, query,WindowType.COUNT_WINDOW);
+    }
+
+    public Engine(Schema schema, String query, WindowType winType){
+        this(schema,null, query,winType);
     }
 
 //    // 处理 Kafka 记录
@@ -74,7 +80,7 @@ public class Engine implements ForeachAction<String, String> {
 
         // 逐条处理事件
         startTime = System.currentTimeMillis();
-        worker.resetBeforeRun();
+        worker.resetBeforeRun(pe.getTimestamp());
         worker.runOneByOne(pe);
         endTime = System.currentTimeMillis();
         runOneByOneTime += (endTime - startTime);
@@ -115,6 +121,8 @@ public class Engine implements ForeachAction<String, String> {
         System.out.println("    update_merged Time "+(double)this.worker.getTree().update_merged /1000 + " s (" + Math.round ((double)this.worker.getTree().update_merged/(double)duration *100)+"%");
 
         System.out.println("        concateTime Time "+ (double)Table.concateTime  /1000 + " s (" +Math.round ( (double)Table.concateTime  /(double)duration *100)+"%");
+        System.out.println("            concateRebuilTime Time "+ (double)Table.concateRebuilTime  /1000 + " s (" +Math.round ( (double)Table.concateRebuilTime  /(double)duration *100)+"%");
+
         System.out.println("            addRowMergeTime Time "+ (double)Table.addRowMergeTime  /1000 + " s (" +Math.round ( (double)Table.addRowMergeTime  /(double)duration *100)+"%");
         System.out.println("                clearRowsTime Time "+ (double)Table.clearRowsTime  /1000 + " s (" +Math.round ( (double)Table.clearRowsTime  /(double)duration *100)+"%");
 
