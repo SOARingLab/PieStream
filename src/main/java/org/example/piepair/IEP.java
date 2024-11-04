@@ -221,4 +221,8 @@ public class IEP implements Expirable {
         return triggerTime<deadLine;
     }
 
+    @Override
+    public long getSortKey() {
+        return triggerTime;
+    }
 }

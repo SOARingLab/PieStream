@@ -33,11 +33,12 @@ public class Engine implements ForeachAction<String, String> {
             System.err.println("Failed to parse query: " + e.getMessage());
         }
         this.MPPSourceList = parser.getPatternClause();  // 获取解析后的模式子句
-        long Window=parser.getwindowClause();
+        long windowCapasity=parser.getwindowClause();
         this.processor = new EventPreprocessor(schema);  // 初始化事件预处理器
         this.partitionAttribute = partitionAttribute;  // 设置分区属性
+        Window window =new Window(winType,windowCapasity);
 
-        this.worker = new Worker(MPPSourceList,winType, Window,parser.getEBA2String() );  // 创建 Worker 实例
+        this.worker = new Worker(MPPSourceList,  window,parser.getEBA2String() );  // 创建 Worker 实例
 
     }
 

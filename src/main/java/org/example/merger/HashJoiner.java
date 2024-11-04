@@ -1,7 +1,6 @@
 package org.example.merger;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class HashJoiner {
     public static long searchForJoin=0;
@@ -12,8 +11,8 @@ public class HashJoiner {
     // 使用哈希连接两个表，基于多个 joinColumns 进行连接
     public static Table hashJoin(Table table1, Table table2, List<String> parentJoinColumns,boolean needNewIndex) {
 
-        if(table1.getRowCount() * table2.getRowCount()==0){
-            return new Table(0);
+        if(table1.getSize() * table2.getSize()==0){
+            return null;
         }
 
         Table smallerTable = table1.getRows().getSize() <= table2.getRows().getSize() ? table1 : table2;
@@ -30,9 +29,7 @@ public class HashJoiner {
     }
 
     public static Table JoinTwoTableQuick(Table smallerTable,Table largerTable,List<String> parentJoinColumns,boolean needNewIndex){
-        long capacity= smallerTable.getCapacity()>largerTable.getCapacity()?smallerTable.getCapacity():largerTable.getCapacity();
-        // 存储连接后的结果
-        Table resultTable = new Table(capacity);
+        Table resultTable = new Table(largerTable.getWindow());
 
         Map<String, List<Row>> smallHashIndex = smallerTable.getHashIndex();
         Map<String, List<Row>> largeHashIndex = largerTable.getHashIndex();

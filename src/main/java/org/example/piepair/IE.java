@@ -65,5 +65,9 @@ public class IE implements Expirable   {
         return triggerTime<deadLine;
     }
 
+    @Override
+    public long getSortKey() {
+        return triggerTime;
+    }
 
 }

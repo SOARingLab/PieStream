@@ -2,43 +2,36 @@ package org.example.merger;
 
 import java.util.*;
 
-import org.example.events.Expirable;
+import org.example.engine.Window;
+import org.example.engine.WindowType;
 import org.example.events.PointEvent;
 import org.example.piepair.IEP;
 import org.example.piepair.eba.EBA;
 
 public class IEPCol   {
-
-    private LinkList<IEP> iepList;   // 包含 IEP 的链表
-    public Map<EBA, Map<Long, List<IEP>>> colMap; // 建立在 IEPList 上的索引
-    private Table iepTable; // iepList对应的Table
-
-    private boolean isTrigger;
-    private LinkList<IEP> newIEPList;
-    private Map<EBA, Map<Long, List<IEP>>> newIEPMap;
-    private Table newIEPTable; // newIEPList对应的Table
-
-
-    public LinkList<IEP> getIepList(){
+    public final Map<EBA, Map<Long, List<IEP>>> colMap; // 建立在 IEPList 上的索引
+    public final LinkList<IEP> getIepList(){
         return iepList;
     }
-
-
+    private final Table iepTable; // iepList对应的Table
+    private boolean isTrigger;
+    private final LinkList<IEP> newIEPList;
+    private final Map<EBA, Map<Long, List<IEP>>> newIEPMap;
+    private final Table newIEPTable; // newIEPList对应的Table
+    private final Window window;
+    private final LinkList<IEP> iepList;   // 包含 IEP 的链表
     // 构造函数，初始化 LinkList 和索引
-    public IEPCol(long capacity,Map<EBA, String> EBA2String ) {
-        this.iepList = new LinkList<>(capacity);
+    public IEPCol(Window window, Map<EBA, String> EBA2String ) {
+        this.window=window;
         this.colMap = new HashMap<>();
-        this.iepTable=new Table(capacity);
         this.isTrigger = false;
-        this.newIEPList = new LinkList<>(capacity);
         this.newIEPMap = new HashMap<>();
-        this.newIEPTable=new Table(capacity);
-
+        this.newIEPTable=new Table(window);
+        this.iepList = new LinkList<>(window);
+        this.iepTable=new Table(window);
+        this.newIEPList = new LinkList<>(window);
     }
 
-    public LinkList<IEP> getNewIEPList(){
-        return newIEPList;
-    }
 
     public Map<EBA, Map<Long, List<IEP>>>  getNewIEPMap(){
         return newIEPMap;
@@ -68,22 +61,8 @@ public class IEPCol   {
     public void printNewIEPList() {
         if (newIEPList.getSize()!=0){
             System.out.println("    +"+newIEPList.getSize());
-
-//            newIEPList.printList();
         }
     }
-
-
-//    public void setTriggerMSG(EBA pred1, Long startTime1, EBA pred2, Long startTime2, IEP iep){
-//
-//        this.newIEPList.add(iep);
-//        this.isTrigger = true;
-//        Map<Long, List<IEP>> predIndex1 = newIEPMap.computeIfAbsent(pred1, k -> new HashMap<>());
-//        predIndex1.computeIfAbsent(startTime1, k -> new ArrayList<>()).add(iep);
-//        Map<Long, List<IEP>> predIndex2 = newIEPMap.computeIfAbsent(pred2, k -> new HashMap<>());
-//        predIndex2.computeIfAbsent(startTime2, k -> new ArrayList<>()).add(iep);
-//        this.newIEPTable.addRow(iep, EBA2String);
-//    }
 
     public void setTriggerMSG(  IEP iep){
         this.newIEPList.safeAdd(iep);
@@ -92,7 +71,6 @@ public class IEPCol   {
         Map<Long, List<IEP>> predIndex2 = newIEPMap.computeIfAbsent(iep.getLatterPie(), k -> new HashMap<>());
         predIndex2.computeIfAbsent(iep.getLatterStartTime(), k -> new ArrayList<>()).add(iep);
         this.isTrigger = true;
-
     }
 
     public void updateNewIepList2Table( Map<EBA, String> EBA2String,List<String> joinColumns){
@@ -109,11 +87,31 @@ public class IEPCol   {
     // 添加 IEP 到链表和索引中，支持两个 EBA 和两个 startTime
     public void updateIEP2List() {
         if(isTrigger){
+            long excess=needMoreSpaceWhenConcate(newIEPList);
+            if(excess>0){
+                deleteExcessiveIEPAndIndex(excess);
+            }
             iepList.concat(newIEPList);  // 添加到链表
             MapMerger.mergeNestedMaps(colMap,newIEPMap );
             this.iepTable.concatenate(this.newIEPTable);
         }
     }
+
+    private long needMoreSpaceWhenConcate(LinkList<IEP> newIepList){
+        if( this.window.getWindowType()== WindowType.COUNT_WINDOW  ){
+            return this.iepList.getSize()+newIepList.getSize()-this.iepList.getCapacity();
+        }else{
+            return 0;
+        }
+    }
+
+    private void deleteExcessiveIEPAndIndex(long excessNum){
+        List<IEP> toDelIepList=this.iepList.deleteFromHead(excessNum);
+        for(IEP iep:toDelIepList){
+            deleteHashindexByIEP(iep);
+        }
+    }
+
 
     // 根据 EBA 和 startTime 获取 IEP 列表
     public List<IEP> getIEP(EBA eba, Long startTime) {
@@ -130,8 +128,6 @@ public class IEPCol   {
         }
         return   null;
     }
-
-
 
     // 打印 colMap 的内容
     public void print() {
@@ -162,13 +158,13 @@ public class IEPCol   {
     }
 
     // 获取链表的大小
-    public int getSize() {
+    public long getSize() {
         return iepList.getSize();
     }
 
     // 获取链表的容量
     public long getCapacity() {
-        return iepList.getCapacity();
+        return window.getWindowCapacity();
     }
 
     // 获取头 IEP

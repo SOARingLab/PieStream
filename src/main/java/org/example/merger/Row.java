@@ -117,4 +117,8 @@ public class Row implements Expirable {
         return triggerTime<deadLine;
     }
 
+    @Override
+    public long getSortKey() {
+        return triggerTime;
+    }
 }

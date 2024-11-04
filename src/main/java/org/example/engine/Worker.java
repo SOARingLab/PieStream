@@ -20,16 +20,14 @@ public class Worker {
     private final List<MPIEPair> MPPS;  // 所有的 PIEPair 对象
     private final Map<MPIEPairSource, TreeNode> source2Node ;  // 源到节点的映射
     private final  BinTree tree;
-    private final long  window;
-    private final WindowType  winType;
+    private final Window  window;
 
     // 构造函数，创建树并映射源到节点
-    public Worker(List<MPIEPairSource> MPPSourceList,WindowType winType, long window, Map<EBA,String> EBA2String) {
+    public Worker(List<MPIEPairSource> MPPSourceList,Window window, Map<EBA,String> EBA2String) {
 
         this.window=window;
-        this.winType=winType;
 
-        this.tree=new BinTree(MPPSourceList,winType,window,EBA2String);
+        this.tree=new BinTree(MPPSourceList,window, EBA2String);
 
         try {
             tree.constructTree();
@@ -96,8 +94,8 @@ public class Worker {
         tree.clearMergedNodeData_NewT();
         tree.clearLeafNodeData_NewT();
 
-        if(winType==WindowType.TIME_WINDOW){
-            long deadLine=currentTime-window;
+        if(window.getWindowType()==WindowType.TIME_WINDOW){
+            long deadLine=currentTime-window.getWindowCapacity();
             tree.refreshMergedNodeData_OldT(deadLine );
             tree.refreshLeafNodeData_OldT(deadLine);
         }

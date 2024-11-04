@@ -1,9 +1,7 @@
 package org.example.merger;
 
-import org.example.engine.WindowType;
-import org.example.parser.Schema;
+import org.example.engine.Window;
 import org.example.parser.MPIEPairSource;
-import org.example.parser.QueryParser;
 import org.example.piepair.eba.EBA;
 
 import java.util.*;
@@ -16,13 +14,12 @@ public class BinTree {
     private Map<MPIEPairSource, IEPCol> source2Col;
     private Map<MPIEPairSource, TreeNode> sourceToNode;
     private Map<IEPCol, TreeNode> Col2Node;
-    private long window;
-    private long bef_aftWin;
+    private final Window bef_aftWin;
     private TreeNode root;
     private TreeNode bottomLeaf;
     private List<TreeNode> mergedNodes;
     private Map<EBA, String> EBA2String;
-    private final WindowType winType;
+    private final Window window;
     private Map<TreeNode, List<String>> node2JoinedCols;
 
     private Map<TreeNode, Set<String>> node2AcmltJoinedCols;
@@ -35,9 +32,8 @@ public class BinTree {
     public long endTime=0;
 
 
-    public BinTree(List<MPIEPairSource> sourceList, WindowType winType, long window, Map<EBA, String> EBA2String) {
+    public BinTree(List<MPIEPairSource> sourceList, Window window, Map<EBA, String> EBA2String) {
 
-        this.winType=winType;
         this.sourceList = sourceList;
         this.window = window;
         this.source2Col = new HashMap<>();
@@ -51,11 +47,7 @@ public class BinTree {
         this.node2JoinedCols=new HashMap<>();
         this.node2AcmltJoinedCols=new HashMap<>();
     }
-    // 构造函数初始化常用的变量
-    public BinTree(List<MPIEPairSource> sourceList, long window, Map<EBA, String> EBA2String) {
-        this(sourceList,WindowType.COUNT_WINDOW,window,EBA2String);
 
-    }
 
         // 构建二叉树的方法
     public TreeNode constructTree() throws Exception {
@@ -127,7 +119,7 @@ public class BinTree {
             predSet.add(source.getFormerPred()); // 添加前驱谓词
             predSet.add(source.getLatterPred()); // 添加后继谓词
             // 创建叶子节点
-            IEPCol Col = new IEPCol(window,  EBA2String);
+            IEPCol Col = new IEPCol(window,   EBA2String);
             // TreeNode node = new TreeNode(predSet, new HashSet<>(), null, null, null,
             // null, source, 0, true, null, Col);
             TreeNode node = new TreeNode(predSet, source, window,  EBA2String);
@@ -210,15 +202,12 @@ public class BinTree {
 
         // TreeNode mergedNode = new TreeNode(newPredSet, newKeyPredSet, hNode,
         // otherNode, null, null, null, heightCnt + 1, false, pt, null);
-        TreeNode mergedNode = new TreeNode(newPredSet, newKeyPredSet, hNode, otherNode, heightCnt + 1, window,  EBA2String);
+        TreeNode mergedNode = new TreeNode(newPredSet, newKeyPredSet, hNode, otherNode, heightCnt + 1,   window,  EBA2String);
 
         hNode.parent = mergedNode;
         if (otherNode != null) {
             otherNode.parent = mergedNode;
         }
-
-
-
         return mergedNode;
     }
 
@@ -307,14 +296,14 @@ public class BinTree {
         refreshNewIepTable_Leaf(leafNode);
         Table mergedNewTab = mergedNode.getNewT();
 
-        long mergedNewTabCnt=mergedNewTab.getRowCount();
-        long leafNewTabCnt=leafNode.getCol().getNewIEPTable().getRowCount();
+        long mergedNewTabCnt=mergedNewTab.getSize();
+        long leafNewTabCnt=leafNode.getCol().getNewIEPTable().getSize();
         boolean needNewIndex=true;
         if(ParnetNode==root){
             needNewIndex=false;
         }
 
-        if(mergedNewTab.getRowCount()!=0 ){
+        if(mergedNewTab.getSize()!=0 ){
             startTime = System.currentTimeMillis();
 
 
@@ -333,7 +322,7 @@ public class BinTree {
             concat += (endTime - startTime);
 
         }
-        if( leafNode.getCol().getNewIEPTable().getRowCount()!=0){
+        if( leafNode.getCol().getNewIEPTable().getSize()!=0){
 
             startTime = System.currentTimeMillis();
             Table tb = HashJoiner.hashJoin( leafNode.getCol().getNewIEPTable(), mergedNode.getT(),node2JoinedCols.get(ParnetNode),needNewIndex);
@@ -359,12 +348,12 @@ public class BinTree {
     }
 
     public void printResultCNT() {
-        long cnt = root.T.getRowCount();
+        long cnt = root.getResCount();
         System.out.println("RESULT:" + cnt);
     }
 
     public long getResultCNT() {
-        return root.T.getRowCount();
+        return root.T.getSize();
 
     }
 
@@ -385,7 +374,21 @@ public class BinTree {
     public void updateMergedNodeData() {
         startTime = System.currentTimeMillis();
         for (TreeNode node : mergedNodes) {
+            int flag=0;
+            if(!node.T.getRows().sizeNotEqual("before concatenate")){
+                flag++;
+            }
+
             node.T.concatenate(node.newT);
+            if(node.T.getRows().sizeNotEqual("after concatenate")){
+                flag++;
+            }
+
+            if(flag==2){
+                System.out.println(" stop ");
+            }
+
+            node.addResCount( node.newT.getSize());
 
         }
         endTime = System.currentTimeMillis();
@@ -436,7 +439,7 @@ public class BinTree {
     public void clearMergedNodeData_NewT() {
         for (TreeNode node : mergedNodes) {
             Table newT = node.newT;
-            if (newT.getRowCount() != 0) {
+            if (newT.getSize() != 0) {
                 newT.clear();
             }
         }
@@ -445,7 +448,7 @@ public class BinTree {
     public void refreshMergedNodeData_OldT(long deadLine ){
         for (TreeNode node : mergedNodes) {
             Table oldT = node.T;
-            if (oldT.getRowCount() != 0) {
+            if (oldT.getSize() != 0) {
                 oldT.refresh(deadLine );
             }
         }
@@ -497,5 +500,4 @@ public class BinTree {
         return EBA2String;
     }
 
-    //TODO: 1. 继续转化从COUNT到TIME的WINDOW
 }

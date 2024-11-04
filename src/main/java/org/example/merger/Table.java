@@ -1,5 +1,6 @@
 package org.example.merger;
 
+import org.example.engine.Window;
 import org.example.engine.WindowType;
 import org.example.piepair.IEP;
 import org.example.piepair.eba.EBA;
@@ -9,9 +10,10 @@ import java.util.*;
 public class Table {
 //    private final List<Row> rows;
     private final LinkList<Row> rows;
-    private final long  capacity; // 表的最大容量
+//    private final long  capacity; // 表的最大容量
     private long size; // 当前行数
-    private final WindowType winType; // 当前行数
+//    private final WindowType winType; // 当前行数
+    private final Window window;
     private final Map<String, List<Row>> hashIndex;
 
     public static long removeRowsAndIndexTime;
@@ -23,23 +25,21 @@ public class Table {
     public static long startTime;
     public static long endTime;
 
-    // 构造函数，接受容量参数
-    public Table(long capacity) {
-//        this.rows = new ArrayList<>();
-        this.winType=WindowType.COUNT_WINDOW;
-        this.capacity = capacity;
-        this.size = 0;
-        this.hashIndex=new HashMap<>();
-        this.rows =new LinkList<Row>(capacity);
-    }
+//    // 构造函数，接受容量参数
+//    public Table(long capacity) {
+////        this.rows = new ArrayList<>();
+//        this.winType=WindowType.COUNT_WINDOW;
+//        this.capacity = capacity;
+//        this.size = 0;
+//        this.hashIndex=new HashMap<>();
+//        this.rows =new LinkList<Row>(capacity);
+//    }
 
-    // no capacity limited
-    public Table( ) {
-        this.winType=WindowType.TIME_WINDOW;
-        this.capacity = 0;
+    public Table(Window window ) {
+        this.window = window;
         this.size = 0;
         this.hashIndex=new HashMap<>();
-        this.rows =new LinkList<Row>();
+        this.rows =new LinkList<Row>(window);
     }
 
 
@@ -47,16 +47,24 @@ public class Table {
         return hashIndex;
     }
 
+    //COUNT_WINDOW
     private void deleteRowsAndIndex(long toDelSize){
         if (toDelSize > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("Excess size exceeds Integer.MAX_VALUE, cannot proceed.");
         }
+        if(toDelSize> window.getWindowCapacity() ){
+            toDelSize=window.getWindowCapacity();
+        }
+
+        this.rows.sizeNotEqual("before deleteRowsAndIndex");
         int cnt=0;
         while(cnt<toDelSize ){
             Row oldestRow= this.rows.deleteHead();
             deleteHashindexByRow(oldestRow);
             cnt++;
         }
+        this.rows.sizeNotEqual("after deleteRowsAndIndex");
+
         size -= toDelSize;
     }
 
@@ -73,9 +81,9 @@ public class Table {
     }
 
     public void addRowsWithoutGenIndex(LinkList<Row> rowsToAdd) {
-        long excess = size + rowsToAdd.getSize()  - capacity;
+        long excess = size + rowsToAdd.getSize()  - this.getCapacity();
 
-        if (winType==WindowType.COUNT_WINDOW && excess > 0) {
+        if (window.getWindowType()==WindowType.COUNT_WINDOW && excess > 0) {
             startTime= System.currentTimeMillis();
             deleteRowsAndIndex(excess);
             endTime= System.currentTimeMillis();
@@ -93,7 +101,7 @@ public class Table {
     // 添加一行到表中
     public void addRow(Row row) {
         // 检查容量是否已满
-        if (winType==WindowType.COUNT_WINDOW&&size >= capacity) {
+        if (window.getWindowType()==WindowType.COUNT_WINDOW&&size >= this.getCapacity()) {
            deleteRowsAndIndex(1);
         }
 
@@ -295,19 +303,25 @@ public class Table {
 //    }
 
     // 返回表的当前行数
-    public long getRowCount() {
+    public long getSize() {
         return size;
     }
 
     // 返回表的容量
     public long getCapacity() {
-        return capacity;
+        return window.getWindowCapacity();
     }
 
+    public Window getWindow(){
+        return window;
+    }
 
     public void concatenate(Table otherTable ) {
+        if(otherTable==null){
+            return;
+        }
         long concatST=System.currentTimeMillis();
-        if (otherTable.getRowCount() != 0) {
+        if (otherTable.getSize() != 0) {
             LinkList<Row> otherRows = otherTable.getRows();
             // Pre-allocate capacity if using ArrayList
 
@@ -338,7 +352,7 @@ public class Table {
 
     public void concatenateRebuildIndex(Table otherTable, List<String> newJoinColumns) {
         long CRstartTime= System.currentTimeMillis();
-        if (otherTable.getRowCount() != 0) {
+        if (otherTable.getSize() != 0) {
             LinkList<Row> otherRows = otherTable.getRows();
 
             LinkList<Row>.Node node=otherRows.getHead();

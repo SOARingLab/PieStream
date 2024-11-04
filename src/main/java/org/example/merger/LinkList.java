@@ -1,5 +1,6 @@
 package org.example.merger;
 
+import org.example.engine.Window;
 import org.example.engine.WindowType;
 import org.example.events.Expirable;
 
@@ -8,8 +9,6 @@ import java.util.List;
 
 public class LinkList<T extends Expirable> {
 
-    //TODO: 在TimeWindow下最好严格排序。
-    // 节点类，定义链表的每个节点，包含双向指针
     public class Node {
         T data;       // 节点的数据
         Node next;    // 指向下一个节点的指针
@@ -27,21 +26,19 @@ public class LinkList<T extends Expirable> {
 
     private Node head;    // 头指针
     private Node tail;    // 尾指针
-    private final long capacity; // 链表的总容量
-    private int size;     // 当前元素个数
-    private final WindowType winType;
+    private long size;     // 当前元素个数
+    private final Window window;
 
     // 构造函数，初始化链表，容量是传入的参数
-    public LinkList(long capacity) {
-        this.winType=WindowType.COUNT_WINDOW;
-        this.capacity = capacity;
-        this.size = 0;
-        this.head = null;
-        this.tail = null;
-    }
-    public LinkList( ) {
-        this.winType=WindowType.TIME_WINDOW;
-        this.capacity = 0;
+//    public LinkList(long capacity) {
+//        this.winType=WindowType.COUNT_WINDOW;
+//        this.capacity = capacity;
+//        this.size = 0;
+//        this.head = null;
+//        this.tail = null;
+//    }
+    public LinkList( Window window) {
+        this.window=window;
         this.size = 0;
         this.head = null;
         this.tail = null;
@@ -49,7 +46,7 @@ public class LinkList<T extends Expirable> {
 
     // 检查链表是否已满
     public boolean isFull() {
-        return winType == WindowType.COUNT_WINDOW && size == capacity;
+        return window.getWindowType() == WindowType.COUNT_WINDOW && size == window.getWindowCapacity();
     }
 
     // 检查链表是否为空
@@ -58,24 +55,56 @@ public class LinkList<T extends Expirable> {
     }
 
 
-    // 向链表中添加元素（添加到尾部），如果已满，删除头部元素
+//    // safe add
+//    public void safeAdd(T data) {
+//        // 如果链表满了，删除头部节点
+//        if (isFull()) {
+//            deleteHead();
+//        }
+//
+//        // 添加新节点到尾部
+//        Node newNode = new Node(data, null, tail);
+//        if (isEmpty()) {
+//            head = newNode;
+//        } else {
+//            tail.next = newNode;
+//        }
+//        tail = newNode;
+//        size++;
+////        setIsTrigger();
+//    }
+
+
+    //  sorted add
     public void safeAdd(T data) {
         // 如果链表满了，删除头部节点
         if (isFull()) {
             deleteHead();
         }
-
-        // 添加新节点到尾部
         Node newNode = new Node(data, null, tail);
-        if (isEmpty()) {
-            head = newNode;
-        } else {
-            tail.next = newNode;
-        }
-        tail = newNode;
-        size++;
-//        setIsTrigger();
+        this.sortedInsert(newNode);
     }
+
+    private void sortedInsert(Node node) {
+
+        if (isEmpty()) {
+            head = node;
+            tail = node;
+        } else {
+            Node crt=tail;
+            while(node.getData().getSortKey()>crt.getData().getSortKey()){
+                crt=crt.prev;
+            }
+            node.prev=crt;
+            node.next=crt.next;
+            if(node.next!=null){
+                node.next.prev=node;
+            }
+             crt.next=node;
+        }
+        size++;
+    }
+
 
     // 删除头部节点
     public T  deleteHead() {
@@ -148,9 +177,11 @@ public class LinkList<T extends Expirable> {
         if(otherLinkList.getSize()==0){
             return;
         }
-        if(winType==WindowType.COUNT_WINDOW && this.size+otherLinkList.getSize()>this.capacity){
+        if(window.getWindowType() ==WindowType.COUNT_WINDOW && this.size+otherLinkList.getSize()>this.getCapacity()){
             throw new IllegalArgumentException("Excess size exceeds capacity of LinkList.");
         }
+
+
 
         //change head
         if (this.size==0){
@@ -175,13 +206,34 @@ public class LinkList<T extends Expirable> {
     }
 
     // 获取链表的大小
-    public int getSize() {
+    public long getSize() {
         return size;
     }
 
+    public long getRealSize() {
+        long cnt=0;
+        Node pt=head;
+        while(pt!=null){
+            cnt++;
+            pt=pt.next;
+        }
+        return cnt;
+    }
+// TODO:toDel
+    public boolean  sizeNotEqual(String sentence){
+        if(getSize()!=getRealSize()){
+            System.out.println("size not equal: "+sentence);
+            System.out.println("size ：" +getSize());
+            System.out.println("link size ：" +getRealSize());
+            return true;
+        }
+        return false;
+    }
+
+
     // 获取链表的容量
     public long getCapacity() {
-        return capacity;
+        return window.getWindowCapacity();
     }
 
     // 获取头节点
@@ -194,6 +246,7 @@ public class LinkList<T extends Expirable> {
         return tail;
     }
 
+    //TIME WINDOW
     public List<T> refresh(long deadLine ){
         List<T> dataList= new ArrayList<T>();
         Node current=head;
@@ -204,8 +257,21 @@ public class LinkList<T extends Expirable> {
             cnt++;
         }
         head=current;
+        if (head != null) {
+            head.prev = null;
+        } else {
+            tail = null;
+        }
         size-=cnt;
 
+        return dataList;
+    }
+    public List<T> deleteFromHead(long excess){
+        List<T> dataList= new ArrayList<T>();
+        while(excess>0){
+            dataList.add(deleteHead());
+            excess--;
+        }
         return dataList;
     }
 

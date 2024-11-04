@@ -2,6 +2,8 @@ package org.example.merger;
 
 import com.fasterxml.jackson.databind.util.LinkedNode;
 import org.example.engine.MPIEPair;
+import org.example.engine.Window;
+import org.example.engine.WindowType;
 import org.example.events.PointEvent;
 import org.example.parser.MPIEPairSource;
 import org.example.piepair.IE;
@@ -32,13 +34,16 @@ public class TreeNode {
     final boolean isLeaf;        // 是否为叶子节点
     final boolean hasBefore;     // 是否包含before关系
     final boolean hasAfter;      // 是否包含after关系
+    final Window window;
 //    final List<String> joinedCols;
     MPIEPair mpp;      // 是否包含after关系
 
+    long resCount;
     // 构造函数
     public TreeNode(Set<EBA> predSet, Set<EBA> keyPredSet, TreeNode left, TreeNode right,
                     TreeNode parent, TreeNode brother, MPIEPairSource source, int height,
-                    boolean isLeaf, long QCapacity,Map<EBA, String> EBA2String) {
+                    boolean isLeaf, Window window, Map<EBA, String> EBA2String) {
+        this.window=window;
         this.predSet = predSet;
         this.keyPredSet = keyPredSet;
         this.left = left;
@@ -48,26 +53,20 @@ public class TreeNode {
         this.source = source;
         this.height = height;
         this.isLeaf = isLeaf;
+        this.resCount=0;
 //        this.joinedCols=new ArrayList<>();
-        long bef_aftQCapacity = ((QCapacity + 3) * QCapacity) / 6;
+        Window bef_aftWindow = window;
 
 
         if (isLeaf) {
-            this.Col = new IEPCol(QCapacity, EBA2String);
+            this.Col = new IEPCol(window,EBA2String);
             this.T = null;
             this.newT = null;
 
-//            if (source.isHasAfterRel() || source.isHasBeforeRel() ){
-//                this.leafNewT=new Table(bef_aftQCapacity);
-//            }else {
-//                this.leafNewT=new Table(QCapacity);
-//            }
-
-
             if (source.isHasAfterRel()) {
                 this.hasAfter = true;
-                this.latterIEList = new LinkList<>(QCapacity);
-                this.aftCol = new IEPCol(bef_aftQCapacity,  EBA2String);
+                this.latterIEList = new LinkList<>(window);
+                this.aftCol = new IEPCol(bef_aftWindow,  EBA2String);
             } else {
                 this.hasAfter = false;
                 this.latterIEList = null;
@@ -76,8 +75,8 @@ public class TreeNode {
 
             if (source.isHasBeforeRel()) {
                 this.hasBefore = true;
-                this.formerIEList = new LinkList<>(QCapacity);
-                this.befCol = new IEPCol(bef_aftQCapacity,EBA2String);
+                this.formerIEList = new LinkList<>(window);
+                this.befCol = new IEPCol(bef_aftWindow,EBA2String);
             } else {
                 this.hasBefore = false;
                 this.formerIEList = null;
@@ -85,8 +84,8 @@ public class TreeNode {
             }
         } else {
 
-            this.T = new Table(bef_aftQCapacity);
-            this.newT = new Table(bef_aftQCapacity);
+            this.T = new Table(bef_aftWindow);
+            this.newT = new Table(bef_aftWindow);
             this.Col = null;
             this.hasAfter = false;
             this.hasBefore = false;
@@ -98,13 +97,13 @@ public class TreeNode {
     }
 
     // 叶子节点的构造函数
-    public TreeNode(Set<EBA> predSet, MPIEPairSource source, long QCapacity,Map<EBA, String> EBA2String) {
-        this(predSet, new HashSet<>(), null, null, null, null, source, 0, true, QCapacity,  EBA2String);
+    public TreeNode(Set<EBA> predSet, MPIEPairSource source,   Window window,Map<EBA, String> EBA2String) {
+        this(predSet, new HashSet<>(), null, null, null, null, source, 0, true,window,  EBA2String);
     }
 
     // 父节点的构造函数
-    public TreeNode(Set<EBA> predSet, Set<EBA> keyPredSet, TreeNode left, TreeNode right, int height, long QCapacity,Map<EBA, String> EBA2String) {
-        this(predSet, keyPredSet, left, right, null, null, null, height, false, QCapacity, EBA2String);
+    public TreeNode(Set<EBA> predSet, Set<EBA> keyPredSet, TreeNode left, TreeNode right, int height,  Window window,Map<EBA, String> EBA2String) {
+        this(predSet, keyPredSet, left, right, null, null, null, height, false,window, EBA2String);
     }
 
     // Getter 和 Setter 方法
@@ -121,6 +120,14 @@ public class TreeNode {
 
     public Set<EBA> getPredSet() {
         return predSet;
+    }
+
+    public long getResCount() {
+        return resCount;
+    }
+
+    public void addResCount(long n) {
+        this.resCount += n;
     }
 
     public void setMPIEPair(MPIEPair mpp) {
