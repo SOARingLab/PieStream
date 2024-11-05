@@ -23,6 +23,26 @@ public class Schema {
         this.fieldIndexMap = new HashMap<>();
         loadSchema(schemaFilePath);
     }
+    public Schema(String rawdataType, String timestampField, List<Attribute> attributes) {
+        this.rawdataType = rawdataType;
+        this.timestampField = timestampField;
+        this.hasNativeTimestamp = timestampField != null && !timestampField.isEmpty();
+        this.fields = new HashMap<>();
+        this.attributes = attributes != null ? new ArrayList<>(attributes) : new ArrayList<>();
+        this.fieldIndexMap = new HashMap<>();
+
+        // 初始化 fields 和 fieldIndexMap
+        if (attributes != null) {
+            for (int i = 0; i < attributes.size(); i++) {
+                Attribute attribute = attributes.get(i);
+                fields.put(attribute.getName(), attribute.getType());
+                fieldIndexMap.put(attribute.getName(), i);
+            }
+        }
+    }
+    public Schema(String rawdataType,   List<Attribute> attributes) {
+        this(rawdataType,null,attributes);
+    }
 
     private void loadSchema(String schemaFilePath) {
         try {

@@ -9,16 +9,20 @@ import org.example.parser.Schema;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BefAftTest {
 
     @Test
     public void testEngineProcessing() {
 
-
         // Schema file path
-        String schemaFilePath ="src/test/resources/domain/ab.yaml";
-        Schema schema = new Schema(schemaFilePath); // Load Schema
+//        String schemaFilePath ="src/test/resources/domain/ab.yaml";
+        List<Attribute> attriList= new ArrayList<Attribute>();
+        attriList.add(new Attribute("a","int"));
+        attriList.add(new Attribute("b","int"));
+        Schema schema = new Schema("CSV", attriList); // Load Schema
 
         // Query statement
         String query = "SELECT A.ts, B.te " +
@@ -34,7 +38,7 @@ public class BefAftTest {
         try (DataSource dataSource = new FileDataSource(ab13FilePath)) {
             String line;
             while ((line = dataSource.readNext()) != null) {
-                System.out.println("Line Read: " + line);
+//                System.out.println("Line Read: " + line);
                 engine.apply("", line); // Process each line of data
             }
             engine.printResultCNT();

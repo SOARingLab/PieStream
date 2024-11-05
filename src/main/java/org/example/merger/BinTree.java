@@ -10,19 +10,18 @@ import java.util.Set;
 
 public class BinTree {
 
-    private List<MPIEPairSource> sourceList;
-    private Map<MPIEPairSource, IEPCol> source2Col;
-    private Map<MPIEPairSource, TreeNode> sourceToNode;
-    private Map<IEPCol, TreeNode> Col2Node;
-    private final Window bef_aftWin;
+    private final List<MPIEPairSource> sourceList;
+    private final Map<MPIEPairSource, IEPCol> source2Col;
+    private final Map<MPIEPairSource, TreeNode> sourceToNode;
+    private final Map<IEPCol, TreeNode> Col2Node;
     private TreeNode root;
     private TreeNode bottomLeaf;
-    private List<TreeNode> mergedNodes;
-    private Map<EBA, String> EBA2String;
+    private final List<TreeNode> mergedNodes;
+    private final Map<EBA, String> EBA2String;
     private final Window window;
-    private Map<TreeNode, List<String>> node2JoinedCols;
+    private final Map<TreeNode, List<String>> node2JoinedCols;
 
-    private Map<TreeNode, Set<String>> node2AcmltJoinedCols;
+    private final Map<TreeNode, Set<String>> node2AcmltJoinedCols;
 
     public long joinTime=0;
     public long concat=0;
@@ -42,7 +41,6 @@ public class BinTree {
         this.root = null;
         this.bottomLeaf = null;
         this.EBA2String = EBA2String;
-        this.bef_aftWin = window;
         this.mergedNodes = new ArrayList<>();
         this.node2JoinedCols=new HashMap<>();
         this.node2AcmltJoinedCols=new HashMap<>();
@@ -141,8 +139,7 @@ public class BinTree {
         bottomLeaf = hNode;
         hNode.height = heightCnt;
         heightCnt++;
-        TreeNode mergedNode = createParentNode(hNode, null, heightCnt); // 合并两个节点
-        hNode = mergedNode;
+        hNode = createParentNode(hNode, null, heightCnt);
         mergedNodes.add(hNode);
 
         while (!nodes.isEmpty()) {

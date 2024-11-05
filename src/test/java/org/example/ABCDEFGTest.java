@@ -4,12 +4,15 @@ package org.example;
 import org.example.datasource.DataSource;
 import org.example.datasource.FileDataSource;
 import org.example.engine.Engine;
-import org.example.engine.Window;
 import org.example.engine.WindowType;
+import org.example.events.Attribute;
 import org.example.parser.Schema;
+import org.example.utils.ExampleBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ABCDEFGTest {
 
@@ -17,39 +20,18 @@ public class ABCDEFGTest {
     public void testEngineProcessing() {
 
 
-        // Schema file path
-        String schemaFilePath ="src/test/resources/domain/abcdefg.yaml";
-        Schema schema = new Schema(schemaFilePath); // Load Schema
+        int Col=7;
+        int Row=1000000;
+        Schema schema =  ExampleBuilder.buildSchema(Col);
+        String query= ExampleBuilder.buildSimpleJoinQuery(Col);
 
-//        // Query statement
-//        String query = "SELECT A.ts, B.te " +
-//                "FROM CarStream " +
-//                "DEFINE A AS a == 1 , B AS  b == 1 , C AS  c == 1 , D AS  d == 1 " +
-//                "PATTERN A   meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals;before;after B " +
-//                "AND C   meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals;before;after B " +
-//                "AND D   meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals;before;after C " +
-//                "WINDOW 10000";
-
-        // Query statement
-        String query = "SELECT A.ts, B.te " +
-                "FROM CarStream " +
-                "DEFINE A AS a > 0 , B AS  b  > 0 , C AS  c > 0 , D AS  d > 0 ,  E AS  e > 0  ,  F AS  f > 0 ,  G AS  g > 0 " +
-                "PATTERN A    meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  B " +
-                "AND B   meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals    C " +
-                "AND C   meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals   D " +
-                "AND D meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  E " +
-                "AND E meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  F " +
-                "AND F meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  G " +
-//                "AND G meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  A " +
-                "WINDOW 50000";
-        // Create Engine instance
-
-//        Engine engine = new Engine(schema, query,WindowType.TIME_WINDOW);
-        Engine engine = new Engine(schema, query,WindowType.COUNT_WINDOW);
-
-        String ab13FilePath = "/Users/czq/Code/TPstream0/TPStream_DAPD/jepc-v2/col7_row500000.csv";
+        Engine engine = new Engine(schema, query,WindowType.TIME_WINDOW);
+//        Engine engine = new Engine(schema, query,WindowType.COUNT_WINDOW);
+        String basePath="/Users/czq/Code/TPstream0/TPStream_DAPD/jepc-v2/";
+        StringBuilder dataPath = new StringBuilder();
+        dataPath.append(basePath).append("col").append(Col).append("_row").append(Row).append(".csv");
         // File data source, read data and apply to Engine
-        try (DataSource dataSource = new FileDataSource(ab13FilePath)) {
+        try (DataSource dataSource = new FileDataSource(dataPath.toString())) {
             String line;
             long cnt=1;
             long lastResCNT=0;
@@ -67,7 +49,7 @@ public class ABCDEFGTest {
 //                    engine.formatResult();
 //                }
                 cnt++;
-                if(cnt%10000==0){
+                if(cnt%100000==0){
                     System.out.println( cnt+", ");
                 }
 
