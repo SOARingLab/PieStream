@@ -109,8 +109,10 @@ public class EventPreprocessor {
             // 如果是 CSV，则 rawEvent 可以是字符串或列表
             if (rawEvent instanceof String) {
                 String rawString = (String) rawEvent;
-                List<String> rawList = Arrays.asList(rawString.split(","));
+                String[] rawArray = rawString.split(",", -1); // 使用 -1 保留空字符串
+                List<String> rawList = Arrays.asList(rawArray);
                 return convertListToPayload(rawList);
+
             } else if (rawEvent instanceof List) {
                 return convertListToPayload((List<?>) rawEvent);
             } else {

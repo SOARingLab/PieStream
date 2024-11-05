@@ -26,7 +26,7 @@ public class ExampleBuilder {
         for (int i = 1; i < Col; i++) {
             if (i > 1) patternBuilder.append(" AND ");
             patternBuilder.append("A").append(i)
-                    .append(" meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals ")
+                    .append(" meets;met-by;overlaps;started-by;during;finished-by;equals ")
                     .append("A").append(i + 1);
         }
 
@@ -65,7 +65,7 @@ public class ExampleBuilder {
             while ((line = dataSource.readNext()) != null) {
                 engine.apply("", line); // Process each line of data
                 cnt++;
-                if (cnt % 100000 == 0) {
+                if (cnt % 10000000 == 0) {
                     System.out.println(cnt + ", ");
                 }
             }
@@ -74,7 +74,7 @@ public class ExampleBuilder {
             System.out.println("\nTotal Lines Processed: " + (cnt-1));
             System.out.println("Processing time: " + (endTime - startTime) + " ms");
             engine.printResultCNT();
-//            engine.printAccumulatedTimes();
+            engine.printAccumulatedTimes();
             return  (endTime - startTime);
 
         } catch (IOException e) {
@@ -86,14 +86,30 @@ public class ExampleBuilder {
 
     public static void main(String[] args) {
 
-        List<Integer> colList = new ArrayList<>(Arrays.asList(4, 6, 8, 10, 12, 14, 16, 18, 20, 22));
+//        List<Integer> colList = new ArrayList<>(Arrays.asList(4, 6, 8, 10, 12, 14, 16, 18, 20, 22));
+//        List<Integer> colList = new ArrayList<>(Arrays.asList(4, 6));
+        List<Integer> colList = new ArrayList<>(Arrays.asList( 4));
+
         int row = 1000000;
-        String basePath = "/Users/czq/Code/TPstream0/TPStream_DAPD/jepc-v2/";
+//        String basePath = "/Users/czq/Code/TPstream0/TPStream_DAPD/jepc-v2/";
+
+        String basePath = "/home/uzi/Code/TPS/jepc-v2/";
         Map<Integer,Long> processedTimeMap=new HashMap<>();
         // Run with TIME_WINDOW
         for(int col :colList){
+
             processedTimeMap.put(col,buildRunner(col, row, basePath, WindowType.TIME_WINDOW));
+            System.out.println(processedTimeMap);
         }
 
+
+        System.out.println(processedTimeMap);
     }
 }
+
+// row = 1000000, window=100000
+//{16=25558, 18=28040, 4=5680, 20=32368, 6=8413, 22=35275, 8=10719, 10=15273, 12=17323, 14=22095}
+
+
+// col=4, window=100000
+// row=10w， t=710  row=100w,t=5680  row=1000w,t=62799   row=10000w,t=  ，
