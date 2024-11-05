@@ -74,36 +74,49 @@ public class LinkList<T extends Expirable> {
 ////        setIsTrigger();
 //    }
 
-
-    //  sorted add
     public void safeAdd(T data) {
         // 如果链表满了，删除头部节点
         if (isFull()) {
             deleteHead();
         }
-        Node newNode = new Node(data, null, tail);
+        Node newNode = new Node(data, null, null);
         this.sortedInsert(newNode);
     }
 
     private void sortedInsert(Node node) {
-
         if (isEmpty()) {
+            // 如果链表为空，将新节点设为 head 和 tail
             head = node;
             tail = node;
         } else {
-            Node crt=tail;
-            while(node.getData().getSortKey()>crt.getData().getSortKey()){
-                crt=crt.prev;
+            Node crt = tail;
+
+            // 向前遍历链表，找到合适的插入位置
+            while (crt != null && node.getData().getSortKey() < crt.getData().getSortKey()) {
+                crt = crt.prev;
             }
-            node.prev=crt;
-            node.next=crt.next;
-            if(node.next!=null){
-                node.next.prev=node;
+
+            if (crt == null) {
+                // 插入到链表头部，成为新的 head
+                node.next = head;
+                head.prev = node;
+                head = node;
+            } else if (crt == tail) {
+                // 插入到链表尾部，成为新的 tail
+                crt.next = node;
+                node.prev = crt;
+                tail = node;
+            } else {
+                // 插入到中间位置
+                node.next = crt.next;
+                node.prev = crt;
+                crt.next.prev = node;
+                crt.next = node;
             }
-             crt.next=node;
         }
         size++;
     }
+
 
 
     // 删除头部节点
@@ -173,6 +186,7 @@ public class LinkList<T extends Expirable> {
         System.out.println("null");
     }
 
+    // TODO: bug
     public void concat(LinkList<T > otherLinkList){
         if(otherLinkList.getSize()==0){
             return;
@@ -213,13 +227,17 @@ public class LinkList<T extends Expirable> {
     public long getRealSize() {
         long cnt=0;
         Node pt=head;
-        while(pt!=null){
+        if(pt!=null){
+            cnt++;
+        }
+
+        while(pt!=tail){
             cnt++;
             pt=pt.next;
         }
         return cnt;
     }
-// TODO:toDel
+
     public boolean  sizeNotEqual(String sentence){
         if(getSize()!=getRealSize()){
             System.out.println("size not equal: "+sentence);

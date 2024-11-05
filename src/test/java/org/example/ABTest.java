@@ -17,7 +17,7 @@ public class ABTest {
 
 
         // Schema file path
-        String schemaFilePath ="src/test/resources/domain/abcd.yaml";
+        String schemaFilePath ="src/test/resources/domain/ab.yaml";
         Schema schema = new Schema(schemaFilePath); // Load Schema
 
 //        // Query statement
@@ -32,15 +32,16 @@ public class ABTest {
         // Query statement
         String query = "SELECT A.ts, B.te " +
                 "FROM CarStream " +
-                "DEFINE A AS a > 0 , B AS  b  > 0 , C AS  c == 1 , D AS  d == 1 " +
-                "PATTERN B   meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals   C " +
+                "DEFINE A AS a > 0 , B AS  b  > 0  " +
+                "PATTERN A   before;after   B " +
+//                "PATTERN A  meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals   B " +
                 "WINDOW 10000";
 
 //        meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals
         // Create Engine instance
         Engine engine = new Engine(schema, query);
 
-        String ab13FilePath = "src/test/resources/data/abcd_5000.csv";
+        String ab13FilePath = "/Users/czq/Code/TPstream0/TPStream_DAPD/jepc-v2/col2_row10.csv";
         // File data source, read data and apply to Engine
         try (DataSource dataSource = new FileDataSource(ab13FilePath)) {
             String line;

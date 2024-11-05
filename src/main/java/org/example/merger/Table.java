@@ -55,16 +55,12 @@ public class Table {
         if(toDelSize> window.getWindowCapacity() ){
             toDelSize=window.getWindowCapacity();
         }
-
-        this.rows.sizeNotEqual("before deleteRowsAndIndex");
         int cnt=0;
         while(cnt<toDelSize ){
             Row oldestRow= this.rows.deleteHead();
             deleteHashindexByRow(oldestRow);
             cnt++;
         }
-        this.rows.sizeNotEqual("after deleteRowsAndIndex");
-
         size -= toDelSize;
     }
 
@@ -315,6 +311,7 @@ public class Table {
     public Window getWindow(){
         return window;
     }
+
 
     public void concatenate(Table otherTable ) {
         if(otherTable==null){
