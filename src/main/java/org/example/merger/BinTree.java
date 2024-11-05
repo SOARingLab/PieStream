@@ -278,7 +278,14 @@ public class BinTree {
 
     private void refreshNewIepTable_Leaf(TreeNode leaf){
         leaf.getCol().updateNewIepList2Table( EBA2String,  node2JoinedCols.get(leaf));
-//        leaf.getCol().updateNewIepList2Table( EBA2String,  node2AcmltJoinedCols.get(leaf));
+        if (leaf.isHasBefore()){
+            leaf.getBefCol().updateNewIepList2Table( EBA2String,  node2JoinedCols.get(leaf));
+            leaf.getCol().mergeBefAftCol(leaf.getBefCol());
+        }
+        if (leaf.isHasAfter()){
+            leaf.getAftCol().updateNewIepList2Table( EBA2String,  node2JoinedCols.get(leaf));
+            leaf.getCol().mergeBefAftCol(leaf.getAftCol());
+        }
     }
 
 
@@ -293,9 +300,6 @@ public class BinTree {
 
     // 将中间结点的信息进行更新
     private void getNewTabeOfLeafAndMergedNode(TreeNode ParnetNode, TreeNode mergedNode, TreeNode leafNode) {
-
-//        Set<String> JoinedCols = getStringFromEBA(mergedNode.getKeyPredSet());
-
 
         refreshNewIepTable_Leaf(leafNode);
         Table mergedNewTab = mergedNode.getNewT();
@@ -332,9 +336,6 @@ public class BinTree {
             Table tb = HashJoiner.hashJoin( leafNode.getCol().getNewIEPTable(), mergedNode.getT(),node2JoinedCols.get(ParnetNode),needNewIndex);
             endTime = System.currentTimeMillis();
             joinTime += (endTime - startTime);
-//            Table tb = HashJoiner.hashJoin( leafNode.getCol().getNewIEPTable(), mergedNode.getT(),JoinedCols,node2AcmltJoinedCols.get(ParnetNode));
-
-
             startTime = System.currentTimeMillis();
             ParnetNode.newT.concatenate(tb);
             endTime = System.currentTimeMillis();

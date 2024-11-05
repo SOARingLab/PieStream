@@ -216,5 +216,12 @@ public class IEPCol   {
         refreshIndex(deadLine,toDelIeps);
     }
 
-    //TODO: COUNTWINDOW 下好像没删除过 IEPList的索引。
+
+    // 把叶子结点中的本次发现的bef结果 更新到大表中，方便后续进行统一Join
+    public void mergeBefAftCol(IEPCol col){
+        this.getNewIEPTable().concatenate(col.getNewIEPTable());
+        this.isTrigger=true;
+    }
+
+
 }
