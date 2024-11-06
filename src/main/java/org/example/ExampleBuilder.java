@@ -1,4 +1,4 @@
-package org.example.utils;
+package org.example;
 
 import org.example.datasource.DataSource;
 import org.example.datasource.FileDataSource;
@@ -49,7 +49,7 @@ public class ExampleBuilder {
         return new Schema("CSV",  attriList);
     }
 
-    public static long buildRunner(int col, int row, String basePath, WindowType windowType) {
+    public static long buildRunner(int col, long row, String basePath, WindowType windowType) {
         Schema schema = ExampleBuilder.buildSchema(col);
         String query = ExampleBuilder.buildSimpleJoinQuery(col); // Assuming buildQuery is used here
 
@@ -87,23 +87,33 @@ public class ExampleBuilder {
     public static void main(String[] args) {
 
 //        List<Integer> colList = new ArrayList<>(Arrays.asList(4, 6, 8, 10, 12, 14, 16, 18, 20, 22));
-//        List<Integer> colList = new ArrayList<>(Arrays.asList(4, 6));
-        List<Integer> colList = new ArrayList<>(Arrays.asList( 4));
+        List<Integer> colList = new ArrayList<>(Arrays.asList(4, 6));
+//        List<Integer> colList = new ArrayList<>(Arrays.asList( 4));
+        List<Long> rowList = new ArrayList<>(Arrays.asList(100_000L, 1000_000L, 10_000_000L, 100_000_000L));
 
-        int row = 1000000;
+        WindowType windowType=WindowType.TIME_WINDOW;
 //        String basePath = "/Users/czq/Code/TPstream0/TPStream_DAPD/jepc-v2/";
 
         String basePath = "/home/uzi/Code/TPS/jepc-v2/";
-        Map<Integer,Long> processedTimeMap=new HashMap<>();
-        // Run with TIME_WINDOW
-        for(int col :colList){
+        Map<Integer, Map<Long, Long>> col_row_proceTimeMap = new HashMap<>();
 
-            processedTimeMap.put(col,buildRunner(col, row, basePath, WindowType.TIME_WINDOW));
-            System.out.println(processedTimeMap);
+        for (int col : colList) {
+            // 使用 computeIfAbsent 保证每个 col 对应一个新的 Map<Long, Long>
+            col_row_proceTimeMap.computeIfAbsent(col, k -> new HashMap<>());
+
+            for (long row : rowList) {
+                // 调用 buildRunner 方法，获取处理时间并存入 map
+                Long processedTime = buildRunner(col, row, basePath, windowType);
+
+                // 把结果放入嵌套的 Map 中
+                col_row_proceTimeMap.get(col).put(row, processedTime);
+
+                // 打印当前处理后的 Map
+                System.out.println(col_row_proceTimeMap);
+            }
         }
 
-
-        System.out.println(processedTimeMap);
+        System.out.println(col_row_proceTimeMap);
     }
 }
 

@@ -5,14 +5,10 @@ import org.example.datasource.DataSource;
 import org.example.datasource.FileDataSource;
 import org.example.engine.Engine;
 import org.example.engine.WindowType;
-import org.example.events.Attribute;
 import org.example.parser.Schema;
-import org.example.utils.ExampleBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class ABCDEFGTest {
 
