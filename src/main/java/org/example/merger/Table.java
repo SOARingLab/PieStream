@@ -43,6 +43,22 @@ public class Table {
     }
 
 
+    public void update(String pred,Long startTime,Long endTime){
+
+        LinkList<Row>.Node node=rows.getHead();
+        while(node!=null){
+            Row row=node.getData();
+            String searchColName=pred+".ST";
+            if(row.getValueFromColName(searchColName)==startTime){
+                row.update(pred+".ET",endTime);
+            } else if (row.getValueFromColName(searchColName)<startTime) {
+                node=node.next;
+            }else{
+                return;
+            }
+        }
+    }
+
     public  Map<String, List<Row>> getHashIndex(){
         return hashIndex;
     }

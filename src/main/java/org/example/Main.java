@@ -65,7 +65,7 @@ public class Main {
             while ((line = dataSource.readNext()) != null) {
                 engine.apply("", line); // Process each line of data
                 cnt++;
-                if (cnt % 1000000 == 0) {
+                if (cnt % 100000 == 0) {
                     System.out.println(cnt + ", ");
                 }
             }
@@ -86,7 +86,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        List<Integer> colList = new ArrayList<>(Arrays.asList(16 ));
+        List<Integer> colList = new ArrayList<>(Arrays.asList(4 ));
 
 //        List<Integer> colList = new ArrayList<>(Arrays.asList(4, 6));
 //        List<Integer> colList = new ArrayList<>(Arrays.asList( 4));

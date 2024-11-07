@@ -57,10 +57,6 @@ public class Worker {
         mpiEPairsManager.runByPE((PointEvent) event);
     }
 
-    // 打印 mpiEPairsManager 中的每个 MPIEPair 及其对应的队列内容
-    public void print() {
-        mpiEPairsManager.print();
-    }
 
     public void printResultCNT() {
         tree.printResultCNT();

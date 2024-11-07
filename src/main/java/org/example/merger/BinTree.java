@@ -2,6 +2,7 @@ package org.example.merger;
 
 import org.example.engine.Window;
 import org.example.parser.MPIEPairSource;
+import org.example.piepair.IEP;
 import org.example.piepair.eba.EBA;
 
 import java.util.*;
@@ -446,18 +447,36 @@ public class BinTree {
         for (Map.Entry<IEPCol, TreeNode> entry : Col2Node.entrySet()) {
             // MPIEPairSource key = entry.getKey();
             TreeNode leafNode = entry.getValue();
-            leafNode.getCol().refresh(deadLine);
+            List<IEP> toDelIeps=leafNode.getCol().refresh(deadLine);
+            //update Pie End time before Deleted
+//            updateIepET2RootTable(toDelIeps);
 //            leafNode.leafNewT.clear();
             if (leafNode.isHasBefore()) {
-                leafNode.getBefCol().refresh(deadLine);
+                toDelIeps=leafNode.getBefCol().refresh(deadLine);
+//                updateIepET2RootTable(toDelIeps);
             }
             if (leafNode.isHasAfter()) {
-                leafNode.getAftCol().refresh(deadLine);
+                toDelIeps=leafNode.getAftCol().refresh(deadLine);
+//                updateIepET2RootTable(toDelIeps);
             }
 
         }
     }
 
+    private void updateIepET2RootTable(List<IEP> toDelIeps){
+        Table rootTable=root.getT();
+        for (IEP iep:toDelIeps){
+            if(iep.getCompTime()== IEP.CompletedTime.LatterEnd){
+                rootTable.update(EBA2String.get(iep.getLatterPie()),iep.getLatterStartTime(),iep.getLatterEndTime());
+            }
+            else if(iep.getCompTime()== IEP.CompletedTime.FormerEnd){
+                rootTable.update(EBA2String.get(iep.getFormerPie()),iep.getFormerStartTime(),iep.getFormerEndTime());
+
+            }else{
+                return;
+            }
+        }
+    }
     // Getter 方法
     public List<MPIEPairSource> getSourceList() {
         return sourceList;

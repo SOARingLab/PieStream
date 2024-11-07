@@ -121,7 +121,7 @@ public class IEPCol   {
         return new ArrayList<>();
     }
 
-    // 根据 EBA 和  Long -> IEP Map
+    // 根据 EBA 和  Long ->get IEP Map
     public  Map< Long , List<IEP>> getLong2IEPListMap(EBA eba ) {
         if (colMap.containsKey(eba)  ) {
             return colMap.get(eba);
@@ -129,16 +129,7 @@ public class IEPCol   {
         return   null;
     }
 
-    // 打印 colMap 的内容
-    public void print() {
-        for (EBA eba : colMap.keySet()) {
-            System.out.println("EBA: " + eba);
-            Map<Long, List<IEP>> timeMap = colMap.get(eba);
-            for (Long time : timeMap.keySet()) {
-                System.out.println("  Time: " + time + " -> IEPs: " + timeMap.get(time));
-            }
-        }
-    }
+
 
     public void updateCompletedMSG(String thePred,EBA pred, Long startTime , PointEvent endEvent ){
         if(thePred=="former"){
@@ -177,6 +168,7 @@ public class IEPCol   {
         return iepList.getTail().data;
     }
 
+    //refresh 时删除超过 window的ColMap
     private void deleteHashindexByIEP(IEP iep){
         // 更新 hashIndex 中的索引
         EBA formerPie = iep.getFormerPie();
@@ -203,16 +195,17 @@ public class IEPCol   {
         }
     }
 
-    public void  refresh(long deadLine ){
+    public List<IEP>  refresh(long deadLine ){
         List<IEP> toDelIeps=iepList.refresh(deadLine);
-        // refresh ColMap
+        // del ColMap which relate to toDelIeps
          for(IEP iep:toDelIeps){
             deleteHashindexByIEP(iep);
         }
-        // refresh ColMap
+        // refresh iepTable
         if (iepTable.getSize() != 0) {
             iepTable.refresh(deadLine );
         }
+        return toDelIeps;
 
     }
 

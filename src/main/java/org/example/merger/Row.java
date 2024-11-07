@@ -62,7 +62,9 @@ public class Row implements Expirable {
         return triggerTime;
     }
 
-
+    public void update(String replaceColName,Long EndTime){
+        this.data.put(replaceColName,EndTime);
+    }
 
     public String getIndexKey(){
         return indexKey;
@@ -101,6 +103,10 @@ public class Row implements Expirable {
 
     public Map<String, Long> getData() {
         return data;
+    }
+
+    public Long getValueFromColName(String colName) {
+        return data.get(colName);
     }
 
     // 打印行的内容

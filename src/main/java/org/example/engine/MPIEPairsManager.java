@@ -69,18 +69,4 @@ public class MPIEPairsManager {
         }
     }
 
-    // 输出 source2Col 中所有 IEPCol 的内容
-    public void print() {
-        for (Map.Entry<MPIEPairSource, TreeNode> entry : source2Node.entrySet()) {
-            MPIEPairSource source = entry.getKey();
-            IEPCol col = entry.getValue().getCol();
-
-            System.out.println("MPIEPairSource: " + source);
-            System.out.println("CircularQueue Contents:");
-
-            col.print();  // 打印 IEPCol 的内容
-
-            System.out.println("-----------------------------");
-        }
-    }
 }

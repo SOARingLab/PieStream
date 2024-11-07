@@ -18,8 +18,14 @@ public class IEP implements Expirable {
     private Long latterStartTime;     // 后事件的开始时间
     private PointEvent triggerEvent;
     private Long triggerTime;
+    private CompletedTime compTime;
 //    private boolean isCompleted;
 
+    public enum CompletedTime {
+        FormerEnd,
+        LatterEnd,
+        NoNeed
+    }
     // 构造函数
     public IEP(TemporalRelations.AllRel relation,
                EBA formerPie,
@@ -48,6 +54,8 @@ public class IEP implements Expirable {
         this.latterPieEnd = latterPieEnd;
         this.formerPie = formerPie;
         this.latterPie = latterPie;
+        this.compTime=determinCompTimeByRel();
+
 //        this.isCompleted=false;
     }
 
@@ -104,6 +112,9 @@ public class IEP implements Expirable {
     }
 
 
+    public CompletedTime getCompTime() {
+        return compTime;
+    }
 
     public PointEvent getLatterPieStart() {
         return latterPieStart;
@@ -178,6 +189,33 @@ public class IEP implements Expirable {
     @Override
     public int hashCode() {
         return Objects.hash(relation, formerPieStart, latterPieStart, formerPieEnd, latterPieEnd, formerStartTime, latterStartTime);
+    }
+
+    private CompletedTime determinCompTimeByRel(){
+        if (relation.isPreciseRel()){
+            TemporalRelations.PreciseRel preRel=relation.getPreciseRel();
+            if(preRel.triggerWithoutLatterPieEnd()){
+                return CompletedTime.LatterEnd;
+            } else if (preRel.triggerWithoutFormerPieEnd()) {
+                return CompletedTime.FormerEnd;
+            }
+            else if(preRel.triggerWithCompleted()) {
+                return CompletedTime.NoNeed;
+            }
+            else{
+                throw new IllegalStateException("Unexpected precise relation state.");
+
+            }
+        }else{
+            if(relation.getAllenRel()== TemporalRelations.AllenRel.AFTER){
+                return  CompletedTime.FormerEnd;
+            } else if (relation.getAllenRel()==TemporalRelations.AllenRel.BEFORE) {
+                return CompletedTime.LatterEnd;
+            }else{
+                throw new IllegalStateException("Unexpected precise relation state.");
+
+            }
+        }
     }
 
     @Override
