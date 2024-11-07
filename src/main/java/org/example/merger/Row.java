@@ -42,16 +42,16 @@ public class Row implements Expirable {
         // 生成列名和列值
         String formerPieSTKey = EBA2String.get(iep.getFormerPie()) + ".ST";  // formerPieST 列名
         String latterPieSTKey = EBA2String.get(iep.getLatterPie()) + ".ST";  // latterPieST 列名
-//        String formerPieETKey = EBA2String.get(iep.getFormerPie()) + ".ET";  // formerPieET 列名
-//        String latterPieETKey = EBA2String.get(iep.getLatterPie()) + ".ET";  // latterPieET 列名
+        String formerPieETKey = EBA2String.get(iep.getFormerPie()) + ".ET";  // formerPieET 列名
+        String latterPieETKey = EBA2String.get(iep.getLatterPie()) + ".ET";  // latterPieET 列名
 //        String relationKey = "r(" +EBA2String.get(iep.getFormerPie()) +"," +  EBA2String.get(iep.getLatterPie())+")";  // 关系列名
 
 
         this.data = new HashMap<>();
         this.data.put(formerPieSTKey, iep.getFormerStartTime() );
         this.data.put(latterPieSTKey, iep.getLatterStartTime() );
-//        this.data.put(formerPieETKey, iep.getFormerEndTime() );
-//        this.data.put(latterPieETKey, iep.getLatterEndTime() );
+        this.data.put(formerPieETKey, iep.getFormerEndTime() );
+        this.data.put(latterPieETKey, iep.getLatterEndTime() );
 //        this.data.put(relationKey, iep.getRelation().toString());
 
         this.triggerTime=iep.getTriggerTime();
@@ -62,10 +62,7 @@ public class Row implements Expirable {
         return triggerTime;
     }
 
-    // 返回该行中某列的值
-    public Long getValue(String column) {
-        return data.get(column);
-    }
+
 
     public String getIndexKey(){
         return indexKey;

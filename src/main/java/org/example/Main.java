@@ -86,7 +86,8 @@ public class Main {
 
     public static void main(String[] args) {
 
-        List<Integer> colList = new ArrayList<>(Arrays.asList(8 ));
+        List<Integer> colList = new ArrayList<>(Arrays.asList(16 ));
+
 //        List<Integer> colList = new ArrayList<>(Arrays.asList(4, 6));
 //        List<Integer> colList = new ArrayList<>(Arrays.asList( 4));
 
@@ -112,7 +113,6 @@ public class Main {
             }
         }
 
-        System.out.println(col_row_proceTimeMap);
     }
 }
 

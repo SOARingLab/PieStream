@@ -141,21 +141,21 @@ public class IEP implements Expirable {
         return latterStartTime ;
     }
 
-    public String getFormerEndTime() {
+    public Long getFormerEndTime() {
         if (formerPieEnd==null){
-            return "NF";
+            return 0L;
         }
         else{
-            return String.valueOf(formerPieEnd.getTimestamp());
+            return  formerPieEnd.getTimestamp();
         }
     }
 
-    public String getLatterEndTime() {
+    public Long getLatterEndTime() {
         if (latterPieEnd==null){
-            return "NF";
+            return 0L;
         }
         else{
-            return String.valueOf(latterPieEnd.getTimestamp());
+            return latterPieEnd.getTimestamp();
         }
     }
 
