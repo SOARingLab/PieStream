@@ -4,10 +4,7 @@ import org.example.piepair.TemporalRelations;
 import org.example.piepair.eba.EBA;
 import org.example.piepair.eba.EBAParser;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 
 public class QueryParser {
 
@@ -20,7 +17,9 @@ public class QueryParser {
     private List<Map<String, EBA>> defineClause = new ArrayList<>();
     private Map<EBA,String> EBA2String =new HashMap<>();
     private List<MPIEPairSource> patternClause = new ArrayList<>();  // 更改为 MPIEPairSource 的 List
-    private long windowClause;
+    private long windowClause=0;
+    private int JoinedNum=0 ;
+    private Set<EBA> predSetInPattern=new HashSet<EBA>();
 
     public List<MPIEPairSource> getPatternClause(){
         return  this.patternClause;
@@ -28,6 +27,14 @@ public class QueryParser {
 
     public Map<EBA,String> getEBA2String(){
         return  this.EBA2String;
+    }
+
+    public int getJoinedNum() {
+        return JoinedNum;
+    }
+
+    public int getPredNumInPattern() {
+        return predSetInPattern.size();
     }
 
     public long getwindowClause(){
@@ -162,6 +169,7 @@ public class QueryParser {
         do {
             patternClause.add(parseMpiePairSource());
             if (peek("AND")) {
+                JoinedNum++;
                 consume(); // Consume AND and continue parsing
             } else {
                 break;
@@ -172,11 +180,12 @@ public class QueryParser {
     private MPIEPairSource parseMpiePairSource() throws ParseException, EBA.ParseException {
         String alias1 = consume(); // PIE alias 1
         EBA formerPred = getEbaByAlias(alias1); // 获取第一个 PIE 的 EBA
-
+        predSetInPattern.add(formerPred);
         List<TemporalRelations.AllRel> relations = parseAllRelations(); // 解析时间关系
 
         String alias2 = consume(); // PIE alias 2
         EBA latterPred = getEbaByAlias(alias2); // 获取第二个 PIE 的 EBA
+        predSetInPattern.add(latterPred);
 
         return new MPIEPairSource(relations, formerPred, latterPred);
     }

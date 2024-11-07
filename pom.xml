@@ -16,21 +16,6 @@
     </properties>
 
     <dependencies>
-<!--        <dependency>-->
-<!--            <groupId>org.apache.ignite</groupId>-->
-<!--            <artifactId>ignite-spring</artifactId>-->
-<!--            <version>${ignite.version}</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.ignite</groupId>-->
-<!--            <artifactId>ignite-indexing</artifactId>-->
-<!--            <version>${ignite.version}</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.ignite</groupId>-->
-<!--            <artifactId>ignite-core</artifactId>-->
-<!--            <version>${ignite.version}</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>net.automatalib</groupId>
             <artifactId>automata-core</artifactId>
@@ -104,5 +89,26 @@
 
 
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                        <configuration>
+                            <!-- 使用完全限定名 -->
+                            <mainClass>org.example.Main</mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
 
 </project>

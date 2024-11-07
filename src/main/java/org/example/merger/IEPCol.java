@@ -10,9 +10,6 @@ import org.example.piepair.eba.EBA;
 
 public class IEPCol   {
     public final Map<EBA, Map<Long, List<IEP>>> colMap; // 建立在 IEPList 上的索引
-    public final LinkList<IEP> getIepList(){
-        return iepList;
-    }
     private final Table iepTable; // iepList对应的Table
     private boolean isTrigger;
     private final LinkList<IEP> newIEPList;
@@ -32,6 +29,10 @@ public class IEPCol   {
         this.newIEPList = new LinkList<>(window);
     }
 
+
+    public final LinkList<IEP> getIepList(){
+        return iepList;
+    }
 
     public Map<EBA, Map<Long, List<IEP>>>  getNewIEPMap(){
         return newIEPMap;
@@ -111,7 +112,6 @@ public class IEPCol   {
             deleteHashindexByIEP(iep);
         }
     }
-
 
     // 根据 EBA 和 startTime 获取 IEP 列表
     public List<IEP> getIEP(EBA eba, Long startTime) {
@@ -203,17 +203,17 @@ public class IEPCol   {
         }
     }
 
-
-    public void refreshIndex(long deadLine,List<IEP> toDelIeps ){
-
-        for(IEP iep:toDelIeps){
-            deleteHashindexByIEP(iep);
-        }
-    }
-
     public void  refresh(long deadLine ){
         List<IEP> toDelIeps=iepList.refresh(deadLine);
-        refreshIndex(deadLine,toDelIeps);
+        // refresh ColMap
+         for(IEP iep:toDelIeps){
+            deleteHashindexByIEP(iep);
+        }
+        // refresh ColMap
+        if (iepTable.getSize() != 0) {
+            iepTable.refresh(deadLine );
+        }
+
     }
 
 

@@ -16,6 +16,7 @@ public class EventPreprocessor {
     private static long timestampCounter = 1; // 用于递增时间戳
     private static final ObjectMapper objectMapper = new ObjectMapper(); // 用于解析 JSON
     private  PointEventIterator pointEventIterator ;
+    private Map<Attribute, Object> reusePayload = new HashMap<>();
 
 
     public EventPreprocessor(Schema schema)  {
@@ -148,16 +149,17 @@ public class EventPreprocessor {
      * @return 转换后的 Map
      */
     private Map<Attribute, Object> convertListToPayload(List<?> rawList) {
-        Map<Attribute, Object> payload = new HashMap<>();
+        reusePayload.clear();  // 清空之前的内容
+
         List<Attribute> attributes = schema.getAttributes();
         if (rawList.size() != attributes.size()) {
             throw new IllegalArgumentException("List size does not match schema field count");
         }
         for (int i = 0; i < rawList.size(); i++) {
             Attribute attribute = attributes.get(i);
-            payload.put(attribute, rawList.get(i));
+            reusePayload.put(attribute, rawList.get(i));
         }
-        return payload;
+        return reusePayload;
     }
 
     /**
