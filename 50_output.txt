@@ -1,0 +1,120 @@
+===============  COL 4 ROW 100000 ===============
+Query parsed successfully：
+Joined-number:2
+predicate number in pattern:4
+window size:100000
+Tree constructed successfully.
+
+Total Lines Processed: 100000
+Processing time: 1028 ms
+RESULT:54583
+ALL Processing time: 0.993 s
+Total preprocess time: 0.079 s
+Total run one by one time: 0.413 s (42%
+Total derive before-after relationship time: 0.017 s (2%
+Total merge after run time: 0.314 s (32%
+    Joined Time0.152 s (15%
+        searchForJoin Time: 0.144 s (15%
+    concat Time0.031 s (3%
+Total update data time: 0.17 s (17%
+    update_merged Time 0.044 s (4%
+        concateTime Time 0.094 s (9%
+            concateRebuilTime Time 0.014 s (1%
+            addRowMergeTime Time 0.083 s (8%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 0.005 s (1%
+                merge_simple Time 0.068 s (7%
+    update_leaf Time 0.117 s (12%
+(0.0)
+{4={100000=1028}}
+===============  COL 4 ROW 1000000 ===============
+Query parsed successfully：
+Joined-number:2
+predicate number in pattern:4
+window size:100000
+Tree constructed successfully.
+
+Total Lines Processed: 1000000
+Processing time: 9999 ms
+RESULT:550323
+ALL Processing time: 9.818 s
+Total preprocess time: 0.303 s
+Total run one by one time: 5.978 s (61%
+Total derive before-after relationship time: 0.051 s (1%
+Total merge after run time: 2.319 s (24%
+    Joined Time1.329 s (14%
+        searchForJoin Time: 1.399 s (14%
+    concat Time0.282 s (3%
+Total update data time: 1.167 s (12%
+    update_merged Time 0.364 s (4%
+        concateTime Time 0.884 s (9%
+            concateRebuilTime Time 0.083 s (1%
+            addRowMergeTime Time 0.737 s (8%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 0.089 s (1%
+                merge_simple Time 0.497 s (5%
+    update_leaf Time 0.74 s (8%
+(0.0)
+{4={100000=1028, 1000000=9999}}
+===============  COL 4 ROW 10000000 ===============
+Query parsed successfully：
+Joined-number:2
+predicate number in pattern:4
+window size:100000
+Tree constructed successfully.
+
+Total Lines Processed: 10000000
+Processing time: 101747 ms
+RESULT:5515986
+ALL Processing time: 100.129 s
+Total preprocess time: 3.584 s
+Total run one by one time: 61.0 s (61%
+Total derive before-after relationship time: 0.512 s (1%
+Total merge after run time: 22.85 s (23%
+    Joined Time11.762 s (12%
+        searchForJoin Time: 12.455 s (12%
+    concat Time2.903 s (3%
+Total update data time: 12.183 s (12%
+    update_merged Time 3.68 s (4%
+        concateTime Time 9.396 s (9%
+            concateRebuilTime Time 1.085 s (1%
+            addRowMergeTime Time 7.81 s (8%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 0.96 s (1%
+                merge_simple Time 5.324 s (5%
+    update_leaf Time 7.973 s (8%
+(0.0)
+{4={100000=1028, 10000000=101747, 1000000=9999}}
+===============  COL 4 ROW 100000000 ===============
+Query parsed successfully：
+Joined-number:2
+predicate number in pattern:4
+window size:100000
+Tree constructed successfully.
+
+Total Lines Processed: 100000000
+Processing time: 990373 ms
+RESULT:55142105
+ALL Processing time: 974.886 s
+Total preprocess time: 36.558 s
+Total run one by one time: 597.561 s (61%
+Total derive before-after relationship time: 5.214 s (1%
+Total merge after run time: 216.619 s (22%
+    Joined Time110.198 s (11%
+        searchForJoin Time: 115.918 s (12%
+    concat Time27.401 s (3%
+Total update data time: 118.934 s (12%
+    update_merged Time 37.492 s (4%
+        concateTime Time 89.436 s (9%
+            concateRebuilTime Time 9.416 s (1%
+            addRowMergeTime Time 74.341 s (8%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 9.678 s (1%
+                merge_simple Time 49.805 s (5%
+    update_leaf Time 75.94 s (8%
+(0.0)
+{4={100000=1028, 100000000=990373, 10000000=101747, 1000000=9999}}
