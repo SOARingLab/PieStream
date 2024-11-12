@@ -26,8 +26,8 @@ public class Main {
         for (int i = 1; i < Col; i++) {
             if (i > 1) patternBuilder.append(" AND ");
             patternBuilder.append("A").append(i)
-                    .append(" meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals ")
-//                    .append(" meets;met-by;overlaps;started-by;during;finished-by;equals ")
+//                    .append(" meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals ")
+                    .append(" meets;met-by;overlaps;started-by;during;finished-by;equals ")
                     .append("A").append(i + 1);
         }
 
@@ -88,13 +88,13 @@ public class Main {
 
     public static void main(String[] args) {
 
-        int  density=10;
-        List<Integer> colList = new ArrayList<>(Arrays.asList(4 ));
+        int  density=50;
+        List<Integer> colList = new ArrayList<>(Arrays.asList(4,8,16,32,64,128 ));
 
 //        List<Integer> colList = new ArrayList<>(Arrays.asList(4, 6));
 //        List<Integer> colList = new ArrayList<>(Arrays.asList( 4));
 
-        List<Long> rowList = new ArrayList<>(Arrays.asList(100_000L,1000_000L,10_000_000L,100_000_000L ));
+        List<Long> rowList = new ArrayList<>(Arrays.asList( 1000_000L ));
 //        List<Long> rowList = new ArrayList<>(Arrays.asList(100_000L, 1000_000L, 10_000_000L, 100_000_000L));
 
         WindowType windowType=WindowType.TIME_WINDOW;
