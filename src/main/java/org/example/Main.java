@@ -56,7 +56,7 @@ public class Main {
 
         Engine engine = new Engine(schema, query, windowType);
         StringBuilder dataPath = new StringBuilder();
-        dataPath.append(basePath).append("col").append(col).append("_row100000000").append(".csv");
+        dataPath.append(basePath).append("col").append(col).append("_row1000000").append(".csv");
 
         // Initialize FileDataSource and process data with the Engine
         try (DataSource dataSource = new FileDataSource(dataPath.toString())) {
@@ -89,7 +89,7 @@ public class Main {
     public static void main(String[] args) {
 
         int  density=50;
-        List<Integer> colList = new ArrayList<>(Arrays.asList(4,8,16,32,64,128 ));
+        List<Integer> colList = new ArrayList<>(Arrays.asList(4,6,8,10,12,14,16,18,20,22,24,26,28,30 ));
 
 //        List<Integer> colList = new ArrayList<>(Arrays.asList(4, 6));
 //        List<Integer> colList = new ArrayList<>(Arrays.asList( 4));

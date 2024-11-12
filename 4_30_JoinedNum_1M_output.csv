@@ -1,0 +1,325 @@
+===============  COL 4 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 5941 ms
+RESULT:196601
+ALL Processing time: 5.578 s
+Total preprocess time: 0.352 s
+Total run one by one time: 2.871 s (51%
+Total derive before-after relationship time: 0.061 s (1%
+Total merge after run time: 1.275 s (23%
+    Joined Time0.517 s (9%
+        searchForJoin Time: 0.469 s (8%
+    concat Time0.142 s (3%
+Total update data time: 1.019 s (18%
+    update_merged Time 0.301 s (5%
+        concateTime Time 0.619 s (11%
+            concateRebuilTime Time 0.063 s (1%
+            addRowMergeTime Time 0.52 s (9%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 0.046 s (1%
+                merge_simple Time 0.397 s (7%
+    update_leaf Time 0.672 s (12%
+(0.0)
+{4={1000000=5941}}
+===============  COL 8 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 13018 ms
+RESULT:148858
+ALL Processing time: 12.85 s
+Total preprocess time: 0.524 s
+Total run one by one time: 6.625 s (52%
+Total derive before-after relationship time: 0.061 s (0%
+Total merge after run time: 3.444 s (27%
+    Joined Time1.617 s (13%
+        searchForJoin Time: 1.947 s (15%
+    concat Time0.346 s (3%
+Total update data time: 2.196 s (17%
+    update_merged Time 0.555 s (4%
+        concateTime Time 1.951 s (15%
+            concateRebuilTime Time 0.11 s (1%
+            addRowMergeTime Time 1.593 s (12%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 0.175 s (1%
+                merge_simple Time 1.153 s (9%
+    update_leaf Time 1.581 s (12%
+(0.0)
+{4={1000000=5941}, 8={1000000=13018}}
+===============  COL 10 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 17341 ms
+RESULT:128546
+ALL Processing time: 17.117 s
+Total preprocess time: 0.826 s
+Total run one by one time: 8.939 s (52%
+Total derive before-after relationship time: 0.089 s (1%
+Total merge after run time: 4.686 s (27%
+    Joined Time2.474 s (14%
+        searchForJoin Time: 4.251 s (25%
+    concat Time0.39 s (2%
+Total update data time: 2.577 s (15%
+    update_merged Time 0.719 s (4%
+        concateTime Time 3.458 s (20%
+            concateRebuilTime Time 0.163 s (1%
+            addRowMergeTime Time 2.775 s (16%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 0.33 s (2%
+                merge_simple Time 1.962 s (11%
+    update_leaf Time 1.818 s (11%
+(0.0)
+{4={1000000=5941}, 8={1000000=13018}, 10={1000000=17341}}
+===============  COL 12 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 21798 ms
+RESULT:108311
+ALL Processing time: 21.555 s
+Total preprocess time: 1.199 s
+Total run one by one time: 10.92 s (51%
+Total derive before-after relationship time: 0.102 s (0%
+Total merge after run time: 5.918 s (27%
+    Joined Time3.04 s (14%
+        searchForJoin Time: 7.074 s (33%
+    concat Time0.485 s (2%
+Total update data time: 3.416 s (16%
+    update_merged Time 0.87 s (4%
+        concateTime Time 5.387 s (25%
+            concateRebuilTime Time 0.227 s (1%
+            addRowMergeTime Time 4.304 s (20%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 0.535 s (2%
+                merge_simple Time 3.03 s (14%
+    update_leaf Time 2.488 s (12%
+(0.0)
+{4={1000000=5941}, 8={1000000=13018}, 10={1000000=17341}, 12={1000000=21798}}
+===============  COL 14 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 26116 ms
+RESULT:99056
+ALL Processing time: 25.84 s
+Total preprocess time: 1.016 s
+Total run one by one time: 13.901 s (54%
+Total derive before-after relationship time: 0.137 s (1%
+Total merge after run time: 6.624 s (26%
+    Joined Time3.304 s (13%
+        searchForJoin Time: 10.14 s (39%
+    concat Time0.656 s (3%
+Total update data time: 4.162 s (16%
+    update_merged Time 1.174 s (5%
+        concateTime Time 8.0 s (31%
+            concateRebuilTime Time 0.305 s (1%
+            addRowMergeTime Time 6.475 s (25%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 0.729 s (3%
+                merge_simple Time 4.712 s (18%
+    update_leaf Time 2.927 s (11%
+(0.0)
+{4={1000000=5941}, 8={1000000=13018}, 10={1000000=17341}, 12={1000000=21798}, 14={1000000=26116}}
+===============  COL 16 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 30356 ms
+RESULT:84818
+ALL Processing time: 30.073 s
+Total preprocess time: 1.516 s
+Total run one by one time: 15.392 s (51%
+Total derive before-after relationship time: 0.139 s (0%
+Total merge after run time: 7.911 s (26%
+    Joined Time4.076 s (14%
+        searchForJoin Time: 13.895 s (46%
+    concat Time0.571 s (2%
+Total update data time: 5.115 s (17%
+    update_merged Time 1.586 s (5%
+        concateTime Time 10.924 s (36%
+            concateRebuilTime Time 0.366 s (1%
+            addRowMergeTime Time 8.81 s (29%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 0.954 s (3%
+                merge_simple Time 6.459 s (21%
+    update_leaf Time 3.469 s (12%
+(0.0)
+{16={1000000=30356}, 4={1000000=5941}, 8={1000000=13018}, 10={1000000=17341}, 12={1000000=21798}, 14={1000000=26116}}
+===============  COL 18 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 34909 ms
+RESULT:70781
+ALL Processing time: 34.653 s
+Total preprocess time: 1.219 s
+Total run one by one time: 18.165 s (52%
+Total derive before-after relationship time: 0.183 s (1%
+Total merge after run time: 9.781 s (28%
+    Joined Time5.521 s (16%
+        searchForJoin Time: 19.094 s (55%
+    concat Time0.613 s (2%
+Total update data time: 5.305 s (15%
+    update_merged Time 1.207 s (3%
+        concateTime Time 13.611 s (39%
+            concateRebuilTime Time 0.443 s (1%
+            addRowMergeTime Time 10.931 s (32%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 1.202 s (3%
+                merge_simple Time 7.978 s (23%
+    update_leaf Time 4.043 s (12%
+(0.0)
+{16={1000000=30356}, 18={1000000=34909}, 4={1000000=5941}, 8={1000000=13018}, 10={1000000=17341}, 12={1000000=21798}, 14={1000000=26116}}
+===============  COL 20 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 39131 ms
+RESULT:59132
+ALL Processing time: 38.655 s
+Total preprocess time: 1.413 s
+Total run one by one time: 21.616 s (56%
+Total derive before-after relationship time: 0.167 s (0%
+Total merge after run time: 9.339 s (24%
+    Joined Time4.677 s (12%
+        searchForJoin Time: 23.388 s (61%
+    concat Time0.599 s (2%
+Total update data time: 6.12 s (16%
+    update_merged Time 1.332 s (3%
+        concateTime Time 16.739 s (43%
+            concateRebuilTime Time 0.691 s (2%
+            addRowMergeTime Time 13.356 s (35%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 1.46 s (4%
+                merge_simple Time 9.798 s (25%
+    update_leaf Time 4.733 s (12%
+(0.0)
+{16={1000000=30356}, 18={1000000=34909}, 20={1000000=39131}, 4={1000000=5941}, 8={1000000=13018}, 10={1000000=17341}, 12={1000000=21798}, 14={1000000=26116}}
+===============  COL 22 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 42193 ms
+RESULT:53392
+ALL Processing time: 41.856 s
+Total preprocess time: 1.825 s
+Total run one by one time: 23.642 s (56%
+Total derive before-after relationship time: 0.173 s (0%
+Total merge after run time: 9.761 s (23%
+    Joined Time5.468 s (13%
+        searchForJoin Time: 28.448 s (68%
+    concat Time0.636 s (2%
+Total update data time: 6.455 s (15%
+    update_merged Time 1.563 s (4%
+        concateTime Time 20.2 s (48%
+            concateRebuilTime Time 0.769 s (2%
+            addRowMergeTime Time 16.098 s (38%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 1.735 s (4%
+                merge_simple Time 11.809 s (28%
+    update_leaf Time 4.836 s (12%
+(0.0)
+{16={1000000=30356}, 18={1000000=34909}, 20={1000000=39131}, 4={1000000=5941}, 22={1000000=42193}, 8={1000000=13018}, 10={1000000=17341}, 12={1000000=21798}, 14={1000000=26116}}
+===============  COL 24 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 46288 ms
+RESULT:49368
+ALL Processing time: 45.958 s
+Total preprocess time: 1.902 s
+Total run one by one time: 25.037 s (54%
+Total derive before-after relationship time: 0.201 s (0%
+Total merge after run time: 11.332 s (25%
+    Joined Time6.051 s (13%
+        searchForJoin Time: 34.072 s (74%
+    concat Time0.645 s (1%
+Total update data time: 7.486 s (16%
+    update_merged Time 1.716 s (4%
+        concateTime Time 23.861 s (52%
+            concateRebuilTime Time 0.841 s (2%
+            addRowMergeTime Time 19.037 s (41%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 2.073 s (5%
+                merge_simple Time 13.961 s (30%
+    update_leaf Time 5.723 s (12%
+(0.0)
+{16={1000000=30356}, 18={1000000=34909}, 20={1000000=39131}, 4={1000000=5941}, 22={1000000=42193}, 24={1000000=46288}, 8={1000000=13018}, 10={1000000=17341}, 12={1000000=21798}, 14={1000000=26116}}
+===============  COL 26 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 51174 ms
+RESULT:40173
+ALL Processing time: 50.822 s
+Total preprocess time: 2.276 s
+Total run one by one time: 27.525 s (54%
+Total derive before-after relationship time: 0.278 s (1%
+Total merge after run time: 12.349 s (24%
+    Joined Time6.179 s (12%
+        searchForJoin Time: 39.823 s (78%
+    concat Time0.747 s (1%
+Total update data time: 8.394 s (17%
+    update_merged Time 1.57 s (3%
+        concateTime Time 28.044 s (55%
+            concateRebuilTime Time 0.931 s (2%
+            addRowMergeTime Time 22.432 s (44%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 2.433 s (5%
+                merge_simple Time 16.515 s (32%
+    update_leaf Time 6.779 s (13%
+(0.0)
+{16={1000000=30356}, 18={1000000=34909}, 20={1000000=39131}, 4={1000000=5941}, 22={1000000=42193}, 24={1000000=46288}, 8={1000000=13018}, 26={1000000=51174}, 10={1000000=17341}, 12={1000000=21798}, 14={1000000=26116}}
+===============  COL 28 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 52938 ms
+RESULT:32333
+ALL Processing time: 52.58 s
+Total preprocess time: 2.038 s
+Total run one by one time: 29.951 s (57%
+Total derive before-after relationship time: 0.262 s (0%
+Total merge after run time: 12.282 s (23%
+    Joined Time5.3 s (10%
+        searchForJoin Time: 44.634 s (85%
+    concat Time0.773 s (1%
+Total update data time: 8.047 s (15%
+    update_merged Time 1.73 s (3%
+        concateTime Time 32.013 s (61%
+            concateRebuilTime Time 1.008 s (2%
+            addRowMergeTime Time 25.534 s (49%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 2.784 s (5%
+                merge_simple Time 18.774 s (36%
+    update_leaf Time 6.252 s (12%
+(0.0)
+{16={1000000=30356}, 18={1000000=34909}, 20={1000000=39131}, 4={1000000=5941}, 22={1000000=42193}, 24={1000000=46288}, 8={1000000=13018}, 26={1000000=51174}, 10={1000000=17341}, 28={1000000=52938}, 12={1000000=21798}, 14={1000000=26116}}
+===============  COL 30 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 56035 ms
+RESULT:28167
+ALL Processing time: 55.621 s
+Total preprocess time: 2.145 s
+Total run one by one time: 30.93 s (56%
+Total derive before-after relationship time: 0.23 s (0%
+Total merge after run time: 13.499 s (24%
+    Joined Time6.851 s (12%
+        searchForJoin Time: 50.965 s (92%
+    concat Time0.765 s (1%
+Total update data time: 8.817 s (16%
+    update_merged Time 1.795 s (3%
+        concateTime Time 36.449 s (66%
+            concateRebuilTime Time 1.07 s (2%
+            addRowMergeTime Time 29.013 s (52%
+                clearRowsTime Time 0.0 s (0%
+                removeRowsAndIndexTime Time 0.0 s (0%
+                addRowsTime Time 3.171 s (6%
+                merge_simple Time 21.32 s (38%
+    update_leaf Time 6.958 s (13%
+(0.0)
+{16={1000000=30356}, 18={1000000=34909}, 20={1000000=39131}, 4={1000000=5941}, 22={1000000=42193}, 24={1000000=46288}, 8={1000000=13018}, 26={1000000=51174}, 10={1000000=17341}, 28={1000000=52938}, 12={1000000=21798}, 30={1000000=56035}, 14={1000000=26116}}
