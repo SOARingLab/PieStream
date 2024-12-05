@@ -1,0 +1,60 @@
+
+  
+col=4,limit=1000000,windSize=10000,rate=100000   
+
+ ===============  RATE 100000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 9997 ms
+RESULT:21260
+AVG-latencyTime: 8421.098259642522 ns
+  
+col=4,limit=1000000,windSize=10000,rate=50000   
+
+ ===============  RATE 50000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 19993 ms
+RESULT:21260
+AVG-latencyTime: 16364.802916274693 ns
+  
+col=4,limit=1000000,windSize=10000,rate=10000   
+
+ ===============  RATE 10000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 99989 ms
+RESULT:21260
+AVG-latencyTime: 30397.149576669803 ns
+  
+col=4,limit=1000000,windSize=10000,rate=5000   
+
+ ===============  RATE 5000 ===============
+  
+col=4,limit=1000000,windSize=10000,rate=1000   
+
+ ===============  RATE 1000 ===============
+  
+col=4,limit=1000000,windSize=10000,rate=500   
+
+ ===============  RATE 500 ===============
+  
+col=4,limit=1000000,windSize=10000,rate=100   
+
+ ===============  RATE 100 ===============
+  
+col=4,limit=1000000,windSize=10000,rate=50   
+
+ ===============  RATE 50 ===============
+  
+col=4,limit=1000000,windSize=10000,rate=10   
+
+ ===============  RATE 10 ===============
+  
+col=4,limit=1000000,windSize=10000,rate=5   
+
+ ===============  RATE 5 ===============
+  
+col=4,limit=1000000,windSize=10000,rate=1   
+
+ ===============  RATE 1 ===============

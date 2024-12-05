@@ -147,7 +147,7 @@ public class Engine implements ForeachAction<String, String> {
 
 
     public void printAVGprocessTime(){
-        System.out.println(worker.getTree().getRoot().getAVGprocessTime() +"ns");
+        System.out.println("AVG-latencyTime: "+worker.getTree().getRoot().getAVGprocessTime() +" ns");
 
     }
 

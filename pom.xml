@@ -17,6 +17,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>31.1-jre</version>
+        </dependency>
+
+        <dependency>
             <groupId>net.automatalib</groupId>
             <artifactId>automata-core</artifactId>
             <version>0.11.0</version>

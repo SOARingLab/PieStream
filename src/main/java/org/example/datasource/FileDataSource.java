@@ -3,6 +3,7 @@ package org.example.datasource;
 import org.example.engine.Engine;
 import org.example.events.Attribute;
 import org.example.parser.Schema;
+import com.google.common.util.concurrent.RateLimiter;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -14,6 +15,8 @@ public class FileDataSource implements DataSource {
     private BufferedReader reader;
     private long limit;
     private long readCount;
+    private RateLimiter rateLimiter; // 用于速率控制
+
 
     // 原构造函数
     public FileDataSource(String filePath) throws IOException {
@@ -28,6 +31,18 @@ public class FileDataSource implements DataSource {
         this.limit = limit;
         this.readCount = 0; // 初始化已读取的数据量
     }
+
+    public FileDataSource(String filePath, long limit, long rates) throws IOException {
+        reader = new BufferedReader(new FileReader(filePath));
+        this.limit = limit;
+        this.readCount = 0; // 初始化已读取的数据量
+        if (rates > 0) {
+            this.rateLimiter = RateLimiter.create(rates); // 初始化 RateLimiter
+        } else {
+            this.rateLimiter = null; // 如果 rates <= 0，则不进行速率限制
+        }
+    }
+
 
     @Override
     public boolean hasNext() {
@@ -52,6 +67,9 @@ public class FileDataSource implements DataSource {
             if (readCount >= limit) {
                 return null; // 如果读取超过 limit，返回 null
             }
+            if (rateLimiter != null) {
+                rateLimiter.acquire(); // 进行速率限制
+            }
             String line = reader.readLine();
             if (line != null) {
                 readCount++; // 增加已读取的数据量
@@ -70,6 +88,9 @@ public class FileDataSource implements DataSource {
                 if (readCount >= limit) {
                     break; // 如果已经读取超过 limit，停止读取
                 }
+                if (rateLimiter != null) {
+                    rateLimiter.acquire(); // 进行速率限制
+                }
                 String line = reader.readLine();
                 if (line != null) {
                     batch.add(line);
@@ -84,6 +105,7 @@ public class FileDataSource implements DataSource {
         return batch;
     }
 
+
     @Override
     public void close() {
         try {
@@ -93,43 +115,81 @@ public class FileDataSource implements DataSource {
         }
     }
 
+    /**
+     * 简单的 main 方法用于测试 FileDataSource 类。
+     * 该方法将展示如何使用不同的构造函数来读取 CSV 文件。
+     */
     public static void main(String[] args) {
-        // 配置文件路径
-        String schemaFilePath = "src/main/resources/domain/linear_accel.yaml";
-        Schema schema = new Schema(schemaFilePath); // 加载 Schema
+        // 确保你有一个大的 CSV 文件，例如 "large_file.csv" 在指定路径
+        String filePath = "/Users/czq/Code/TPS_data/events_col4_row10000000.csv";
 
-        String query = "SELECT s.ts, s.te " +
-                "FROM CarStream " +
-                "DEFINE X AS XWay > 2, S AS SPEED > 30,D AS ACCEL <= -0.5 " +
-                "PATTERN S follow;followed-by;meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  X  " +
-                "AND S follow;followed-by;meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  D "+
-                "AND D follow;followed-by;meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals  X "+
-                "WINDOW 1000000";
-
-
-        // 创建 Engine 实例
-        Engine engine = new Engine(schema, query);
-
-        // 使用无参数构造函数，读取所有数据
-        try (DataSource dataSource = new FileDataSource("src/main/resources/data/fake.csv")) {
+        // 测试 1: 使用原始构造函数，读取所有数据
+        System.out.println("=== 测试 1: 读取所有数据 ===");
+        try (DataSource dataSource = new FileDataSource(filePath)) {
             String line;
+            long startTime = System.currentTimeMillis();
+            long count = 0;
             while ((line = dataSource.readNext()) != null) {
-                System.out.println("Line Read: " + line);
-                engine.apply("", line); // 处理每一行数据
+                // 这里可以选择不打印每一行，以提高性能
+                // System.out.println(line);
+                count++;
+                if (count % 100000 == 0) {
+                    System.out.println("已读取 " + count + " 行");
+                }
             }
+            long endTime = System.currentTimeMillis();
+            double durationSeconds = (endTime - startTime) / 1000.0;
+            System.out.println("总共读取 " + count + " 行，耗时 " + durationSeconds + " 秒");
         } catch (IOException e) {
-            System.err.println("Failed to open file: " + e.getMessage());
+            System.err.println("无法打开文件: " + e.getMessage());
         }
 
-        // 使用带 limit 参数的构造函数，读取前 100 行数据
-        try (DataSource dataSource = new FileDataSource("src/main/resources/data/fake.csv", 100)) {
+        // 测试 2: 使用带 limit 和 rate 的构造函数，读取前 1000 行，速率为 50 行/秒
+        System.out.println("\n=== 测试 2: 读取前 1000 行，速率限制为 50 行/秒 ===");
+        long limit = 1000;
+        long rate = 50; // 50 行每秒
+        try (DataSource dataSource = new FileDataSource(filePath, limit, rate)) {
             String line;
+            long startTime = System.currentTimeMillis();
+            long count = 0;
             while ((line = dataSource.readNext()) != null) {
-                System.out.println("Line Read (with limit): " + line);
-                engine.apply("", line); // 处理每一行数据
+                // 这里可以选择不打印每一行，以提高性能
+                // System.out.println(line);
+                count++;
+                if (count % 100 == 0) {
+                    System.out.println("已读取 " + count + " 行");
+                }
             }
+            long endTime = System.currentTimeMillis();
+            double durationSeconds = (endTime - startTime) / 1000.0;
+            System.out.println("总共读取 " + count + " 行，耗时 " + durationSeconds + " 秒");
+            System.out.println("预期耗时约 " + (limit / (double) rate) + " 秒");
         } catch (IOException e) {
-            System.err.println("Failed to open file: " + e.getMessage());
+            System.err.println("无法打开文件: " + e.getMessage());
+        }
+
+        // 测试 3: 使用带 limit 和 rate 的构造函数，读取前 2000 行，速率为 100 行/秒
+        System.out.println("\n=== 测试 3: 读取前 2000 行，速率限制为 100 行/秒 ===");
+        limit = 2000;
+        rate = 100; // 100 行每秒
+        try (DataSource dataSource = new FileDataSource(filePath, limit, rate)) {
+            String line;
+            long startTime = System.currentTimeMillis();
+            long count = 0;
+            while ((line = dataSource.readNext()) != null) {
+                // 这里可以选择不打印每一行，以提高性能
+                // System.out.println(line);
+                count++;
+                if (count % 500 == 0) {
+                    System.out.println("已读取 " + count + " 行");
+                }
+            }
+            long endTime = System.currentTimeMillis();
+            double durationSeconds = (endTime - startTime) / 1000.0;
+            System.out.println("总共读取 " + count + " 行，耗时 " + durationSeconds + " 秒");
+            System.out.println("预期耗时约 " + (limit / (double) rate) + " 秒");
+        } catch (IOException e) {
+            System.err.println("无法打开文件: " + e.getMessage());
         }
     }
 }
