@@ -1,0 +1,1145 @@
+
+col,limit,windSize,output
+4,1000,1000,===============  COL 4 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 36 ms
+RESULT:18
+4,1000,5000,===============  COL 4 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 36 ms
+RESULT:18
+4,1000,10000,===============  COL 4 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 42 ms
+RESULT:18
+4,1000,50000,===============  COL 4 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 37 ms
+RESULT:18
+4,1000,100000,===============  COL 4 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 34 ms
+RESULT:18
+4,5000,1000,===============  COL 4 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 82 ms
+RESULT:100
+4,5000,5000,===============  COL 4 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 82 ms
+RESULT:100
+4,5000,10000,===============  COL 4 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 77 ms
+RESULT:100
+4,5000,50000,===============  COL 4 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 77 ms
+RESULT:100
+4,5000,100000,===============  COL 4 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 132 ms
+RESULT:100
+4,10000,1000,===============  COL 4 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 119 ms
+RESULT:215
+4,10000,5000,===============  COL 4 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 126 ms
+RESULT:215
+4,10000,10000,===============  COL 4 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 152 ms
+RESULT:215
+4,10000,50000,===============  COL 4 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 125 ms
+RESULT:215
+4,10000,100000,===============  COL 4 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 117 ms
+RESULT:215
+4,50000,1000,===============  COL 4 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 315 ms
+RESULT:1080
+4,50000,5000,===============  COL 4 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 305 ms
+RESULT:1080
+4,50000,10000,===============  COL 4 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 318 ms
+RESULT:1080
+4,50000,50000,===============  COL 4 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 289 ms
+RESULT:1080
+4,50000,100000,===============  COL 4 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 285 ms
+RESULT:1080
+4,100000,1000,===============  COL 4 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 514 ms
+RESULT:2121
+4,100000,5000,===============  COL 4 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 523 ms
+RESULT:2121
+4,100000,10000,===============  COL 4 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 525 ms
+RESULT:2121
+4,100000,50000,===============  COL 4 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 493 ms
+RESULT:2121
+4,100000,100000,===============  COL 4 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 463 ms
+RESULT:2121
+4,500000,1000,===============  COL 4 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 1981 ms
+RESULT:10645
+4,500000,5000,===============  COL 4 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 2228 ms
+RESULT:10645
+4,500000,10000,===============  COL 4 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 1820 ms
+RESULT:10645
+4,500000,50000,===============  COL 4 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 1954 ms
+RESULT:10645
+4,500000,100000,===============  COL 4 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 1924 ms
+RESULT:10645
+4,1000000,1000,===============  COL 4 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 3310 ms
+RESULT:21260
+4,1000000,5000,===============  COL 4 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 3209 ms
+RESULT:21260
+4,1000000,10000,===============  COL 4 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 3199 ms
+RESULT:21260
+4,1000000,50000,===============  COL 4 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 3386 ms
+RESULT:21260
+4,1000000,100000,===============  COL 4 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 3378 ms
+RESULT:21260
+4,5000000,1000,===============  COL 4 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 15723 ms
+RESULT:105511
+4,5000000,5000,===============  COL 4 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 15668 ms
+RESULT:105511
+4,5000000,10000,===============  COL 4 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 14797 ms
+RESULT:105511
+4,5000000,50000,===============  COL 4 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 14813 ms
+RESULT:105511
+4,5000000,100000,===============  COL 4 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 14615 ms
+RESULT:105511
+4,10000000,1000,===============  COL 4 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 28316 ms
+RESULT:211182
+4,10000000,5000,===============  COL 4 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 29334 ms
+RESULT:211182
+4,10000000,10000,===============  COL 4 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 30072 ms
+RESULT:211182
+4,10000000,50000,===============  COL 4 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 29916 ms
+RESULT:211182
+4,10000000,100000,===============  COL 4 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 29763 ms
+RESULT:211182
+4,50000000,1000,===============  COL 4 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 28910 ms
+RESULT:211182
+4,50000000,5000,===============  COL 4 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 30581 ms
+RESULT:211182
+4,50000000,10000,===============  COL 4 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 29114 ms
+RESULT:211182
+4,50000000,50000,===============  COL 4 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 30049 ms
+RESULT:211182
+4,50000000,100000,===============  COL 4 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 30017 ms
+RESULT:211182
+6,1000,1000,===============  COL 6 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 44 ms
+RESULT:48
+6,1000,5000,===============  COL 6 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 40 ms
+RESULT:48
+6,1000,10000,===============  COL 6 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 39 ms
+RESULT:48
+6,1000,50000,===============  COL 6 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 40 ms
+RESULT:48
+6,1000,100000,===============  COL 6 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 40 ms
+RESULT:48
+6,5000,1000,===============  COL 6 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 98 ms
+RESULT:223
+6,5000,5000,===============  COL 6 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 91 ms
+RESULT:223
+6,5000,10000,===============  COL 6 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 92 ms
+RESULT:223
+6,5000,50000,===============  COL 6 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 93 ms
+RESULT:223
+6,5000,100000,===============  COL 6 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 90 ms
+RESULT:223
+6,10000,1000,===============  COL 6 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 178 ms
+RESULT:413
+6,10000,5000,===============  COL 6 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 152 ms
+RESULT:413
+6,10000,10000,===============  COL 6 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 140 ms
+RESULT:413
+6,10000,50000,===============  COL 6 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 143 ms
+RESULT:413
+6,10000,100000,===============  COL 6 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 143 ms
+RESULT:413
+6,50000,1000,===============  COL 6 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 442 ms
+RESULT:1883
+6,50000,5000,===============  COL 6 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 425 ms
+RESULT:1883
+6,50000,10000,===============  COL 6 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 506 ms
+RESULT:1883
+6,50000,50000,===============  COL 6 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 400 ms
+RESULT:1883
+6,50000,100000,===============  COL 6 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 393 ms
+RESULT:1883
+6,100000,1000,===============  COL 6 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 755 ms
+RESULT:3794
+6,100000,5000,===============  COL 6 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 765 ms
+RESULT:3794
+6,100000,10000,===============  COL 6 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 751 ms
+RESULT:3794
+6,100000,50000,===============  COL 6 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 781 ms
+RESULT:3794
+6,100000,100000,===============  COL 6 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 835 ms
+RESULT:3794
+6,500000,1000,===============  COL 6 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 2850 ms
+RESULT:19299
+6,500000,5000,===============  COL 6 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 2989 ms
+RESULT:19299
+6,500000,10000,===============  COL 6 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 3005 ms
+RESULT:19299
+6,500000,50000,===============  COL 6 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 2777 ms
+RESULT:19299
+6,500000,100000,===============  COL 6 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 3220 ms
+RESULT:19299
+6,1000000,1000,===============  COL 6 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 5192 ms
+RESULT:39664
+6,1000000,5000,===============  COL 6 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 4838 ms
+RESULT:39664
+6,1000000,10000,===============  COL 6 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 5730 ms
+RESULT:39664
+6,1000000,50000,===============  COL 6 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 5229 ms
+RESULT:39664
+6,1000000,100000,===============  COL 6 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 5196 ms
+RESULT:39664
+6,5000000,1000,===============  COL 6 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 25750 ms
+RESULT:200033
+6,5000000,5000,===============  COL 6 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 26184 ms
+RESULT:200033
+6,5000000,10000,===============  COL 6 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 25144 ms
+RESULT:200033
+6,5000000,50000,===============  COL 6 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 24406 ms
+RESULT:200033
+6,5000000,100000,===============  COL 6 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 24908 ms
+RESULT:200033
+6,10000000,1000,===============  COL 6 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 44710 ms
+RESULT:400586
+6,10000000,5000,===============  COL 6 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 44701 ms
+RESULT:400586
+6,10000000,10000,===============  COL 6 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 45652 ms
+RESULT:400586
+6,10000000,50000,===============  COL 6 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 44882 ms
+RESULT:400586
+6,10000000,100000,===============  COL 6 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 45124 ms
+RESULT:400586
+6,50000000,1000,===============  COL 6 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 42336 ms
+RESULT:400586
+6,50000000,5000,===============  COL 6 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 45207 ms
+RESULT:400586
+6,50000000,10000,===============  COL 6 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 43849 ms
+RESULT:400586
+6,50000000,50000,===============  COL 6 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 45371 ms
+RESULT:400586
+6,50000000,100000,===============  COL 6 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 42517 ms
+RESULT:400586
+8,1000,1000,===============  COL 8 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 47 ms
+RESULT:58
+8,1000,5000,===============  COL 8 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 46 ms
+RESULT:58
+8,1000,10000,===============  COL 8 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 46 ms
+RESULT:58
+8,1000,50000,===============  COL 8 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 46 ms
+RESULT:58
+8,1000,100000,===============  COL 8 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 46 ms
+RESULT:58
+8,5000,1000,===============  COL 8 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 117 ms
+RESULT:361
+8,5000,5000,===============  COL 8 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 113 ms
+RESULT:361
+8,5000,10000,===============  COL 8 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 114 ms
+RESULT:361
+8,5000,50000,===============  COL 8 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 114 ms
+RESULT:361
+8,5000,100000,===============  COL 8 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 113 ms
+RESULT:361
+8,10000,1000,===============  COL 8 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 190 ms
+RESULT:689
+8,10000,5000,===============  COL 8 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 193 ms
+RESULT:689
+8,10000,10000,===============  COL 8 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 278 ms
+RESULT:689
+8,10000,50000,===============  COL 8 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 186 ms
+RESULT:689
+8,10000,100000,===============  COL 8 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 190 ms
+RESULT:689
+8,50000,1000,===============  COL 8 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 555 ms
+RESULT:3552
+8,50000,5000,===============  COL 8 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 594 ms
+RESULT:3552
+8,50000,10000,===============  COL 8 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 565 ms
+RESULT:3552
+8,50000,50000,===============  COL 8 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 518 ms
+RESULT:3552
+8,50000,100000,===============  COL 8 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 522 ms
+RESULT:3552
+8,100000,1000,===============  COL 8 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 1032 ms
+RESULT:7463
+8,100000,5000,===============  COL 8 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 962 ms
+RESULT:7463
+8,100000,10000,===============  COL 8 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 995 ms
+RESULT:7463
+8,100000,50000,===============  COL 8 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 981 ms
+RESULT:7463
+8,100000,100000,===============  COL 8 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 898 ms
+RESULT:7463
+8,500000,1000,===============  COL 8 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 3618 ms
+RESULT:38087
+8,500000,5000,===============  COL 8 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 3572 ms
+RESULT:38087
+8,500000,10000,===============  COL 8 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 3585 ms
+RESULT:38087
+8,500000,50000,===============  COL 8 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 3595 ms
+RESULT:38087
+8,500000,100000,===============  COL 8 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 3632 ms
+RESULT:38087
+8,1000000,1000,===============  COL 8 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 6161 ms
+RESULT:76075
+8,1000000,5000,===============  COL 8 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 6165 ms
+RESULT:76075
+8,1000000,10000,===============  COL 8 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 6071 ms
+RESULT:76075
+8,1000000,50000,===============  COL 8 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 6338 ms
+RESULT:76075
+8,1000000,100000,===============  COL 8 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 6706 ms
+RESULT:76075
+8,5000000,1000,===============  COL 8 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 32269 ms
+RESULT:378482
+8,5000000,5000,===============  COL 8 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 33052 ms
+RESULT:378482
+8,5000000,10000,===============  COL 8 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 33662 ms
+RESULT:378482
+8,5000000,50000,===============  COL 8 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 35148 ms
+RESULT:378482
+8,5000000,100000,===============  COL 8 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 35907 ms
+RESULT:378482
+8,10000000,1000,===============  COL 8 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 59940 ms
+RESULT:758980
+8,10000000,5000,===============  COL 8 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 60895 ms
+RESULT:758980
+8,10000000,10000,===============  COL 8 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 67706 ms
+RESULT:758980
+8,10000000,50000,===============  COL 8 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 63785 ms
+RESULT:758980
+8,10000000,100000,===============  COL 8 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 66760 ms
+RESULT:758980
+8,50000000,1000,===============  COL 8 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 62501 ms
+RESULT:758980
+8,50000000,5000,===============  COL 8 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 60888 ms
+RESULT:758980
+8,50000000,10000,===============  COL 8 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 60440 ms
+RESULT:758980
+8,50000000,50000,===============  COL 8 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 67725 ms
+RESULT:758980
+8,50000000,100000,===============  COL 8 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 62289 ms
+RESULT:758980
+10,1000,1000,===============  COL 10 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 77 ms
+RESULT:84
+10,1000,5000,===============  COL 10 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 80 ms
+RESULT:84
+10,1000,10000,===============  COL 10 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 57 ms
+RESULT:84
+10,1000,50000,===============  COL 10 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 51 ms
+RESULT:84
+10,1000,100000,===============  COL 10 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 63 ms
+RESULT:84
+10,5000,1000,===============  COL 10 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 148 ms
+RESULT:798
+10,5000,5000,===============  COL 10 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 155 ms
+RESULT:798
+10,5000,10000,===============  COL 10 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 138 ms
+RESULT:798
+10,5000,50000,===============  COL 10 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 241 ms
+RESULT:798
+10,5000,100000,===============  COL 10 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 146 ms
+RESULT:798
+10,10000,1000,===============  COL 10 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 249 ms
+RESULT:1750
+10,10000,5000,===============  COL 10 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 358 ms
+RESULT:1750
+10,10000,10000,===============  COL 10 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 217 ms
+RESULT:1750
+10,10000,50000,===============  COL 10 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 306 ms
+RESULT:1750
+10,10000,100000,===============  COL 10 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 250 ms
+RESULT:1750
+10,50000,1000,===============  COL 10 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 730 ms
+RESULT:6842
+10,50000,5000,===============  COL 10 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 800 ms
+RESULT:6842
+10,50000,10000,===============  COL 10 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 886 ms
+RESULT:6842
+10,50000,50000,===============  COL 10 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 691 ms
+RESULT:6842
+10,50000,100000,===============  COL 10 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 825 ms
+RESULT:6842
+10,100000,1000,===============  COL 10 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 1372 ms
+RESULT:14476
+10,100000,5000,===============  COL 10 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 1396 ms
+RESULT:14476
+10,100000,10000,===============  COL 10 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 1536 ms
+RESULT:14476
+10,100000,50000,===============  COL 10 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 1323 ms
+RESULT:14476
+10,100000,100000,===============  COL 10 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 1209 ms
+RESULT:14476
+10,500000,1000,===============  COL 10 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 5462 ms
+RESULT:72250
+10,500000,5000,===============  COL 10 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 4785 ms
+RESULT:72250
+10,500000,10000,===============  COL 10 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 5148 ms
+RESULT:72250
+10,500000,50000,===============  COL 10 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 5116 ms
+RESULT:72250
+10,500000,100000,===============  COL 10 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 5384 ms
+RESULT:72250
+10,1000000,1000,===============  COL 10 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 9483 ms
+RESULT:144591
+10,1000000,5000,===============  COL 10 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 9039 ms
+RESULT:144591
+10,1000000,10000,===============  COL 10 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 9387 ms
+RESULT:144591
+10,1000000,50000,===============  COL 10 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 9987 ms
+RESULT:144591
+10,1000000,100000,===============  COL 10 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 9981 ms
+RESULT:144591
+10,5000000,1000,===============  COL 10 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 46829 ms
+RESULT:717630
+10,5000000,5000,===============  COL 10 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 47197 ms
+RESULT:717630
+10,5000000,10000,===============  COL 10 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 45225 ms
+RESULT:717630
+10,5000000,50000,===============  COL 10 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 49003 ms
+RESULT:717630
+10,5000000,100000,===============  COL 10 ROW 5000000 ===============
+
+Total Lines Processed: 5000000
+Processing time: 49921 ms
+RESULT:717630
+10,10000000,1000,===============  COL 10 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 85445 ms
+RESULT:1439475
+10,10000000,5000,===============  COL 10 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 85696 ms
+RESULT:1439475
+10,10000000,10000,===============  COL 10 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 90670 ms
+RESULT:1439475
+10,10000000,50000,===============  COL 10 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 84520 ms
+RESULT:1439475
+10,10000000,100000,===============  COL 10 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 94860 ms
+RESULT:1439475
+10,50000000,1000,===============  COL 10 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 80502 ms
+RESULT:1439475
+10,50000000,5000,===============  COL 10 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 82281 ms
+RESULT:1439475
+10,50000000,10000,===============  COL 10 ROW 50000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 82650 ms
+RESULT:1439475
+10,50000000,50000,10,50000000,100000,===============  COL 10 ROW 50000000 ===============
+12,1000,1000,===============  COL 12 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 61 ms
+RESULT:606
+12,1000,5000,===============  COL 12 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 85 ms
+RESULT:606
+12,1000,10000,===============  COL 12 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 63 ms
+RESULT:606
+12,1000,50000,===============  COL 12 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 72 ms
+RESULT:606
+12,1000,100000,===============  COL 12 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 126 ms
+RESULT:606
+12,5000,1000,===============  COL 12 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 184 ms
+RESULT:1545
+12,5000,5000,===============  COL 12 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 209 ms
+RESULT:1545
+12,5000,10000,===============  COL 12 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 160 ms
+RESULT:1545
+12,5000,50000,===============  COL 12 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 158 ms
+RESULT:1545
+12,5000,100000,===============  COL 12 ROW 5000 ===============
+
+Total Lines Processed: 5000
+Processing time: 153 ms
+RESULT:1545
+12,10000,1000,===============  COL 12 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 259 ms
+RESULT:2827
+12,10000,5000,===============  COL 12 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 261 ms
+RESULT:2827
+12,10000,10000,===============  COL 12 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 240 ms
+RESULT:2827
+12,10000,50000,===============  COL 12 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 301 ms
+RESULT:2827
+12,10000,100000,===============  COL 12 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 297 ms
+RESULT:2827
+12,50000,1000,===============  COL 12 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 939 ms
+RESULT:13413
+12,50000,5000,===============  COL 12 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 935 ms
+RESULT:13413
+12,50000,10000,===============  COL 12 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 957 ms
+RESULT:13413
+12,50000,50000,===============  COL 12 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 883 ms
+RESULT:13413
+12,50000,100000,===============  COL 12 ROW 50000 ===============
+
+Total Lines Processed: 50000
+Processing time: 882 ms
+RESULT:13413
+12,100000,1000,===============  COL 12 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 1650 ms
+RESULT:26088
+12,100000,5000,===============  COL 12 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 1725 ms
+RESULT:26088
+12,100000,10000,===============  COL 12 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 1791 ms
+RESULT:26088
+12,100000,50000,===============  COL 12 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 1565 ms
+RESULT:26088
+12,100000,100000,===============  COL 12 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 1549 ms
+RESULT:26088
+12,500000,1000,===============  COL 12 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 6264 ms
+RESULT:133950
+12,500000,5000,===============  COL 12 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 6325 ms
+RESULT:133950
+12,500000,10000,===============  COL 12 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 5783 ms
+RESULT:133950
+12,500000,50000,===============  COL 12 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 6613 ms
+RESULT:133950
+12,500000,100000,===============  COL 12 ROW 500000 ===============
+
+Total Lines Processed: 500000
+Processing time: 6247 ms
+RESULT:133950
+12,1000000,1000,===============  COL 12 ROW 1000000 ===============
+12,1000000,5000,

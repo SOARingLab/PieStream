@@ -1,0 +1,8 @@
+
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+
+export PIE_PAIR_HOME=/home/uzi/Code/TPStream_expr/pieP
+
+CLASSPATH=$PIE_PAIR_HOME/target/classes:$PIE_PAIR_HOME/lib/*
+
+JAVA_CMD="$JAVA_HOME/bin/java -Xms16G -Xmx16G -Dfile.encoding=UTF-8 -classpath $CLASSPATH"

@@ -32,7 +32,7 @@ public class EventPreprocessor {
      */
     public PointEvent preprocess(String rawPointEvent) {
 
-        return preprocess(rawPointEvent, false);
+        return preprocess(rawPointEvent, true);
     }
 
     public PointEvent preprocess(String rawPointEvent,boolean useNativeTimestamp ) {
@@ -73,9 +73,18 @@ public class EventPreprocessor {
             throw new IllegalArgumentException("Timestamp field not found in event payload");
         }
         if ("long".equalsIgnoreCase(timestampAttribute.getType())) {
-            return (Long) timestampObj;
+            if (timestampObj instanceof Long) {
+                return (Long) timestampObj; // 如果是 Long 类型，直接转换为 long
+            } else if (timestampObj instanceof String) {
+                try {
+                    return Long.valueOf((String) timestampObj); // 如果是 String 类型，尝试解析为 long
+                } catch (NumberFormatException e) {
+                    throw new IllegalArgumentException("Invalid long value: " + timestampObj, e);
+                }
+            } else {
+                throw new IllegalArgumentException("Unsupported type for long conversion: " + timestampObj.getClass());
+            }
         }
-
 
         return Long.parseLong(timestampObj.toString());
     }

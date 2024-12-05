@@ -19,7 +19,7 @@ public class ABCDEFGTest {
         int Col=7;
         int Row=1000000;
         Schema schema =  Main.buildSchema(Col);
-        String query= Main.buildSimpleJoinQuery(Col);
+        String query= Main.buildSimpleJoinQuery(Col,50);
 
         Engine engine = new Engine(schema, query,WindowType.TIME_WINDOW);
 //        Engine engine = new Engine(schema, query,WindowType.COUNT_WINDOW);

@@ -119,7 +119,13 @@ public class Dot2DFA {
 
 
     public static DFA createDFAFromRelation(TemporalRelations.PreciseRel relation) {
-        String dotFilePath = "src/main/resources/dotFiles/" + relation.name() + ".dot";
+        String piePairHome = System.getenv("PIE_PAIR_HOME");
+        if (piePairHome == null) {
+            System.out.println("PIE_PAIR_HOME environment variable is not set.");
+            System.exit(1);
+        }
+
+        String dotFilePath = piePairHome+"/src/main/resources/dotFiles/" + relation.name() + ".dot";
         return parseDotFile(dotFilePath);
     }
 
