@@ -146,6 +146,13 @@ public class Engine implements ForeachAction<String, String> {
     }
 
 
+    public void printAVGprocessTime(){
+        System.out.println(worker.getTree().getRoot().getAVGprocessTime() +"ns");
+
+    }
+
+
+
     public long getResultCNT(){
         return worker.getResultCNT();
     }

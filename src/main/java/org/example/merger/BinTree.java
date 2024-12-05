@@ -250,7 +250,7 @@ public class BinTree {
 
 //            getNewTableOfLeafNode(leafNode);
             refreshNewIepTable_Leaf(leafNode);
-            if(pn==root){
+            if(pn==root){   // mpp = 1
                 pn.newT.concatenate(leafNode.getCol().getNewIEPTable());
             }else{
                 pn.newT.concatenate(leafNode.getCol().getNewIEPTable(),
@@ -377,8 +377,17 @@ public class BinTree {
     public void updateMergedNodeData() {
         startTime = System.currentTimeMillis();
         for (TreeNode node : mergedNodes) {
-            node.T.concatenate(node.newT);
-            node.addResCount( node.newT.getSize());
+            if(node==root){
+                long time=node.newT.addDetectTimeAndCalProcessTime("detectTime",System.nanoTime());
+
+                node.addProcessTime(time);
+                node.T.concatenate(node.newT);
+                node.addResCount( node.newT.getSize());
+            }else{
+
+                node.T.concatenate(node.newT);
+                node.addResCount( node.newT.getSize());
+            }
         }
         endTime = System.currentTimeMillis();
         update_merged+=endTime-startTime;

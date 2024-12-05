@@ -18,6 +18,7 @@ public class IEP implements Expirable {
     private Long latterStartTime;     // 后事件的开始时间
     private PointEvent triggerEvent;
     private Long triggerTime;
+    private Long systemTriggerTime;
     private CompletedTime compTime;
 //    private boolean isCompleted;
 
@@ -55,6 +56,7 @@ public class IEP implements Expirable {
         this.formerPie = formerPie;
         this.latterPie = latterPie;
         this.compTime=determinCompTimeByRel();
+        this.systemTriggerTime= System.nanoTime();
 
 //        this.isCompleted=false;
     }
@@ -106,6 +108,9 @@ public class IEP implements Expirable {
     }
 
 
+    public Long getSystemTriggerTime() {
+        return systemTriggerTime;
+    }
 
     public PointEvent getFormerPieStart() {
         return formerPieStart;

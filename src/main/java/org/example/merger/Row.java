@@ -45,7 +45,7 @@ public class Row implements Expirable {
         String formerPieETKey = EBA2String.get(iep.getFormerPie()) + ".ET";  // formerPieET 列名
         String latterPieETKey = EBA2String.get(iep.getLatterPie()) + ".ET";  // latterPieET 列名
 //        String relationKey = "r(" +EBA2String.get(iep.getFormerPie()) +"," +  EBA2String.get(iep.getLatterPie())+")";  // 关系列名
-
+        String triggerName =EBA2String.get(iep.getFormerPie())+"-"+ EBA2String.get(iep.getLatterPie())+"_triggerTime";
 
         this.data = new HashMap<>();
         this.data.put(formerPieSTKey, iep.getFormerStartTime() );
@@ -53,6 +53,7 @@ public class Row implements Expirable {
         this.data.put(formerPieETKey, iep.getFormerEndTime() );
         this.data.put(latterPieETKey, iep.getLatterEndTime() );
 //        this.data.put(relationKey, iep.getRelation().toString());
+        this.data.put(triggerName, iep.getSystemTriggerTime() );
 
         this.triggerTime=iep.getTriggerTime();
         this.indexKey=generateKey(joinColumns);
@@ -124,4 +125,20 @@ public class Row implements Expirable {
     public long getSortKey() {
         return triggerTime;
     }
+
+    public void addCol(String colName,long value){
+        this.data.put(colName,value);
+
+    }
+
+    public long getProcessTime(long value){
+        long maxTriggerTime=0;
+        for( Map.Entry<String,Long > entry:  this.data.entrySet()){
+            if(entry.getKey().endsWith("_triggerTime") && entry.getValue()>maxTriggerTime ){
+                maxTriggerTime =entry.getValue();
+            }
+        }
+        return value - maxTriggerTime;
+    }
+
 }

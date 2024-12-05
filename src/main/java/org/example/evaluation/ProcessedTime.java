@@ -80,6 +80,7 @@ public class ProcessedTime {
             System.out.println("Processing time: " + (endTime - startTime) + " ms");
             engine.printResultCNT();
 //            engine.printAccumulatedTimes();
+            engine.printAVGprocessTime();
             return (endTime - startTime);
 
         } catch (IOException e) {
@@ -91,7 +92,7 @@ public class ProcessedTime {
 
     public static void main(String[] args) throws Exception {
         if (args.length < 4) {
-            execute(4, 100000, 100000, "/home/uzi/Code/TPSdata/");
+            execute(4, 100000, 100000, "/Users/czq/Code/TPS_data/");
 //            System.err.println("xxx");
 //            System.exit(1);
         }

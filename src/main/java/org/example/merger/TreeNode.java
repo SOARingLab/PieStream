@@ -39,6 +39,7 @@ public class TreeNode {
     MPIEPair mpp;      // 是否包含after关系
 
     long resCount;
+    long processTime;
     // 构造函数
     public TreeNode(Set<EBA> predSet, Set<EBA> keyPredSet, TreeNode left, TreeNode right,
                     TreeNode parent, TreeNode brother, MPIEPairSource source, int height,
@@ -54,6 +55,7 @@ public class TreeNode {
         this.height = height;
         this.isLeaf = isLeaf;
         this.resCount=0;
+        this.processTime=0;
 //        this.joinedCols=new ArrayList<>();
         Window bef_aftWindow = window;
 
@@ -128,6 +130,14 @@ public class TreeNode {
 
     public void addResCount(long n) {
         this.resCount += n;
+    }
+
+    public void addProcessTime(long n) {
+        this.processTime += n;
+    }
+
+    public long getProcessTime(long n) {
+        return processTime;
     }
 
     public void setMPIEPair(MPIEPair mpp) {
@@ -341,5 +351,8 @@ public class TreeNode {
         }
     }
 
+    public double getAVGprocessTime(){
+        return (double)this.processTime/(double)this.resCount;
+    }
 
 }

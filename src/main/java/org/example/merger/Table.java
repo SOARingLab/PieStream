@@ -380,6 +380,17 @@ public class Table {
         concateRebuilTime+=(CRendTime-CRstartTime);
     }
 
+    public long addDetectTimeAndCalProcessTime(String colName,long value){
+        LinkList<Row>.Node nd= rows.getHead();
+        long accumlatedProcessTime=0;
+        while(nd!=null){
+
+            nd.getData().addCol(colName,value);
+            accumlatedProcessTime+=nd.getData().getProcessTime(value);
+            nd=nd.next;
+        }
+        return accumlatedProcessTime;
+    }
 
     // 清空表中的所有行
     public void clear() {
