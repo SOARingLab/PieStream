@@ -1,0 +1,62 @@
+
+col,limit,windSize,output
+6,1000,10000,===============  COL 6 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 39 ms
+RESULT:28
+AVG-latencyTime: 145313.0357142857 ns
+6,10000,10000,===============  COL 6 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 125 ms
+RESULT:213
+AVG-latencyTime: 53458.042253521126 ns
+6,100000,10000,===============  COL 6 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 595 ms
+RESULT:1951
+AVG-latencyTime: 23056.336750384417 ns
+6,1000000,10000,===============  COL 6 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 3619 ms
+RESULT:21003
+AVG-latencyTime: 11578.895729181546 ns
+6,10000000,10000,===============  COL 6 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 35293 ms
+RESULT:213122
+AVG-latencyTime: 11218.279290734885 ns
+20,1000,10000,===============  COL 20 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 79 ms
+RESULT:176
+AVG-latencyTime: 951974.3125 ns
+20,10000,10000,===============  COL 20 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 332 ms
+RESULT:2017
+AVG-latencyTime: 558284.1641051066 ns
+20,100000,10000,===============  COL 20 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 2106 ms
+RESULT:21713
+AVG-latencyTime: 534484.0367521761 ns
+20,1000000,10000,===============  COL 20 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 16640 ms
+RESULT:203868
+AVG-latencyTime: 406254.63488139387 ns
+20,10000000,10000,===============  COL 20 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 147829 ms
+RESULT:2124307
+AVG-latencyTime: 317643.52827533876 ns

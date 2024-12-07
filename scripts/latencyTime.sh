@@ -12,13 +12,13 @@ OUT_FILE=$OUT_DIR/latency.txt
 echo > $OUT_FILE  # 清空文件
 
 # 定义参数范围
-cols=( 4 )
+cols=( 4  )
 limits=(  1000000 )
 windSize=( 10000 )
-rates=( 100000 50000 10000 5000 1000 500 100 50 10 5 1)
+rates=( 100000 50000 10000 5000 1000 500 )
 
-#data_dir="/home/uzi/Code/TPSdata/"
-data_dir="/Users/czq/Code/TPS_data/"
+data_dir="/home/uzi/Code/TPSdata/"
+#data_dir="/Users/czq/Code/TPS_data/"
 
 
 # 循环参数并调用 Java 程序

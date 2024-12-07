@@ -5,27 +5,27 @@ col=4,limit=1000000,windSize=10000,rate=100000
  ===============  RATE 100000 ===============
 
 Total Lines Processed: 1000000
-Processing time: 9985 ms
-RESULT:15449
-AVG-latencyTime: 24021.302349666646 ns
+Processing time: 9987 ms
+RESULT:21260
+AVG-latencyTime: 20396.747036688615 ns
   
 col=4,limit=1000000,windSize=10000,rate=50000   
 
  ===============  RATE 50000 ===============
 
 Total Lines Processed: 1000000
-Processing time: 19946 ms
-RESULT:15449
-AVG-latencyTime: 38384.903553628064 ns
+Processing time: 19958 ms
+RESULT:21260
+AVG-latencyTime: 36225.96594543744 ns
   
 col=4,limit=1000000,windSize=10000,rate=10000   
 
  ===============  RATE 10000 ===============
 
 Total Lines Processed: 1000000
-Processing time: 99996 ms
-RESULT:15449
-AVG-latencyTime: 48963.75487086543 ns
+Processing time: 99998 ms
+RESULT:21260
+AVG-latencyTime: 46379.19369708373 ns
   
 col=4,limit=1000000,windSize=10000,rate=5000   
 
@@ -33,17 +33,17 @@ col=4,limit=1000000,windSize=10000,rate=5000
 
 Total Lines Processed: 1000000
 Processing time: 200000 ms
-RESULT:15449
-AVG-latencyTime: 51271.444494789306 ns
+RESULT:21260
+AVG-latencyTime: 52907.44247412982 ns
   
 col=4,limit=1000000,windSize=10000,rate=1000   
 
  ===============  RATE 1000 ===============
 
 Total Lines Processed: 1000000
-Processing time: 999999 ms
-RESULT:15449
-AVG-latencyTime: 65576.94433296654 ns
+Processing time: 1000000 ms
+RESULT:21260
+AVG-latencyTime: 67502.14562558796 ns
   
 col=4,limit=1000000,windSize=10000,rate=500   
 
@@ -51,5 +51,23 @@ col=4,limit=1000000,windSize=10000,rate=500
 
 Total Lines Processed: 1000000
 Processing time: 1999998 ms
-RESULT:15449
-AVG-latencyTime: 80130.77092368438 ns
+RESULT:21260
+AVG-latencyTime: 69580.82883349012 ns
+  
+col=4,limit=1000000,windSize=10000,rate=100   
+
+ ===============  RATE 100 ===============
+
+Total Lines Processed: 1000000
+Processing time: 9999990 ms
+RESULT:21260
+AVG-latencyTime: 78655.82902163688 ns
+  
+col=4,limit=1000000,windSize=10000,rate=50   
+
+ ===============  RATE 50 ===============
+
+Total Lines Processed: 1000000
+Processing time: 19999980 ms
+RESULT:21260
+AVG-latencyTime: 81136.44849482596 ns

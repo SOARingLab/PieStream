@@ -1,0 +1,212 @@
+
+col,limit,windSize,output
+4,1000,10000,===============  COL 4 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 36 ms
+RESULT:14
+AVG-latencyTime: 113446.42857142857 ns
+4,10000,10000,===============  COL 4 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 112 ms
+RESULT:165
+AVG-latencyTime: 49433.048484848485 ns
+4,100000,10000,===============  COL 4 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 480 ms
+RESULT:1557
+AVG-latencyTime: 18466.63840719332 ns
+4,1000000,10000,===============  COL 4 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 2592 ms
+RESULT:15449
+AVG-latencyTime: 7354.996504628131 ns
+4,10000000,10000,===============  COL 4 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 24078 ms
+RESULT:153479
+AVG-latencyTime: 6645.503267548003 ns
+6,1000,10000,===============  COL 6 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 43 ms
+RESULT:28
+AVG-latencyTime: 144563.35714285713 ns
+6,10000,10000,===============  COL 6 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 127 ms
+RESULT:213
+AVG-latencyTime: 51351.25821596244 ns
+6,100000,10000,===============  COL 6 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 599 ms
+RESULT:1951
+AVG-latencyTime: 22831.696565863658 ns
+6,1000000,10000,===============  COL 6 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 3987 ms
+RESULT:21003
+AVG-latencyTime: 12895.070989858592 ns
+6,10000000,10000,===============  COL 6 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 34152 ms
+RESULT:213122
+AVG-latencyTime: 11095.987312431378 ns
+8,1000,10000,===============  COL 8 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 42 ms
+RESULT:24
+AVG-latencyTime: 171932.66666666666 ns
+8,10000,10000,===============  COL 8 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 150 ms
+RESULT:239
+AVG-latencyTime: 71901.24267782427 ns
+8,100000,10000,===============  COL 8 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 785 ms
+RESULT:2949
+AVG-latencyTime: 33330.149203119705 ns
+8,1000000,10000,===============  COL 8 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 4729 ms
+RESULT:29528
+AVG-latencyTime: 17668.221112164723 ns
+8,10000000,10000,===============  COL 8 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 45273 ms
+RESULT:296216
+AVG-latencyTime: 16879.659353309748 ns
+10,1000,10000,===============  COL 10 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 50 ms
+RESULT:24
+AVG-latencyTime: 174428.45833333334 ns
+10,10000,10000,===============  COL 10 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 172 ms
+RESULT:459
+AVG-latencyTime: 90075.8954248366 ns
+10,100000,10000,===============  COL 10 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 985 ms
+RESULT:4298
+AVG-latencyTime: 51089.383201489065 ns
+10,1000000,10000,===============  COL 10 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 6296 ms
+RESULT:40937
+AVG-latencyTime: 31047.795563915286 ns
+10,10000000,10000,===============  COL 10 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 56807 ms
+RESULT:415221
+AVG-latencyTime: 27236.405632181417 ns
+12,1000,10000,===============  COL 12 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 54 ms
+RESULT:173
+AVG-latencyTime: 292651.8670520231 ns
+12,10000,10000,===============  COL 12 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 194 ms
+RESULT:822
+AVG-latencyTime: 137649.50608272507 ns
+12,100000,10000,===============  COL 12 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 1247 ms
+RESULT:5583
+AVG-latencyTime: 98984.97617768226 ns
+12,1000000,10000,===============  COL 12 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 8323 ms
+RESULT:54517
+AVG-latencyTime: 50769.80584038007 ns
+12,10000000,10000,===============  COL 12 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 71433 ms
+RESULT:577261
+AVG-latencyTime: 42283.04317284556 ns
+14,1000,10000,===============  COL 14 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 58 ms
+RESULT:150
+AVG-latencyTime: 244091.91333333333 ns
+14,10000,10000,===============  COL 14 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 211 ms
+RESULT:591
+AVG-latencyTime: 159791.23350253806 ns
+14,100000,10000,===============  COL 14 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 1396 ms
+RESULT:7593
+AVG-latencyTime: 111097.89516660082 ns
+14,1000000,10000,===============  COL 14 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 10314 ms
+RESULT:79145
+AVG-latencyTime: 80236.41819445322 ns
+14,10000000,10000,===============  COL 14 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 86919 ms
+RESULT:801368
+AVG-latencyTime: 66961.63549829791 ns
+16,1000,10000,===============  COL 16 ROW 1000 ===============
+
+Total Lines Processed: 1000
+Processing time: 60 ms
+RESULT:74
+AVG-latencyTime: 485659.0135135135 ns
+16,10000,10000,===============  COL 16 ROW 10000 ===============
+
+Total Lines Processed: 10000
+Processing time: 240 ms
+RESULT:1114
+AVG-latencyTime: 233114.078994614 ns
+16,100000,10000,===============  COL 16 ROW 100000 ===============
+
+Total Lines Processed: 100000
+Processing time: 1636 ms
+RESULT:11402
+AVG-latencyTime: 177005.75969128223 ns
+16,1000000,10000,===============  COL 16 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 11966 ms
+RESULT:110595
+AVG-latencyTime: 140402.6385731724 ns
+16,10000000,10000,===============  COL 16 ROW 10000000 ===============
+
+Total Lines Processed: 10000000
+Processing time: 105786 ms
+RESULT:1116629
+AVG-latencyTime: 112694.78783821664 ns

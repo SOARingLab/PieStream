@@ -1,13 +1,15 @@
 #!/bin/bash
 
 # Set JAVA_HOME (choose the desired Java version)
-JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home
+#JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home
 # Or if you want to use Java 21, you can uncomment the next line and comment the one above
-#   JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 
 # Set PIE_PAIR_HOME to your project directory
-PIE_PAIR_HOME=/Users/czq/Code/PIEPair
-# PIE_PAIR_HOME=/home/uzi/Code/TPStream_expr/pieP
+#PIE_PAIR_HOME=/Users/czq/Code/PIEPair
+PIE_PAIR_HOME=/home/uzi/Code/TPStream_expr/pieP
+export PIE_PAIR_HOME=/home/uzi/Code/TPStream_expr/pieP
+
 
 # Set CLASSPATH for your project (target/classes and libraries)
 CLASSPATH=$PIE_PAIR_HOME/target/classes:$PIE_PAIR_HOME/lib/*

@@ -28,8 +28,9 @@ public class Lowlatency {
         for (int i = 1; i < Col; i++) {
             if (i > 1) patternBuilder.append(" AND ");
             patternBuilder.append("A").append(i)
-                    .append(" meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals ")
+//                    .append(" meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals ")
 //                    .append(" meets;met-by;overlaps;started-by;during;finished-by;equals ")
+                    .append(" meets;overlaps;overlapped-by;starts;started-by;contains ")
                     .append("A").append(i + 1);
         }
 //         patternA4=" A1 starts A2 AND A2 before A3 AND A3 overlaps A4";

@@ -26,8 +26,8 @@ public class ProcessedTime {
         for (int i = 1; i < Col; i++) {
             if (i > 1) patternBuilder.append(" AND ");
             patternBuilder.append("A").append(i)
-                    .append(" meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals ")
-//                    .append(" meets;met-by;overlaps;started-by;during;finished-by;equals ")
+//                    .append(" meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals ")
+                    .append(" meets;overlaps;overlapped-by;starts;started-by;contains ")
                     .append("A").append(i + 1);
         }
 
@@ -92,7 +92,10 @@ public class ProcessedTime {
 
     public static void main(String[] args) throws Exception {
         if (args.length < 4) {
-            execute(4, 100000, 100000, "/Users/czq/Code/TPS_data/");
+//            PIE_PAIR_HOME=/home/uzi/Code/TPStream_expr/pieP
+//            execute(4, 100000, 100000, "/Users/czq/Code/TPS_data/");
+
+            execute(4, 100000, 100000, "/home/uzi/Code/TPSdata/");
 //            System.err.println("xxx");
 //            System.exit(1);
         }
