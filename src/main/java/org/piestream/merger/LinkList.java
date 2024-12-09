@@ -46,7 +46,7 @@ public class LinkList<T extends Expirable> {
 
     // 检查链表是否已满
     public boolean isFull() {
-        return window.getWindowType() == WindowType.COUNT_WINDOW && size == window.getWindowCapacity();
+        return window.getWindowType() == WindowType.CAPACITY_WINDOW && size == window.getWindowCapacity();
     }
 
     // 检查链表是否为空
@@ -191,7 +191,7 @@ public class LinkList<T extends Expirable> {
         if(otherLinkList.getSize()==0){
             return;
         }
-        if(window.getWindowType() ==WindowType.COUNT_WINDOW && this.size+otherLinkList.getSize()>this.getCapacity()){
+        if(window.getWindowType() ==WindowType.CAPACITY_WINDOW && this.size+otherLinkList.getSize()>this.getCapacity()){
             throw new IllegalArgumentException("Excess size exceeds capacity of LinkList.");
         }
 

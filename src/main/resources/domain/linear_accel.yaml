@@ -27,3 +27,4 @@ fields:
 
 # timestamp is a field name of fields or null.
 timestamp: ts
+timestampUnit: s

@@ -35,7 +35,7 @@ public class ProcessedTime {
         String query = " FROM dataStream" +
                 "\n DEFINE " + defineBuilder.toString() +
                 "\n PATTERN " + patternBuilder.toString() +
-                "\n WITHIN "+windSize +
+                "\n WITHIN "+windSize + " s "+
                 "\n RETURN A1.ts, A1.te";
 
         return query;
@@ -49,7 +49,8 @@ public class ProcessedTime {
         }
         attriList.add(new Attribute("t1", "long"));
         attriList.add(new Attribute("t2", "long"));
-        Schema schema= new Schema("CSV","t1", attriList);
+
+        Schema schema= new Schema("CSV","t1",  attriList);
 
         return schema;
     }

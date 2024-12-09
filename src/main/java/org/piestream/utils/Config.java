@@ -10,6 +10,7 @@ import java.util.List;
 public class Config {
     private String rawdataType;
     private String timestamp;
+    private String timestampUnit; // 新增字段
     private List<Field> fields;
 
     // Getter and Setter for rawdataType
@@ -28,6 +29,15 @@ public class Config {
 
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
+    }
+
+    // Getter and Setter for timestampUnit
+    public String getTimestampUnit() {
+        return timestampUnit;
+    }
+
+    public void setTimestampUnit(String timestampUnit) {
+        this.timestampUnit = timestampUnit;
     }
 
     // Getter and Setter for fields
@@ -80,6 +90,9 @@ public class Config {
 
             // Output the timestamp field
             System.out.println("Timestamp field: " + config.getTimestamp());
+
+            // Output the timestampUnit field
+            System.out.println("Timestamp Unit: " + config.getTimestampUnit());
 
             // Output the field information
             for (Field field : config.getFields()) {

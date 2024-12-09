@@ -99,7 +99,7 @@ public class IEPCol   {
     }
 
     private long needMoreSpaceWhenConcate(LinkList<IEP> newIepList){
-        if( this.window.getWindowType()== WindowType.COUNT_WINDOW  ){
+        if( this.window.getWindowType()== WindowType.CAPACITY_WINDOW){
             return this.iepList.getSize()+newIepList.getSize()-this.iepList.getCapacity();
         }else{
             return 0;

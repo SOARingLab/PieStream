@@ -40,7 +40,7 @@ public class Lowlatency {
                 " FROM dataStream " +
                 "\n DEFINE " + defineBuilder.toString() +
                 "\n PATTERN " + patternA4 +
-                "\n WITHIN "+windSize +
+                "\n WITHIN "+windSize + " S "+
                 "\n RETURN A1.ts, A1.te " ;
 
         return query;

@@ -77,11 +77,19 @@ public class QueryParser {
     // Entry point to parse the query
     public void parse() throws ParseException, EBA.ParseException {
 //        parseSelectClause();
+        try{
         parseFromClause();
         parseDefineClause();
         parsePatternClause();
         parseWithinClause();
         parseReturnClause();
+        } catch (ParseException e) {
+            // 捕获异常，输出异常信息
+            System.out.println("Exception caught: " + e.getMessage());
+            // 你也可以重新抛出异常，确保程序中断
+            throw e;
+        }
+
 
     }
 
@@ -238,7 +246,33 @@ public class QueryParser {
 
     private void parseWithinClause() throws ParseException {
         expect("WITHIN");
-        withinClause = Long.parseLong(consume()); // time value, e.g., 5 min
+        String number = consume();
+        String unit = consume().toUpperCase();
+
+        switch (unit) {
+            case "H":
+            case "HOUR":
+            case "HOURS":
+                withinClause = Long.parseLong(number) * 3600;
+                break;
+            case "M":
+            case "MS":
+            case "MIN":
+            case "MINS":
+            case "MINUTE":
+            case "MINUTES":
+                withinClause = Long.parseLong(number) * 60;
+                break;
+            case "S":
+            case "SECS":
+            case "SECONDE":
+            case "SECONDES":
+                withinClause = Long.parseLong(number);
+                break;
+            default:
+                throw new ParseException("Invalid time unit: " + unit);
+        }
+        withinClause *= 1_000_000_000L; // 转换为纳秒
     }
 
     // Helper methods

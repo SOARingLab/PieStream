@@ -29,25 +29,21 @@ public class Engine implements ForeachAction<String, String> {
         try {
             // 解析查询
             parser.parse();
-//            System.err.println("Query parsed successfully：");
-//            System.err.println("Joined-number:"+parser.getJoinedNum());
-//            System.err.println("predicate number in pattern:"+parser.getPredNumInPattern());
-//            System.err.println("window size:"+parser.getwindowClause());
         } catch (QueryParser.ParseException | EBA.ParseException e) {
             System.err.println("Failed to parse query: " + e.getMessage());
         }
         this.MPPSourceList = parser.getPatternClause();  // 获取解析后的模式子句
-        long windowCapasity=parser.getwindowClause();
+        long windowCapasityUnitNS=parser.getwindowClause();
         this.processor = new EventPreprocessor(schema);  // 初始化事件预处理器
         this.partitionAttribute = partitionAttribute;  // 设置分区属性
-        Window window =new Window(winType,windowCapasity);
+        Window window =new Window(winType,windowCapasityUnitNS,schema.getTimestampUnit().getNanosPerUnit());
 
         this.worker = new Worker(MPPSourceList,  window,parser.getEBA2String() );  // 创建 Worker 实例
 
     }
 
     public Engine(Schema schema,  String query){
-         this(schema,null, query,WindowType.COUNT_WINDOW);
+         this(schema,null, query,WindowType.CAPACITY_WINDOW);
     }
 
     public Engine(Schema schema, String query, WindowType winType){

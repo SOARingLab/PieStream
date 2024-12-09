@@ -95,7 +95,7 @@ public class Table {
     public void addRowsWithoutGenIndex(LinkList<Row> rowsToAdd) {
         long excess = size + rowsToAdd.getSize()  - this.getCapacity();
 
-        if (window.getWindowType()==WindowType.COUNT_WINDOW && excess > 0) {
+        if (window.getWindowType()==WindowType.CAPACITY_WINDOW && excess > 0) {
             startTime= System.currentTimeMillis();
             deleteRowsAndIndex(excess);
             endTime= System.currentTimeMillis();
@@ -113,7 +113,7 @@ public class Table {
     // 添加一行到表中
     public void addRow(Row row) {
         // 检查容量是否已满
-        if (window.getWindowType()==WindowType.COUNT_WINDOW&&size >= this.getCapacity()) {
+        if (window.getWindowType()==WindowType.CAPACITY_WINDOW &&size >= this.getCapacity()) {
            deleteRowsAndIndex(1);
         }
 

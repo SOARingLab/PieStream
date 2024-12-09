@@ -1,6 +1,7 @@
 package org.piestream.engine;
 
 
+import org.piestream.parser.Schema;
 
 public class Window {
 
@@ -8,9 +9,9 @@ public class Window {
     private long windowCapacity;       // The capacity of the window (could be in time units or count)
 
     // Constructor
-    public Window(WindowType windowType, long windowCapacity) {
+    public Window(WindowType windowType, long windowCapacityNS, long dataStreamUnitNS) {
         this.windowType = windowType;
-        this.windowCapacity = windowCapacity;
+        this.windowCapacity = windowCapacityNS/dataStreamUnitNS;
     }
 
     // Getter for windowType
