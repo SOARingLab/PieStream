@@ -48,5 +48,5 @@ do
     done
 done
 
-#java  -Xms12g -Xmx12g  -cp "target/classes:lib/*" org.example.evaluation.ProcessedTime 4 10000000 100000 /home/uzi/Code/TPSdata/
+#java  -Xms12g -Xmx12g  -cp "target/classes:lib/*" org.piestream.evaluation.ProcessedTime 4 10000000 100000 /home/uzi/Code/TPSdata/
 
