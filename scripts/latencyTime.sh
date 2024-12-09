@@ -17,9 +17,6 @@ limits=(  1000000 )
 windSize=( 10000 )
 rates=( 100000 50000 10000 5000 1000 500 )
 
-data_dir="/home/uzi/Code/TPSdata/"
-#data_dir="/Users/czq/Code/TPS_data/"
-
 
 # 循环参数并调用 Java 程序
 for col in "${cols[@]}"
@@ -31,7 +28,7 @@ do
           for r in "${rates[@]}"
           do
               # 构建执行的 Java 命令
-              EXEC="$JAVA_CMD  org.example.evaluation.Lowlatency $col $limit $third $data_dir $r "
+              EXEC="$JAVA_CMD  org.example.evaluation.Lowlatency $col $limit $third $DATA_DIR $r "
 
               echo "  "  >> $OUT_FILE
               # 输出到文件

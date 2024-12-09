@@ -98,21 +98,38 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <version>3.5.0</version>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.4.0</version>
                 <executions>
                     <execution>
+                        <phase>install</phase>
                         <goals>
-                            <goal>java</goal>
+                            <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <!-- 使用完全限定名 -->
-                            <mainClass>org.piestream.ExampleRunner</mainClass>
+                            <outputDirectory>${project.basedir}/lib</outputDirectory>
+                            <includeScope>runtime</includeScope> <!-- 你可以根据需要修改依赖的范围 -->
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.codehaus.mojo</groupId>-->
+<!--                <artifactId>exec-maven-plugin</artifactId>-->
+<!--                <version>3.5.0</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <goals>-->
+<!--                            <goal>java</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            &lt;!&ndash; 使用完全限定名 &ndash;&gt;-->
+<!--                            <mainClass>org.piestream.ExampleRunner</mainClass>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 
