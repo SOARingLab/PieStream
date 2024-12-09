@@ -36,11 +36,12 @@ public class Lowlatency {
 //         patternA4=" A1 starts A2 AND A2 before A3 AND A3 overlaps A4";
         patternA4=patternBuilder.toString();
         // 将所有部分组合成完整的查询语句
-        String query = " SELECT A1.ts, A1.te" +
-                "\n FROM dataStream" +
+        String query =
+                " FROM dataStream " +
                 "\n DEFINE " + defineBuilder.toString() +
                 "\n PATTERN " + patternA4 +
-                "\n WINDOW "+windSize;
+                "\n WITHIN "+windSize +
+                "\n RETURN A1.ts, A1.te " ;
 
         return query;
     }
@@ -69,18 +70,14 @@ public class Lowlatency {
         // Initialize FileDataSource and process data with the Engine
         try (DataSource dataSource = new FileDataSource(dataPath.toString(),limit,rate)) {
             String line;
-            long cnt = 0;
             long startTime = System.currentTimeMillis(); // Start timing
             while ((line = dataSource.readNext()) != null ) {
                 engine.apply("", line); // Process each line of data
-                cnt++;
-//                if (cnt % 100000 == 0) {
-//                    System.out.println(cnt + ", ");
-//                }
+
             }
             long endTime = System.currentTimeMillis();
 
-            System.out.println("\nTotal Lines Processed: " + (cnt));
+            System.out.println("\nTotal Lines Processed: " + (limit));
             System.out.println("Processing time: " + (endTime - startTime) + " ms");
             engine.printResultCNT();
 //            engine.printAccumulatedTimes();
@@ -95,25 +92,25 @@ public class Lowlatency {
 
 
     public static void main(String[] args) throws Exception {
+
         if (args.length < 4) {
-            execute(4, 1000000, 10000, "/Users/czq/Code/TPS_data/",100000);
-//            System.err.println("xxx");
-//            System.exit(1);
+            System.out.println("Runing Test : ");
+            int col=4;
+            long limit = 100000L;
+            long windSize= 100000L;
+            String dataPath= "/Users/czq/Code/TPS_data/";
+//            String dataPath= "/home/uzi/Code/TPSdata/";
+            long rate=100000;
+            execute(col, limit, windSize, dataPath,rate);
         }
         else{
             execute(Integer.valueOf(args[0]), Integer.valueOf(args[1]), Long.valueOf(args[2]), args[3], Long.valueOf(args[4]));
         }
-
-//        execute(4, 100000, 100000, "/home/uzi/Code/TPSdata/");
-
     }
 
     private static void execute( int col,long limit, long windSize, String basePath,long rate) throws Exception {
         WindowType windowType = WindowType.TIME_WINDOW;
-//        String basePath = "/home/uzi/Code/TPSdata/";
-//        Map<Integer, Map<Long, Long>> col_row_proceTimeMap = new HashMap<>();
-        System.out.println("\n ===============  RATE "   + rate + " ===============");
+        System.out.println("=====>  COL " + col + ", LIMIT " + limit  + ", WINDSIZE " + windSize + ", DATAPATH " + basePath + ", RATE "   + rate +  ", <=====");
         Long processedTime = buildRunner(col, limit, windSize, basePath, rate,windowType);
-//        System.out.println("processedTime: "+processedTime);
     }
 }

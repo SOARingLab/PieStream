@@ -78,11 +78,26 @@ public class BinaryDataSource implements DataSource {
         }
     }
 
+//    @Override
+//    public String readNext() {
+//        String currentRecord = this.nextRecord;
+//        this.nextRecord = readNextRecord();
+//        this.hasNextRecord = this.nextRecord != null;
+//        return currentRecord;
+//    }
+
     @Override
     public String readNext() {
+        // 读取当前记录
         String currentRecord = this.nextRecord;
+
+        // 读取下一条记录
         this.nextRecord = readNextRecord();
+
+        // 如果下一条记录为 null，标记为没有更多记录
         this.hasNextRecord = this.nextRecord != null;
+
+        // 返回当前记录
         return currentRecord;
     }
 
@@ -110,17 +125,18 @@ public class BinaryDataSource implements DataSource {
     }
 
     public static void main(String[] args) {
-        String binaryFilePath = "/Users/czq/Code/TPstream/data/linear_accel_filtered_404.events";
-        String schemaFilePath = "src/main/resources/domain/linear_accel.yaml";
+        String binaryFilePath = "/Users/czq/Code/TPS_data/linear_accel_filtered_404.events";
+        String schemaFilePath = "src/main/resources/domain/linearBin_404.yaml";
         Schema schema = new Schema(schemaFilePath); // 加载 Schema
 
-        String query = "SELECT s.ts, s.te " +
+        String query =
                 "FROM CarStream " +
                 "DEFINE D AS ACCEL <= -0.00455 , S AS SPEED >= 32 , A AS ACCEL >= 0.0050 " +
                 "PATTERN " +
                 "A  meets; overlaps; starts; during ; before    S  " +
                 "AND S  meets; contains; followed-by; overlaps;after;before   D  " +
-                "WINDOW 1000000";
+                "WITHIN 1000000 "+
+                "RETURN s.ts, s.te ";
 
          // 设置队列容量
 
@@ -132,13 +148,13 @@ public class BinaryDataSource implements DataSource {
             while (dataSource.hasNext()) {
                 String record = dataSource.readNext();
                 // 输出 JSON 格式的记录
-//                System.out.println(record);
+                System.out.println(record);
                 engine.apply("", record); // 处理每一行数据
             }
 
             time += System.nanoTime();
 
-            engine.formatResult();
+//            engine.formatResult();
             engine.printResultCNT();
             System.out.println( (time / 1_000_000) + "ms");
         } catch (IOException e) {

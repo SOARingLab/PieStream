@@ -72,7 +72,7 @@ public class EventPreprocessor {
         if (timestampObj == null) {
             throw new IllegalArgumentException("Timestamp field not found in event payload");
         }
-        if ("long".equalsIgnoreCase(timestampAttribute.getType())) {
+        if ("long".equalsIgnoreCase(timestampAttribute.getType())  ) {
             if (timestampObj instanceof Long) {
                 return (Long) timestampObj; // 如果是 Long 类型，直接转换为 long
             } else if (timestampObj instanceof String) {
@@ -81,8 +81,6 @@ public class EventPreprocessor {
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("Invalid long value: " + timestampObj, e);
                 }
-            } else {
-                throw new IllegalArgumentException("Unsupported type for long conversion: " + timestampObj.getClass());
             }
         }
 

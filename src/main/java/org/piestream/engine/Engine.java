@@ -29,10 +29,10 @@ public class Engine implements ForeachAction<String, String> {
         try {
             // 解析查询
             parser.parse();
-            System.err.println("Query parsed successfully：");
-            System.err.println("Joined-number:"+parser.getJoinedNum());
-            System.err.println("predicate number in pattern:"+parser.getPredNumInPattern());
-            System.err.println("window size:"+parser.getwindowClause());
+//            System.err.println("Query parsed successfully：");
+//            System.err.println("Joined-number:"+parser.getJoinedNum());
+//            System.err.println("predicate number in pattern:"+parser.getPredNumInPattern());
+//            System.err.println("window size:"+parser.getwindowClause());
         } catch (QueryParser.ParseException | EBA.ParseException e) {
             System.err.println("Failed to parse query: " + e.getMessage());
         }

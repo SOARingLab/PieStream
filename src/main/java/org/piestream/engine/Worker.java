@@ -28,7 +28,7 @@ public class Worker {
 
         try {
             tree.constructTree();
-            System.err.println("Tree constructed successfully.");
+//            System.err.println("Tree constructed successfully.");
         } catch (Exception e) {
             throw new IllegalArgumentException("Failed to construct tree");
         }

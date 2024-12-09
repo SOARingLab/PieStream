@@ -12,12 +12,12 @@ public class QueryParser {
     private int currentIndex = 0;
     private Schema schema;
 
-    private List<String> selectClause = new ArrayList<>();
+    private List<String> returnClause = new ArrayList<>();
     private String fromClause;
     private List<Map<String, EBA>> defineClause = new ArrayList<>();
     private Map<EBA,String> EBA2String =new HashMap<>();
     private List<MPIEPairSource> patternClause = new ArrayList<>();  // 更改为 MPIEPairSource 的 List
-    private long windowClause=0;
+    private long withinClause =0;
     private int JoinedNum=0 ;
     private Set<EBA> predSetInPattern=new HashSet<EBA>();
 
@@ -38,7 +38,7 @@ public class QueryParser {
     }
 
     public long getwindowClause(){
-        return  this.windowClause;
+        return  this.withinClause;
     }
 
     public QueryParser(String query, Schema schema) {
@@ -76,22 +76,25 @@ public class QueryParser {
 
     // Entry point to parse the query
     public void parse() throws ParseException, EBA.ParseException {
-        parseSelectClause();
+//        parseSelectClause();
         parseFromClause();
         parseDefineClause();
         parsePatternClause();
-        parseWindowClause();
+        parseWithinClause();
+        parseReturnClause();
 
     }
 
-    private void parseSelectClause() throws ParseException {
-        expect("SELECT");
-        while (!peek("FROM")) {
-            selectClause.add(parseOutputDef());
+    private void parseReturnClause() throws ParseException {
+        expect("RETURN");
+        do {
+            returnClause.add(parseOutputDef());
             if (peek(",")) {
                 consume(); // Consume comma
+            } else {
+                break;
             }
-        }
+        } while (true);
     }
 
     private String parseOutputDef() throws ParseException {
@@ -233,9 +236,9 @@ public class QueryParser {
     }
 
 
-    private void parseWindowClause() throws ParseException {
-        expect("WINDOW");
-        windowClause = Long.parseLong(consume()); // time value, e.g., 5 min
+    private void parseWithinClause() throws ParseException {
+        expect("WITHIN");
+        withinClause = Long.parseLong(consume()); // time value, e.g., 5 min
     }
 
     // Helper methods
