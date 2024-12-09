@@ -3,19 +3,21 @@
 # 设置环境变量和输出目录
 . ./env
 
-#echo  $JAVA_CMD
 OUT_DIR="out/latency_time"
-
 mkdir -p $OUT_DIR
 
-OUT_FILE=$OUT_DIR/latency.txt
+TIMESTAMP=$(date +"%m%d%H%M")  # 获取当前的月日时分
+OUT_FILE="$OUT_DIR/latency_$TIMESTAMP.out"  # 文件名中包含时间戳
+
 echo > $OUT_FILE  # 清空文件
 
 # 定义参数范围
 cols=( 4  )
 limits=(  1000000 )
 windSize=( 10000 )
-rates=( 100000 50000 10000 5000 1000 500 )
+#rates=( 100000 50000 10000 5000 1000 500 )
+
+rates=( 100000 50000   )
 
 
 # 循环参数并调用 Java 程序

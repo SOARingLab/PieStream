@@ -1,0 +1,19 @@
+
+  
+col=4,limit=1000000,windSize=10000,rate=100000   
+
+ ===============  RATE 100000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 9999 ms
+RESULT:21260
+AVG-latencyTime: 8300.387300094073 ns
+  
+col=4,limit=1000000,windSize=10000,rate=50000   
+
+ ===============  RATE 50000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 19993 ms
+RESULT:21260
+AVG-latencyTime: 12490.1268579492 ns

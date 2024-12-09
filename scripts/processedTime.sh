@@ -4,11 +4,15 @@
 . ./env
 
 #echo  $JAVA_CMD
-OUT_DIR="out/processed_time" 
-
+OUT_DIR="out/processed_time"
 mkdir -p $OUT_DIR
 
-OUT_FILE=$OUT_DIR/full.txt
+
+
+TIMESTAMP=$(date +"%m%d%H%M")  # 获取当前的月日时分
+OUT_FILE="$OUT_DIR/processTime_$TIMESTAMP.out"  # 文件名中包含时间戳
+
+#OUT_FILE=$OUT_DIR/full.txt
 echo > $OUT_FILE  # 清空文件
 
 # 定义参数范围

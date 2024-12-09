@@ -1,0 +1,8 @@
+
+col,limit,windSize,output
+6,1000000,10000,===============  COL 6 ROW 1000000 ===============
+
+Total Lines Processed: 1000000
+Processing time: 3707 ms
+RESULT:39664
+AVG-latencyTime: 9797.845855183541 ns
