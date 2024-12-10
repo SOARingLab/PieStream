@@ -1,0 +1,20 @@
+
+col,limit,windSize,output
+6,1000000,10000,=====>  COL 6, LIMIT 1000000, WINDSIZE 10000, DATAPATH /home/uzi/Code/TPSdata/, <=====
+
+Total Lines Processed: 1000000
+Processing time: 4153 ms
+RESULT:21003
+AVG-latencyTime: 13320.57129933819 ns
+8,1000000,10000,=====>  COL 8, LIMIT 1000000, WINDSIZE 10000, DATAPATH /home/uzi/Code/TPSdata/, <=====
+
+Total Lines Processed: 1000000
+Processing time: 5565 ms
+RESULT:29528
+AVG-latencyTime: 20293.30340693579 ns
+10,1000000,10000,=====>  COL 10, LIMIT 1000000, WINDSIZE 10000, DATAPATH /home/uzi/Code/TPSdata/, <=====
+
+Total Lines Processed: 1000000
+Processing time: 6970 ms
+RESULT:40937
+AVG-latencyTime: 32379.402105674573 ns

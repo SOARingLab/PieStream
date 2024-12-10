@@ -18,7 +18,7 @@ echo > $OUT_FILE  # 清空文件
 # 定义参数范围
 #cols=( 4 6 8 10 12 14 16 18 20 22 24 26 28 30 )
 
-cols=(  6   )
+cols=(  6  8 10 )
 # 4 6 8 10
 #limits=( 1000 5000 10000 50000 100000 500000 1000000 5000000 10000000 )
 
@@ -39,7 +39,7 @@ do
         for third in "${windSize[@]}"
         do
             # 构建执行的 Java 命令
-            EXEC="$JAVA_CMD  org.example.evaluation.ProcessedTime $col $limit $third $DATA_DIR"
+            EXEC="$JAVA_CMD  org.piestream.evaluation.ProcessedTime $col $limit $third $DATA_DIR"
             
             # 输出到文件
             echo -n "$col,$limit,$third" >> $OUT_FILE

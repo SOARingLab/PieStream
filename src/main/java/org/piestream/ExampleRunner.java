@@ -87,9 +87,9 @@ public class ExampleRunner {
         List<Integer> colList = new ArrayList<>(Arrays.asList(4 ));
         List<Long> limitList = new ArrayList<>(Arrays.asList( 10_000_000L ));
         WindowType windowType=WindowType.TIME_WINDOW;
-//        String basePath = "/Users/czq/Code/TPstream0/TPStream_DAPD/jepc-v2/";
+        String basePath = "/home/uzi/Code/TPSdata/";
 
-        String basePath = "/Users/czq/Code/TPS_data/";
+//        String basePath = "/Users/czq/Code/TPS_data/";
         Map<Integer, Map<Long, Long>> col_row_proceTimeMap = new HashMap<>();
 
         for (int col : colList) {

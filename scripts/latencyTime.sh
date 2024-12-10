@@ -12,7 +12,7 @@ OUT_FILE="$OUT_DIR/latency_$TIMESTAMP.out"  # 文件名中包含时间戳
 echo > $OUT_FILE  # 清空文件
 
 # 定义参数范围
-cols=( 4  )
+cols=( 4 6 8  )
 limits=(  1000000 )
 windSize=( 10000 )
 #rates=( 100000 50000 10000 5000 1000 500 )
@@ -30,7 +30,7 @@ do
           for r in "${rates[@]}"
           do
               # 构建执行的 Java 命令
-              EXEC="$JAVA_CMD  org.example.evaluation.Lowlatency $col $limit $third $DATA_DIR $r "
+              EXEC="$JAVA_CMD  org.piestream.evaluation.Lowlatency $col $limit $third $DATA_DIR $r "
 
               echo "  "  >> $OUT_FILE
               # 输出到文件
