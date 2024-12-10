@@ -9,12 +9,13 @@ public class Attribute {
         this.type = type;
     }
 
+
     public String getName() {
-        return name;
+        return name != null ? name.trim() : null;
     }
 
     public String getType() {
-        return type;
+        return type != null ? type.trim() : null;
     }
 
     @Override
