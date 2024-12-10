@@ -1,8 +1,7 @@
 
-# Full Pattern Matching for Complex Event Processing
+# Interval Temporal Pattern Matching in Data Streaming
 
-An open-source implementation of the pattern matching algorithm on streaming data.
-
+An open-source implementation to Detect Interval Temporal Patterns in Data Streaming.
 
 ## Installation and Usage
 
