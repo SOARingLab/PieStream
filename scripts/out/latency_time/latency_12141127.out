@@ -1,0 +1,13 @@
+
+  
+col=4,limit=1000000,windSize=10000,rate=100000   
+  
+col=4,limit=1000000,windSize=10000,rate=50000   
+  
+col=6,limit=1000000,windSize=10000,rate=100000   
+  
+col=6,limit=1000000,windSize=10000,rate=50000   
+  
+col=8,limit=1000000,windSize=10000,rate=100000   
+  
+col=8,limit=1000000,windSize=10000,rate=50000   

@@ -1,0 +1,49 @@
+
+  
+col=4,limit=1000000,windSize=10000,rate=100000   
+=====>  COL 4, LIMIT 1000000, WINDSIZE 10000, DATAPATH /Users/czq/Code/TPS_data/, RATE 100000, <=====
+
+Total Lines Processed: 1000000
+Processing time: 10002 ms
+RESULT:15449
+AVG-latencyTime: 12118.45316848987 ns
+  
+col=4,limit=1000000,windSize=10000,rate=50000   
+=====>  COL 4, LIMIT 1000000, WINDSIZE 10000, DATAPATH /Users/czq/Code/TPS_data/, RATE 50000, <=====
+
+Total Lines Processed: 1000000
+Processing time: 19994 ms
+RESULT:15449
+AVG-latencyTime: 18912.28480807819 ns
+  
+col=6,limit=1000000,windSize=10000,rate=100000   
+=====>  COL 6, LIMIT 1000000, WINDSIZE 10000, DATAPATH /Users/czq/Code/TPS_data/, RATE 100000, <=====
+
+Total Lines Processed: 1000000
+Processing time: 9997 ms
+RESULT:21003
+AVG-latencyTime: 17306.757367995047 ns
+  
+col=6,limit=1000000,windSize=10000,rate=50000   
+=====>  COL 6, LIMIT 1000000, WINDSIZE 10000, DATAPATH /Users/czq/Code/TPS_data/, RATE 50000, <=====
+
+Total Lines Processed: 1000000
+Processing time: 19997 ms
+RESULT:21003
+AVG-latencyTime: 26381.961338856352 ns
+  
+col=8,limit=1000000,windSize=10000,rate=100000   
+=====>  COL 8, LIMIT 1000000, WINDSIZE 10000, DATAPATH /Users/czq/Code/TPS_data/, RATE 100000, <=====
+
+Total Lines Processed: 1000000
+Processing time: 9998 ms
+RESULT:29528
+AVG-latencyTime: 19845.484218369005 ns
+  
+col=8,limit=1000000,windSize=10000,rate=50000   
+=====>  COL 8, LIMIT 1000000, WINDSIZE 10000, DATAPATH /Users/czq/Code/TPS_data/, RATE 50000, <=====
+
+Total Lines Processed: 1000000
+Processing time: 19995 ms
+RESULT:29528
+AVG-latencyTime: 29994.487401788134 ns
