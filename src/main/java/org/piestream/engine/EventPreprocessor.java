@@ -15,8 +15,8 @@ public class EventPreprocessor {
     private final Schema schema;
     private static long timestampCounter = 1; // 用于递增时间戳
     private static final ObjectMapper objectMapper = new ObjectMapper(); // 用于解析 JSON
-    private  PointEventIterator pointEventIterator ;
-    private Map<Attribute, Object> reusePayload = new HashMap<>();
+    private final PointEventIterator pointEventIterator ;
+    private final Map<Attribute, Object> reusePayload = new HashMap<>();
 
 
     public EventPreprocessor(Schema schema)  {
@@ -77,7 +77,7 @@ public class EventPreprocessor {
                 return (Long) timestampObj; // 如果是 Long 类型，直接转换为 long
             } else if (timestampObj instanceof String) {
                 try {
-                    return Long.valueOf((String) timestampObj); // 如果是 String 类型，尝试解析为 long
+                    return Long.parseLong((String) timestampObj); // 如果是 String 类型，尝试解析为 long
                 } catch (NumberFormatException e) {
                     throw new IllegalArgumentException("Invalid long value: " + timestampObj, e);
                 }
@@ -167,23 +167,6 @@ public class EventPreprocessor {
             reusePayload.put(attribute, rawList.get(i));
         }
         return reusePayload;
-    }
-
-    /**
-     * 预处理数据源，返回预处理后的 PointEvent 迭代器。
-     *
-     * @param dataS 数据源
-     * @return 预处理后的 PointEvent 迭代器
-     */
-    public PointEventIterator preprocessSource(DataSource dataS) {
-
-        while (dataS.hasNext() ) {
-            String rawPointEvent = dataS.readNext();
-            PointEvent pointEvent = preprocess(rawPointEvent);
-            pointEventIterator.addEvent(pointEvent);
-        }
-
-        return pointEventIterator;
     }
 
 }

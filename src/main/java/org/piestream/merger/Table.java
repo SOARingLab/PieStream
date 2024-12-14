@@ -362,7 +362,6 @@ public class Table {
     }
 
     //  有一些 concate 需要重建索引
-
     public void concatenateRebuildIndex(Table otherTable, List<String> newJoinColumns) {
         long CRstartTime= System.currentTimeMillis();
         if (otherTable.getSize() != 0) {
@@ -371,7 +370,7 @@ public class Table {
             LinkList<Row>.Node node=otherRows.getHead();
             while(node!=null){
                 Row row=node.getData();
-                addRow( new Row(row.getData(),newJoinColumns,row.getTriggerTime(), true )   );
+                addRow( new Row(row.getTimeData(),newJoinColumns,row.getIepSource(),row.getTriggerTime(), true )   );
                 node=node.next;
             }
         }

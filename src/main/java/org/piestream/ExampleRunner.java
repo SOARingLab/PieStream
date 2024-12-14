@@ -27,7 +27,8 @@ public class ExampleRunner {
             if (i > 1) patternBuilder.append(" AND ");
             patternBuilder.append("A").append(i)
 //                    .append(" meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals ")
-                    .append(" meets;met-by;overlaps;started-by;during;finished-by;equals ")
+//                    .append(" meets;met-by;overlaps;started-by;during;finished-by;equals ")
+                    .append(" meets;overlaps;overlapped-by;starts;started-by;contains ")
                     .append("A").append(i + 1);
         }
 
@@ -81,15 +82,14 @@ public class ExampleRunner {
     }
 
 
-
     public static void main(String[] args) {
 
         List<Integer> colList = new ArrayList<>(Arrays.asList(4 ));
-        List<Long> limitList = new ArrayList<>(Arrays.asList( 10_000_000L ));
+        List<Long> limitList = new ArrayList<>(Arrays.asList( 1_000_000L ));
         WindowType windowType=WindowType.TIME_WINDOW;
-        String basePath = "/home/uzi/Code/TPSdata/";
+//        String basePath = "/home/uzi/Code/TPSdata/";
 
-//        String basePath = "/Users/czq/Code/TPS_data/";
+        String basePath = "/Users/czq/Code/TPS_data/";
         Map<Integer, Map<Long, Long>> col_row_proceTimeMap = new HashMap<>();
 
         for (int col : colList) {
@@ -97,7 +97,7 @@ public class ExampleRunner {
             col_row_proceTimeMap.computeIfAbsent(col, k -> new HashMap<>());
 
             for (long limit : limitList) {
-                System.out.println("===============  COL "+col+" LIMIT "+limit+" ===============");
+                System.out.println("===============  COL "+col+", LIMIT "+limit+" ===============");
                 Long processedTime = buildRunner(col, limit, basePath, windowType );
                 col_row_proceTimeMap.get(col).put(limit, processedTime);
                 System.out.println(col_row_proceTimeMap);
