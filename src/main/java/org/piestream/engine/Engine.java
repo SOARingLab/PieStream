@@ -114,12 +114,14 @@ public class Engine implements ForeachAction<String, String> {
         System.out.println("Total run one by one time: " + (double)runOneByOneTime/1000 + " s (" + Math.round ((double)runOneByOneTime/(double)duration *100)+"%");
         System.out.println("Total derive before-after relationship time: " + (double)deriveRelTime/1000 + " s (" + Math.round ((double)deriveRelTime/(double)duration *100)+"%");
         System.out.println("Total merge after run time: " + (double)mergeTime/1000 + " s (" + Math.round ((double)mergeTime/(double)duration *100)+"%");
+        System.out.println("    refreshNewIepTable Time "+(double)this.worker.getTree().refreshNewIepTable /1000 + " s (" + Math.round ((double)this.worker.getTree().refreshNewIepTable/(double)duration *100)+"%");
         System.out.println("    Joined Time"+ (double)this.worker.getTree().joinTime/1000 + " s (" + Math.round ( (double)this.worker.getTree().joinTime/(double)duration *100)+"%");
         System.out.println("        searchForJoin Time: "+ (double)HashJoiner.searchForJoin /1000 + " s (" +Math.round ( (double)HashJoiner.searchForJoin/(double)duration *100)+"%");
 //        System.out.println("    joinedCNT "+ HashJoiner.joinCNT +" times");
-        System.out.println("    concat Time"+ (double)this.worker.getTree().concat/1000 + " s (" +Math.round ( (double)this.worker.getTree().concat/(double)duration *100)+"%");
+//        System.out.println("    concat Time"+ (double)this.worker.getTree().concat/1000 + " s (" +Math.round ( (double)this.worker.getTree().concat/(double)duration *100)+"%");
         System.out.println("Total update data time: " + (double)updateTime/1000 + " s (" +Math.round ( (double)updateTime/(double)duration *100)+"%");
-        System.out.println("    update_merged Time "+(double)this.worker.getTree().update_merged /1000 + " s (" + Math.round ((double)this.worker.getTree().update_merged/(double)duration *100)+"%");
+//        System.out.println("    update_merged Time "+(double)this.worker.getTree().update_merged /1000 + " s (" + Math.round ((double)this.worker.getTree().update_merged/(double)duration *100)+"%");
+
 
         System.out.println("        concateTime Time "+ (double)Table.concateTime  /1000 + " s (" +Math.round ( (double)Table.concateTime  /(double)duration *100)+"%");
         System.out.println("            concateRebuilTime Time "+ (double)Table.concateRebuilTime  /1000 + " s (" +Math.round ( (double)Table.concateRebuilTime  /(double)duration *100)+"%");

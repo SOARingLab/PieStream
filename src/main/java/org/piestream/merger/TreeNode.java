@@ -13,7 +13,7 @@ import java.util.*;
 
 public class TreeNode {
     final Set<EBA> predSet;      // 与节点关联的谓词集合
-    final Set<EBA> keyPredSet;   // 节点之间共享的关键谓词集合
+    final Set<EBA> keyPredSet;   // 节点之间共享的关键谓词集合 join key
     TreeNode parent;             // 树中的父节点
     TreeNode brother;            // 在合并过程中使用的兄弟节点
     TreeNode left;               // 树中的左子节点
@@ -23,7 +23,6 @@ public class TreeNode {
     final IEPCol Col;            // 正常的指定的精确关系的检测结果队列
     Table T;                     // 表格，用于存储节点信息
     Table newT;
-//    Table leafNewT;
     final IEPCol befCol;         // before关系的检测结果队列
     final IEPCol aftCol;         // after关系的检测结果队列
     final LinkList<IE> formerIEList;    // 辅助检测before关系的区间事件队列
@@ -32,7 +31,6 @@ public class TreeNode {
     final boolean hasBefore;     // 是否包含before关系
     final boolean hasAfter;      // 是否包含after关系
     final Window window;
-//    final List<String> joinedCols;
     MPIEPair mpp;      // 是否包含after关系
 
     long resCount;
@@ -105,17 +103,6 @@ public class TreeNode {
         this(predSet, keyPredSet, left, right, null, null, null, height, false,window, EBA2String);
     }
 
-    // Getter 和 Setter 方法
-
-
-//    public List<String> getJoinedCols() {
-//        return joinedCols;
-//    }
-
-//    public void setJoinedCols(List<String> joinedCols ){
-//        this.joinedCols.addAll(joinedCols);
-//        this.joinedCols.sort(null);
-//    }
 
     public Set<EBA> getPredSet() {
         return predSet;
@@ -235,116 +222,101 @@ public class TreeNode {
 
     // 其他方法
 
-    public void deriveBeforeAfterRel() {
+    // TODO: needDerivePrev=true;
+    public void deriveBeforeAfterRel(boolean needDerivePrev) {
+//        needDerivePrev=true;
         if (hasBefore) {
-            deriveBefore();
-        }
-        if (hasAfter) {
-            deriveAfter();
-        }
-    }
-
-
-
-    private void derivePreviousBefIEP( PointEvent latterPieStart){
-
-        if(befCol.getSize()!=0){
-            for ( Map.Entry<Long , List<IEP>> entry : befCol.getLong2IEPListMap(mpp.getFormerPred()).entrySet() ){
-//            entry.getKey();
-                IEP iep =entry.getValue().get(0);
-
-                befCol.setTriggerMSG( new IEP(TemporalRelations.AllenRel.BEFORE,mpp.getFormerPred(),mpp.getLatterPred(),
-                        iep.getFormerPieStart(),latterPieStart,iep.getFormerPieEnd(),null,
-                        iep.getFormerStartTime(),latterPieStart.getTimestamp(),latterPieStart,latterPieStart.getTimestamp() )   );
+            if(mpp.isHasNewLatterIE() ){
+                PointEvent latterPieStart=mpp.getLatterPieStart();
+                LinkList.Node tail=deriveClosestBefIEP(latterPieStart);
+                if(needDerivePrev){
+                    derivePreviousBefFromIE(tail,latterPieStart);
+                }
             }
         }
+        if (hasAfter) {
+            if(mpp.isHasNewFormerIE() ){
+                PointEvent formerPieStart=mpp.getFormerPieStart();
+                LinkList.Node tail=deriveClosestAftIEP(formerPieStart);
+                if(needDerivePrev){
+                    derivePreviousAftFromIE(tail,formerPieStart);
+                }
 
+            }
+        }
     }
-    private void deriveNewBefIEP(PointEvent latterPieStart){
+
+    private LinkList<IE>.Node  deriveClosestBefIEP(PointEvent latterPieStart){
 
         LinkList<IE>.Node  tail = formerIEList.getTail();
         if(tail!=null   ){
             IE lastFormerIE =  tail.getData();
-            if (lastFormerIE.getEndTime() < latterPieStart.getTimestamp()){ // 若小于则可以 并入bef
-                befCol.setTriggerMSG( new IEP(TemporalRelations.AllenRel.BEFORE,mpp.getFormerPred(),mpp.getLatterPred(),
-                        lastFormerIE.getStartEvent(),latterPieStart,lastFormerIE.getEndEvent(),null,
-                        lastFormerIE.getStartTime(),latterPieStart.getTimestamp(),latterPieStart,latterPieStart.getTimestamp()));
-                formerIEList.deleteNode(tail);
-                tail = formerIEList.getTail();
-            }else{  // 这一种情况是 meets ,  则跳过最后一个元素把之前的 formerIEList 全部并入 befCol
+            // find the last FormerIE that choud just satisfy before();
+            // we can sure that : lastFormerIE.getStartTime()<=latterPieStart.getTimestamp()
+            if(lastFormerIE.getStartTime()==latterPieStart.getTimestamp() ){ // starts , started-by
                 tail=tail.prev;
             }
-
-            //无论如何，把 formerIEList 除了最后一个以外的都加入到 befCol；
-            while(tail!=null){
-                lastFormerIE =  tail.getData();
-                befCol.setTriggerMSG( new IEP(TemporalRelations.AllenRel.BEFORE,mpp.getFormerPred(),mpp.getLatterPred(),
-                        lastFormerIE.getStartEvent(),latterPieStart,lastFormerIE.getEndEvent(),null,
-                        lastFormerIE.getStartTime(),latterPieStart.getTimestamp(),latterPieStart,latterPieStart.getTimestamp() )   );
-                LinkList.Node newTail= tail.prev;
-                formerIEList.deleteNode(tail);
-                tail = newTail;
+            else if(lastFormerIE.getEndTime()==null ){  // lastFormerIE is not compeleted
+                tail=tail.prev;
             }
-
-        }
-    }
-
-    public void deriveBefore() {
-        if(mpp.isHasNewLatterIE() ){
-//            IE newLatIE= new IE(mpp.getLatterPred(),mpp.getLatterPieStart());
-            PointEvent latterPieStart=mpp.getLatterPieStart();
-            derivePreviousBefIEP(latterPieStart);
-            deriveNewBefIEP(latterPieStart);
-        }
-    }
-
-    public void deriveAfter() {
-        if(mpp.isHasNewFormerIE() ){
-//            IE newLatIE= new IE(mpp.getLatterPred(),mpp.getLatterPieStart());
-            PointEvent formerPieStart=mpp.getFormerPieStart();
-            derivePreviousAftIEP(formerPieStart);
-            deriveNewAftIEP(formerPieStart);
-        }
-
-    }
-    private void derivePreviousAftIEP(PointEvent formerPieStart){
-        if(aftCol.getSize()!=0){
-            for ( Map.Entry<Long , List<IEP>> entry : aftCol.getLong2IEPListMap(mpp.getLatterPred()).entrySet() ){
-//            entry.getKey();
-                IEP iep =entry.getValue().get(0);
-
-                aftCol.setTriggerMSG( new IEP(TemporalRelations.AllenRel.AFTER,mpp.getFormerPred(),mpp.getLatterPred(),
-                        formerPieStart,iep.getLatterPieStart(),null,iep.getLatterPieEnd(),
-                        formerPieStart.getTimestamp(),iep.getLatterStartTime(),formerPieStart,formerPieStart.getTimestamp() )   );
+            else if(lastFormerIE.getEndTime() == latterPieStart.getTimestamp()) {  //  meets
+                tail=tail.prev;
             }
+            else { // followed-by 理想情况
+
+            }
+            lastFormerIE =  tail.getData();
+            befCol.setTriggerMSG( new IEP(TemporalRelations.AllenRel.BEFORE,mpp.getFormerPred(),mpp.getLatterPred(),
+                    lastFormerIE.getStartEvent(),latterPieStart,lastFormerIE.getEndEvent(),null,
+                    lastFormerIE.getStartTime(),latterPieStart.getTimestamp(),latterPieStart,latterPieStart.getTimestamp()));
+            return tail.prev;
+        }
+        return null;
+    }
+
+    public void  derivePreviousBefFromIE(LinkList<IE>.Node tail,PointEvent latterPieStart){
+        while(tail!=null){
+            IE lastFormerIE =  tail.getData();
+            befCol.setTriggerMSG( new IEP(TemporalRelations.AllenRel.BEFORE,mpp.getFormerPred(),mpp.getLatterPred(),
+                    lastFormerIE.getStartEvent(),latterPieStart,lastFormerIE.getEndEvent(),null,
+                    lastFormerIE.getStartTime(),latterPieStart.getTimestamp(),latterPieStart,latterPieStart.getTimestamp() )   );
+            tail = tail.prev;
         }
     }
-    private void deriveNewAftIEP(PointEvent formerPieStart){
 
-        LinkList<IE>.Node  tail = latterIEList.getTail();
-        if(tail!=null   ){
+
+    private LinkList<IE>.Node  deriveClosestAftIEP(PointEvent formerPieStart) {
+        LinkList<IE>.Node tail = latterIEList.getTail();
+        if (tail != null) {
+            IE lastLatterIE = tail.getData();
+            // find the last LatterIE that can just satisfy before();
+            // we can sure that : lastLatterIE.getStartTime()<=formerPieStart.getTimestamp()
+            if(lastLatterIE.getStartTime()==formerPieStart.getTimestamp() ){ // starts , started-by
+                tail=tail.prev;
+            }else if(lastLatterIE.getEndTime()==null ){  // lastLatterIE is not compeleted
+                tail=tail.prev;
+            }
+            else if(lastLatterIE.getEndTime() == formerPieStart.getTimestamp()) {  //  met-by
+                tail=tail.prev;
+            }
+            else { // follow  理想情况
+            }
+            lastLatterIE = tail.getData();
+            aftCol.setTriggerMSG(new IEP(TemporalRelations.AllenRel.AFTER, mpp.getFormerPred(), mpp.getLatterPred(),
+                    formerPieStart, lastLatterIE.getStartEvent(), null, lastLatterIE.getEndEvent(),
+                    formerPieStart.getTimestamp(), lastLatterIE.getStartTime(), formerPieStart, formerPieStart.getTimestamp()));
+            return tail.prev;
+        }
+        return null;
+    }
+
+    public void  derivePreviousAftFromIE(LinkList<IE>.Node tail,PointEvent formerPieStart){
+        while(tail!=null){
             IE lastLatterIE =  tail.getData();
-            if (lastLatterIE.getEndTime() < formerPieStart.getTimestamp()){ // 若小于则可以 并入 aftCol
-                aftCol.setTriggerMSG( new IEP(TemporalRelations.AllenRel.AFTER,mpp.getFormerPred(),mpp.getLatterPred(),
-                        formerPieStart,lastLatterIE.getStartEvent(),null,lastLatterIE.getEndEvent(),
-                        formerPieStart.getTimestamp(),lastLatterIE.getStartTime(),formerPieStart,formerPieStart.getTimestamp()));
-                latterIEList.deleteNode(tail);
-                tail = latterIEList.getTail();
-            }else{  // 这一种情况是 meets , 则跳过最后一个元素把之前的 latterIEList 全部并入 befCol
-                tail=tail.prev;
-            }
-
-            //无论如何，把 formerIEList 除了最后一个以外的都加入到 befCol；
-            while(tail!=null){
-                lastLatterIE =  tail.getData();
-                aftCol.setTriggerMSG( new IEP(TemporalRelations.AllenRel.AFTER,mpp.getFormerPred(),mpp.getLatterPred(),
-                        formerPieStart,lastLatterIE.getStartEvent(),null,lastLatterIE.getEndEvent(),
-                        formerPieStart.getTimestamp(),lastLatterIE.getStartTime(),formerPieStart,formerPieStart.getTimestamp()));
-                LinkList.Node newTail= tail.prev;
-                latterIEList.deleteNode(tail);
-                tail = newTail;
-
-            }
+            aftCol.setTriggerMSG( new IEP(TemporalRelations.AllenRel.AFTER,mpp.getFormerPred(),mpp.getLatterPred(),
+                    formerPieStart,lastLatterIE.getStartEvent(),null,lastLatterIE.getEndEvent(),
+                    formerPieStart.getTimestamp(),lastLatterIE.getStartTime(),formerPieStart,formerPieStart.getTimestamp()));
+            tail = tail.prev;
         }
     }
 

@@ -96,11 +96,12 @@ public class Worker {
     }
 
     public void mergeAfterRun(){
-        tree.mergeTree();  // 使用包装类内部的 node
+//        tree.mergeTree();
+        tree.mergeTreeWithDeriving();
     }
 
     public void deriveBeforeAfterRel(){
-        tree.deriveBeforeAfterRel();  // 使用包装类内部的 node
+        tree.deriveBeforeAfterRel();
     }
 
 

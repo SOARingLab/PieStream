@@ -259,11 +259,15 @@ public class IEP implements Expirable {
         }
     }
 
-    @Override
-    public  boolean isExpired(long deadLine){
-        return triggerTime<deadLine;
-    }
+//    @Override
+//    public  boolean isExpired(long deadLine){
+//        return triggerTime<deadLine;
+//    }
 
+
+    public  boolean isExpired(long deadLine){
+        return formerStartTime<=latterStartTime?formerStartTime<deadLine:latterStartTime<deadLine;
+    }
     @Override
     public long getSortKey() {
         return triggerTime;

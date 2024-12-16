@@ -8,17 +8,17 @@ import java.util.*;
 
 public class Row implements Expirable {
     private Map<String, Long> timeData;
-    private Set<IEP> iepSource;
+    private Set<Expirable> source;
     private long triggerTime;   //  iep中最晚的 triggerTime，决定了这个row的过期时间
     private String indexKey;    //  这个row的index
 
 
 
     // 构造函数，接受列名和列值的 Map
-    public Row(Map<String, Long> timeData, List<String> joinColumns, Set<IEP> iepSource, long triggerTime , boolean needNewIndex) {
+    public Row(Map<String, Long> timeData, List<String> joinColumns, Set<Expirable> source, long triggerTime , boolean needNewIndex) {
         this.triggerTime=triggerTime;
         this.timeData = timeData;
-        this.iepSource=iepSource;
+        this.source = source;
         if(needNewIndex){    // 非 root 节点都需要 index
             this.indexKey=generateKey(joinColumns);
         }else{  // root 节点不需要 index
@@ -47,14 +47,14 @@ public class Row implements Expirable {
 //        this.data.put(latterPieETKey, iep.getLatterEndTime() );
 //        this.data.put(relationKey, iep.getRelation().toString());
         this.timeData.put(triggerName, iep.getSystemTriggerTime() );
-        this.iepSource=new HashSet<IEP>();
-        this.iepSource.add(iep);
+        this.source =new HashSet<Expirable>();
+        this.source.add(iep);
         this.triggerTime=iep.getTriggerTime();
         this.indexKey=generateKey(joinColumns);
     }
 
-    public Set<IEP> getIepSource(){
-        return iepSource;
+    public Set<Expirable> getSource(){
+        return source;
     }
 
     public long getTriggerTime() {
@@ -95,8 +95,8 @@ public class Row implements Expirable {
         long lastTriggerTime=this.triggerTime>=other.triggerTime?this.triggerTime:other.triggerTime;
         Map<String, Long> joinedData = new HashMap<>(this.timeData);
         joinedData.putAll(other.timeData);
-        Set<IEP> mergedIEPSource= new HashSet<>(this.getIepSource());
-        mergedIEPSource.addAll(other.getIepSource());
+        Set<Expirable> mergedIEPSource= new HashSet<>(this.getSource());
+        mergedIEPSource.addAll(other.getSource());
         Row r= new Row(joinedData,parentJoinColumns,mergedIEPSource,lastTriggerTime,needNewIndex);
         return r;
     }
@@ -131,14 +131,26 @@ public class Row implements Expirable {
 
     }
 
+    // 每次对row 是否过期以其中最新的   Triggertime 为标准
+//    public long getProcessTime(long value){
+//        long maxTriggerTime=0;
+//        for( Map.Entry<String,Long > entry:  this.timeData.entrySet()){
+//            if(entry.getKey().endsWith("_triggerTime") && entry.getValue()>maxTriggerTime ){
+//                maxTriggerTime =entry.getValue();
+//            }
+//        }
+//        return value - maxTriggerTime;
+//    }
+
+    // 每次对row 是否过期以其中最老的   Triggertime 为标准
     public long getProcessTime(long value){
-        long maxTriggerTime=0;
+        long minTriggerTime=Long.MAX_VALUE;
         for( Map.Entry<String,Long > entry:  this.timeData.entrySet()){
-            if(entry.getKey().endsWith("_triggerTime") && entry.getValue()>maxTriggerTime ){
-                maxTriggerTime =entry.getValue();
+            if(entry.getKey().endsWith("_triggerTime") && entry.getValue()<minTriggerTime ){
+                minTriggerTime =entry.getValue();
             }
         }
-        return value - maxTriggerTime;
+        return value - minTriggerTime;
     }
 
 }

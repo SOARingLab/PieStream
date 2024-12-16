@@ -60,9 +60,14 @@ public class IE implements Expirable   {
         this.endTime = endTime;
     }
 
+//    @Override
+//    public  boolean isExpired(long deadLine){
+//        return triggerTime<deadLine;
+//    }
+
     @Override
     public  boolean isExpired(long deadLine){
-        return triggerTime<deadLine;
+        return startTime<deadLine;
     }
 
     @Override

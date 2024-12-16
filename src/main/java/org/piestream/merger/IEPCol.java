@@ -74,12 +74,22 @@ public class IEPCol   {
         this.isTrigger = true;
     }
 
+    //TODO:OOOO
     public void updateNewIepList2Table( Map<EBA, String> EBA2String,List<String> joinColumns){
+        if(isTrigger){
+            LinkList<IEP>.Node current = this.newIEPList.getHead() ;
 
-        LinkList<IEP>.Node current = this.newIEPList.getHead() ;
-        while (current != null) {
-            this.newIEPTable.addRow(current.getData(), EBA2String,joinColumns);
-            current = current.next;
+            int cnt=0;
+            while (current != null) {
+                Row newRow=new Row(current.getData(), EBA2String,joinColumns);
+                this.newIEPTable.addRow(newRow);
+//            this.newIEPTable.addRow(current.getData(), EBA2String,joinColumns);
+                current = current.next;
+                cnt++;
+            }
+            if(cnt> 1) {
+                System.out.println("CNT: ==>  " + cnt);
+            }
         }
     }
 
@@ -210,6 +220,7 @@ public class IEPCol   {
     }
 
 
+    // TODO:
     // 把叶子结点中的本次发现的bef结果 更新到大表中，方便后续进行统一Join
     public void mergeBefAftCol(IEPCol col){
         this.getNewIEPTable().concatenate(col.getNewIEPTable());

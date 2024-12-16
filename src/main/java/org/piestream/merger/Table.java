@@ -352,7 +352,9 @@ public class Table {
 
 
     public void concatenate(Table otherTable, List<String> tableJoinCols,List<String> addedTableJoinCols) {
-
+        if(otherTable==null){
+            return;
+        }
         if(tableJoinCols == addedTableJoinCols){
             concatenate(otherTable);
         }else{
@@ -363,6 +365,9 @@ public class Table {
 
     //  有一些 concate 需要重建索引
     public void concatenateRebuildIndex(Table otherTable, List<String> newJoinColumns) {
+        if(otherTable==null){
+            return;
+        }
         long CRstartTime= System.currentTimeMillis();
         if (otherTable.getSize() != 0) {
             LinkList<Row> otherRows = otherTable.getRows();
@@ -370,7 +375,7 @@ public class Table {
             LinkList<Row>.Node node=otherRows.getHead();
             while(node!=null){
                 Row row=node.getData();
-                addRow( new Row(row.getTimeData(),newJoinColumns,row.getIepSource(),row.getTriggerTime(), true )   );
+                addRow( new Row(row.getTimeData(),newJoinColumns,row.getSource(),row.getTriggerTime(), true )   );
                 node=node.next;
             }
         }

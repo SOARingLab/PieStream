@@ -1,6 +1,7 @@
 package org.piestream.merger;
 
 import org.piestream.engine.Window;
+import org.piestream.events.Expirable;
 import org.piestream.parser.MPIEPairSource;
 import org.piestream.piepair.IEP;
 import org.piestream.piepair.eba.EBA;
@@ -8,6 +9,8 @@ import org.piestream.piepair.eba.EBA;
 import java.util.*;
 import java.util.TreeSet;
 import java.util.Set;
+
+import static java.lang.Math.min;
 
 public class BinTree {
 
@@ -24,12 +27,14 @@ public class BinTree {
 
     private final Map<TreeNode, Set<String>> node2AcmltJoinedCols;
 
+    public long refreshNewIepTable=0;
     public long joinTime=0;
-    public long concat=0;
-    public long update_merged=0;
+//    public long concat=0;
+//    public long update_merged=0;
     public long update_leaf=0;
     public long startTime=0;
     public long endTime=0;
+
 
 
     public BinTree(List<MPIEPairSource> sourceList, Window window, Map<EBA, String> EBA2String) {
@@ -92,9 +97,6 @@ public class BinTree {
                 // 更新 node2JoinedCols，覆盖旧值
                 this.node2JoinedCols.put(right, new ArrayList<>(joinedCols));
             }
-
-
-
             buildJoinedCols(left);
             buildJoinedCols(right);
         }
@@ -209,82 +211,92 @@ public class BinTree {
         return mergedNode;
     }
 
+    private boolean isNodeTrigger(TreeNode node){
+        return node.getCol().getIsTrigger() || (node.getBefCol()!=null && node.getBefCol().getIsTrigger() )
+                ||(node.getAftCol()!=null && node.getAftCol().getIsTrigger());
+    }
+    public void megreBottomLeaf(){
+        // bottomLeaf
+        refreshNewIepTable_Leaf(bottomLeaf);
+        TreeNode pn = bottomLeaf.parent;
+        if(pn==root){   // mpp = 1
+            pn.newT.concatenate(bottomLeaf.getCol().getNewIEPTable());    // directly concat -> finish
+        }else{
+            pn.newT.concatenate(bottomLeaf.getCol().getNewIEPTable(),     // concat with Rebuilding index -> continue
+                    node2JoinedCols.get(pn),
+                    node2JoinedCols.get(bottomLeaf));
+        }
+    }
+
     public void mergeTree() {
-        // TreeNode startNode = getStartMergeNode();
-
-        TreeNode startNode = bottomLeaf;
-        if (startNode != null) {// 为null则不用更新
-            mergeNewTableFrom(startNode);
-        }
-    }
-
-    private TreeNode getStartMergeNode() {
-
-        TreeNode startNode = bottomLeaf;
-
-        if (startNode.getCol().getIsTrigger()) {
-            return startNode;
-        }
-        TreeNode mergedNode = startNode.parent;
-        startNode = mergedNode.brother;
+        megreBottomLeaf();
+        TreeNode mergedNode = bottomLeaf.parent;
         TreeNode pn = mergedNode.parent;
-        while (pn != null) {
-            if (startNode.getCol().getIsTrigger()) {
-                return startNode;
-            }
-            mergedNode = startNode.parent;
-            startNode = mergedNode.brother;
-            pn = mergedNode.parent;
-        }
+        TreeNode leafNode = mergedNode.brother;
 
-        return null;// 不用更新
-
-    }
-
-    private void mergeNewTableFrom(TreeNode startNode) {
-        TreeNode leafNode = startNode;
-        TreeNode mergedNode = leafNode.brother;
-        TreeNode pn = leafNode.parent;
-
-        if (leafNode == bottomLeaf) { // 最底层
-
-//            getNewTableOfLeafNode(leafNode);
-            refreshNewIepTable_Leaf(leafNode);
-            if(pn==root){   // mpp = 1
-                pn.newT.concatenate(leafNode.getCol().getNewIEPTable());
-            }else{
-                pn.newT.concatenate(leafNode.getCol().getNewIEPTable(),
-                        node2JoinedCols.get(pn),
-                        node2JoinedCols.get(leafNode));
-            }
-            // pn.newT.printTable();
-            mergedNode = pn;
-            pn = pn.parent;
-            leafNode = mergedNode.brother;
-        }
-
-        while (pn != null) {
+        while (pn != null) {    // merge Intermediate node
             getNewTabeOfLeafAndMergedNode(pn, mergedNode, leafNode);
-            // pn.newT.printTable();
             mergedNode = pn;
             pn = pn.parent;
             leafNode = mergedNode.brother;
         }
+    }
+
+    public void mergeTreeWithDeriving() {
+
+        megreBottomLeaf();
+        TreeNode mergedNode = bottomLeaf.parent;
+        TreeNode pn = mergedNode.parent;
+        TreeNode leafNode = mergedNode.brother;
+
+        while (pn != null) {    // merge Intermediate node
+
+            mergeIntermedNodeWithDeriving(pn, mergedNode, leafNode);
+            mergedNode = pn;
+            pn = pn.parent;
+            leafNode = mergedNode.brother;
+        }
+    }
+
+    private void deriveBottomLeaf(){
 
     }
 
-
+    // join 之前将 本轮次的匹配结果（包括before 和 after ）全部统一到叶子节点的 col下的NewTable中
+    // // updateNewIepTo Col.NewT
     private void refreshNewIepTable_Leaf(TreeNode leaf){
+
         leaf.getCol().updateNewIepList2Table( EBA2String,  node2JoinedCols.get(leaf));
+
         if (leaf.isHasBefore()){
+            startTime= System.currentTimeMillis();
             leaf.getBefCol().updateNewIepList2Table( EBA2String,  node2JoinedCols.get(leaf));
+
+            endTime= System.currentTimeMillis();
             leaf.getCol().mergeBefAftCol(leaf.getBefCol());
+
         }
+
         if (leaf.isHasAfter()){
             leaf.getAftCol().updateNewIepList2Table( EBA2String,  node2JoinedCols.get(leaf));
             leaf.getCol().mergeBefAftCol(leaf.getAftCol());
         }
+
+        refreshNewIepTable+=(endTime-startTime);
     }
+
+    // updateNewIepTo Col.NewT , BefCol.NewT, AftCol.NewT
+    private void updateNewIepToTable(TreeNode leaf){
+        leaf.getCol().updateNewIepList2Table( EBA2String,  node2JoinedCols.get(leaf));
+        if (leaf.isHasBefore()  ){
+            leaf.getBefCol().updateNewIepList2Table( EBA2String,  node2JoinedCols.get(leaf));
+        }
+        if (leaf.isHasAfter()){
+            leaf.getAftCol().updateNewIepList2Table( EBA2String,  node2JoinedCols.get(leaf));
+        }
+    }
+
+
 
 
     public Set<String> getStringFromEBA(Set<EBA> ebaSet){
@@ -295,58 +307,169 @@ public class BinTree {
         return strs;
     }
 
+    private void mergeIntermedNodeWithDeriving(TreeNode ParentNode, TreeNode mergedNode, TreeNode leafNode) {
+
+        updateNewIepToTable(leafNode);
+        Table intermNewTab=mergedNode.getNewT();
+        Table intermOldTab=mergedNode.getT();
+        Table leafOldTab=leafNode.getCol().getIEPTable();
+
+
+        // for result not in BefCol.NewT and AftCol.NewT
+        // Normal
+        incrementalNaturalJoin(ParentNode,intermNewTab,intermOldTab,leafNode.getCol().getNewIEPTable(),leafOldTab);
+
+        // for result in BefCol.NewT
+        if(leafNode.hasBefore  ) {
+            Set<EBA> keyPredSet=  leafNode.parent.keyPredSet;
+            EBA formerPie= leafNode.mpp.getFormerPred();
+            EBA latterPie= leafNode.mpp.getLatterPred();
+
+            // 3. JoinOn Both  [ first join on latterPie, then derive formerPie according to formalIEList and intermTable
+            if (keyPredSet.contains(formerPie) &&  leafNode.parent.keyPredSet.contains(latterPie) ){
+
+                throw new IllegalStateException("Unexpected state: No matching condition for join logic.");
+            }
+            // 1. JoinOn formerPie [ first traverse intermTable, then derive formerPie according to intermTable
+            else if(leafNode.parent.keyPredSet.contains(leafNode.mpp.getFormerPred())){
+                increDeriveFromIntermJoin(ParentNode,formerPie,latterPie,intermNewTab,intermOldTab, leafNode.getBefCol().getNewIEPTable(),leafNode.getBefCol().getIEPTable() );
+            }
+            // 2. JoinOn latterPie [ first join on latterPie, then derive formerPie according to formalIEList
+            else if (leafNode.parent.keyPredSet.contains(leafNode.mpp.getLatterPred()) ){
+                increDeriveFromIEListJoin(ParentNode,formerPie,latterPie,intermNewTab,intermOldTab, leafNode.getBefCol().getNewIEPTable(),leafNode.getBefCol().getIEPTable() );
+            }
+            else{
+                throw new IllegalStateException("Unexpected state: No matching condition for join logic.");
+            }
+              }
+    }
+
+    private void increDeriveFromIEListJoin(TreeNode ParentNode,EBA joinedPie,EBA otherPieofLeaf,  Table  intermNewTab, Table intermOldTab,Table leafNewTab,Table leafOldTab ){
+
+    }
+    private void increDeriveFromIntermJoin(TreeNode ParentNode,EBA joinedPie,EBA otherPieofLeaf,  Table  intermNewTab, Table intermOldTab,Table leafNewTab,Table leafOldTab ){
+        long intermNewSize=intermNewTab.getSize();
+        long leafNewSize=leafNewTab.getSize();
+        if( leafNewSize>1){
+            throw new IllegalArgumentException("leafNewSize should not be greater than 1. Found: " + leafNewSize);
+        }
+        LinkList<Row>.Node leafNewPtr=leafNewTab.getRows().getHead();
+        LinkList<Row>.Node leafOldPtr=leafOldTab.getRows().getHead();
+        String joinedCol=EBA2String.get(joinedPie)+".ST";
+        String otherPieName= EBA2String.get(otherPieofLeaf)+".ST";
+        if(leafNewSize!=0){
+            // intermedia.New JOIN leaf.New (N:1)
+            deriveAndJoinInterm_LeafNew(ParentNode,joinedCol,otherPieName,leafOldTab,intermNewTab,leafNewPtr);
+            // intermedia.Old JOIN leaf.New (N:1)
+            deriveAndJoinInterm_LeafNew(ParentNode,joinedCol,otherPieName,leafOldTab,intermOldTab,leafNewPtr);
+        }
+        if(intermNewSize!=0 && leafOldTab.getSize()!=0 ){
+            // intermedia.New JOIN leaf.Old (N:M)
+            deriveAndJoinIntermNew_LeafOld(ParentNode,intermNewTab,joinedCol,otherPieName,leafOldPtr);
+        }
+    }
+    private void  deriveAndJoinInterm_LeafNew(TreeNode ParentNode, String joinedCol, String otherPieName, Table leafOldTab, Table intermTab, LinkList<Row>.Node leafPtr ){
+
+        if(intermTab.getSize() !=0){
+            LinkList<Row>.Node intermNode=intermTab.getRows().getHead();
+            while(intermNode!=null){
+                long intermTime = intermNode.getData().getTimeData().get(joinedCol);
+                if( intermTime<=leafPtr.getData().getTimeData().get(joinedCol)){
+                    //  at most once every round
+                    addRow( ParentNode, intermNode,otherPieName,leafPtr);
+                }
+                intermNode=intermNode.next;
+            }
+        }
+
+    }
+
+    private void deriveAndJoinIntermNew_LeafOld(TreeNode ParentNode,Table intermTab,String joinedCol,String otherPieName,LinkList<Row>.Node leafPtr ){
+
+        if(intermTab.getSize() !=0){
+            LinkList<Row>.Node intermNode=intermTab.getRows().getHead();
+            while(intermNode!=null){
+                long intermTime = intermNode.getData().getTimeData().get(joinedCol);
+                if( intermTime<=leafPtr.getData().getTimeData().get(joinedCol)){
+                    // first : find the steer , search back
+                    while(leafPtr!=null && leafPtr.getData().getTimeData().get(joinedCol) >intermTime  ){
+                        leafPtr=leafPtr.prev;
+                    }
+                    // second : build the rows , build forword
+                    while(leafPtr!=null){
+                        addRow( ParentNode, intermNode,otherPieName,leafPtr);
+                        leafPtr=leafPtr.next;
+                    }
+                }
+                intermNode=intermNode.next;
+            }
+        }
+    }
+
+    private void  addRow(TreeNode ParentNode, LinkList<Row>.Node intermNode,String otherPieName, LinkList<Row>.Node ptr){
+        Map<String,Long> timeData= new HashMap<>(intermNode.getData().getTimeData()) ;
+        timeData.put(otherPieName,ptr.getData().getTimeData().get(otherPieName));
+        Set<Expirable> source= new HashSet<>(intermNode.getData().getSource())  ;
+        source.addAll(ptr.getData().getSource());
+        long minTrig=min(ptr.getData().getTriggerTime(),intermNode.getData().getTriggerTime());
+        Row newRow = new Row(timeData,node2JoinedCols.get(ParentNode),source,minTrig,ParentNode!=root );
+        ParentNode.newT.addRow(newRow);
+    }
+
+    private void incrementalNaturalJoin(TreeNode ParentNode, Table  intermNewTab, Table intermOldTab,Table leafNewTab,Table leafOldTab ){
+        long mergedNewSize=intermNewTab.getSize();
+        long leafNewSize=leafNewTab.getSize();
+        if(mergedNewSize!=0 ){
+            // intermedia.New JOIN  leaf.Old
+            Table IntermNew_LeafOld=HashJoiner.hashJoin(intermNewTab, leafOldTab ,node2JoinedCols.get(ParentNode),ParentNode!=root );
+            ParentNode.newT.concatenate( IntermNew_LeafOld ) ;
+        }
+        if( leafNewSize!=0){
+            // intermedia.Old JOIN leaf.New
+            Table IntermOld_LeafNew = HashJoiner.hashJoin( leafNewTab,intermOldTab ,node2JoinedCols.get(ParentNode),ParentNode!=root);
+            ParentNode.newT.concatenate(IntermOld_LeafNew);
+        }
+        if(mergedNewSize*leafNewSize!=0){
+            // intermedia.New JOIN leaf.New
+            Table IntermNew_LeafNew= HashJoiner.hashJoin(intermNewTab, leafNewTab,node2JoinedCols.get(ParentNode),ParentNode!=root);
+            ParentNode.newT.concatenate(IntermNew_LeafNew);
+        }
+    }
+
+
 
     // 将中间结点的信息进行更新
     private void getNewTabeOfLeafAndMergedNode(TreeNode ParnetNode, TreeNode mergedNode, TreeNode leafNode) {
-
         refreshNewIepTable_Leaf(leafNode);
         Table mergedNewTab = mergedNode.getNewT();
+        Table leafNewTab = leafNode.getCol().getNewIEPTable();
+        long mergedNewSize=mergedNewTab.getSize();
+        long leafNewSize=leafNode.getCol().getNewIEPTable().getSize();
 
-        long mergedNewTabCnt=mergedNewTab.getSize();
-        long leafNewTabCnt=leafNode.getCol().getNewIEPTable().getSize();
-        boolean needNewIndex=true;
-        if(ParnetNode==root){
-            needNewIndex=false;
+        if(mergedNewSize!=0 ){
+            // intermedia.New JOIN  leaf.Old
+            Table IntermNew_LeafOld=HashJoiner.hashJoin(mergedNewTab,  leafNode.getCol().getIEPTable(),node2JoinedCols.get(ParnetNode),ParnetNode!=root );
+            ParnetNode.newT.concatenate( IntermNew_LeafOld ) ;
         }
-
-        if(mergedNewTab.getSize()!=0 ){
-            startTime = System.currentTimeMillis();
-
-
-            Table t1= HashJoiner.hashJoin(mergedNewTab, leafNode.getCol().getNewIEPTable(),node2JoinedCols.get(ParnetNode),needNewIndex);
-//            Table t1= HashJoiner.hashJoin(mergedNewTab, leafNode.getCol().getNewIEPTable(), JoinedCols,node2AcmltJoinedCols.get(ParnetNode));
-
-            Table t2=HashJoiner.hashJoin(mergedNewTab,  leafNode.getCol().getIEPTable(),node2JoinedCols.get(ParnetNode),needNewIndex );
-//            Table t2=HashJoiner.hashJoin(mergedNewTab,  leafNode.getCol().getIEPTable(),JoinedCols,node2AcmltJoinedCols.get(ParnetNode) );
-            endTime = System.currentTimeMillis();
-            joinTime += (endTime - startTime);
-
-            startTime = System.currentTimeMillis();
-            ParnetNode.newT.concatenate(t1);
-            ParnetNode.newT.concatenate( t2 ) ;
-            endTime = System.currentTimeMillis();
-            concat += (endTime - startTime);
-
+        if( leafNewSize!=0){
+            // intermedia.Old JOIN leaf.New
+            Table IntermOld_LeafNew = HashJoiner.hashJoin( leafNewTab, mergedNode.getT(),node2JoinedCols.get(ParnetNode),ParnetNode!=root);
+            ParnetNode.newT.concatenate(IntermOld_LeafNew);
         }
-        if( leafNode.getCol().getNewIEPTable().getSize()!=0){
-
-            startTime = System.currentTimeMillis();
-            Table tb = HashJoiner.hashJoin( leafNode.getCol().getNewIEPTable(), mergedNode.getT(),node2JoinedCols.get(ParnetNode),needNewIndex);
-            endTime = System.currentTimeMillis();
-            joinTime += (endTime - startTime);
-            startTime = System.currentTimeMillis();
-            ParnetNode.newT.concatenate(tb);
-            endTime = System.currentTimeMillis();
-            concat += (endTime - startTime);
+        if(mergedNewSize*leafNewSize!=0){
+            // intermedia.New JOIN leaf.New
+            Table IntermNew_LeafNew= HashJoiner.hashJoin(mergedNewTab, leafNewTab,node2JoinedCols.get(ParnetNode),ParnetNode!=root);
+            ParnetNode.newT.concatenate(IntermNew_LeafNew);
         }
     }
 
     public void deriveBeforeAfterRel() {
         for (Map.Entry<IEPCol, TreeNode> entry : Col2Node.entrySet()) {
-            // 只对叶子结点推导
-
-            entry.getValue().deriveBeforeAfterRel();
-
+            //  derive only within LeafNode
+            TreeNode node=entry.getValue();
+            // bottomLeaf need Derive All Previous IEP,
+            // while other leaf node derive key IEP and the rest will be derived in Merge stage to reduce calculation.
+            node.deriveBeforeAfterRel(node==bottomLeaf);
         }
     }
 
@@ -375,7 +498,6 @@ public class BinTree {
     }
 
     public void updateMergedNodeData() {
-        startTime = System.currentTimeMillis();
         for (TreeNode node : mergedNodes) {
             if(node==root){
                 long time=node.newT.addDetectTimeAndCalProcessTime("detectTime",System.nanoTime());
@@ -389,17 +511,12 @@ public class BinTree {
                 node.addResCount( node.newT.getSize());
             }
         }
-        endTime = System.currentTimeMillis();
-        update_merged+=endTime-startTime;
     }
 
     public void updateLeafNodeData() {
         startTime = System.currentTimeMillis();
         for (Map.Entry<IEPCol, TreeNode> entry : Col2Node.entrySet()) {
-            // MPIEPairSource key = entry.getKey();
             TreeNode node = entry.getValue();
-
-            // node.getCol().printNewIEPList();
             node.getCol().updateIEP2List();
 
             if (node.isHasBefore()) {
@@ -411,7 +528,6 @@ public class BinTree {
                 // node.getAftCol().printNewIEPList();
                 node.getAftCol().updateIEP2List();
             }
-
         }
         endTime = System.currentTimeMillis();
         update_leaf+=endTime-startTime;
@@ -461,10 +577,12 @@ public class BinTree {
 //            updateIepET2RootTable(toDelIeps);
 //            leafNode.leafNewT.clear();
             if (leafNode.isHasBefore()) {
+                leafNode.formerIEList.refresh(deadLine);
                 toDelIeps=leafNode.getBefCol().refresh(deadLine);
 //                updateIepET2RootTable(toDelIeps);
             }
             if (leafNode.isHasAfter()) {
+                leafNode.latterIEList.refresh(deadLine);
                 toDelIeps=leafNode.getAftCol().refresh(deadLine);
 //                updateIepET2RootTable(toDelIeps);
             }
