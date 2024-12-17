@@ -329,9 +329,8 @@ public class BinTree {
             EBA latterPie= leafNode.mpp.getLatterPred();
 
             // 3. JoinOn Both  [ first join on latterPie, then derive formerPie according to formalIEList and intermTable
-            if (keyPredSet.contains(formerPie) &&  leafNode.parent.keyPredSet.contains(latterPie) ){
-
-                throw new IllegalStateException("Unexpected state: No matching condition for join logic.");
+            if (keyPredSet.contains(formerPie) &&  keyPredSet.contains(latterPie) ){
+                increDeriveFromIntermAndIEListJoin(ParentNode,formerPie,latterPie,intermNewTab,intermOldTab, leafNode.getBefCol().getNewIEPTable(),leafNode.getBefCol().getIEPTable() );
             }
             // 1. JoinOn formerPie [ first traverse intermTable, then derive formerPie according to intermTable
             else if(leafNode.parent.keyPredSet.contains(leafNode.mpp.getFormerPred())){
@@ -347,7 +346,7 @@ public class BinTree {
               }
     }
 
-    private void increDeriveFromIEListJoin(TreeNode ParentNode,EBA joinedPie,EBA otherPieofLeaf,Table intermNewTab, Table intermOldTab,Table leafNewTab,Table leafOldTab,LinkList<IE> earlyIEList){
+    private void increDeriveFromIntermAndIEListJoin(TreeNode ParentNode,EBA earlyPie,EBA laterPie,Table intermNewTab, Table intermOldTab,Table leafNewTab,Table leafOldTab){
         long intermNewSize=intermNewTab.getSize();
         long leafNewSize=leafNewTab.getSize();
         if( leafNewSize>1){
@@ -355,45 +354,81 @@ public class BinTree {
         }
         LinkList<Row>.Node leafNewPtr=leafNewTab.getRows().getHead();
         LinkList<Row>.Node leafOldPtr=leafOldTab.getRows().getHead();
-        String joinedCol=EBA2String.get(joinedPie)+".ST";
-        String otherPieName= EBA2String.get(otherPieofLeaf)+".ST";
+        String earlyCol=EBA2String.get(earlyPie)+".ST";
+        String laterCol= EBA2String.get(laterPie)+".ST";
 
         if(leafNewSize!=0){
             Row leafRow= leafNewTab.getRows().getHead().getData();
             // intermedia.New JOIN leaf.New (N:1)
-            deriveIEListAndJoin_Interm_LeafNew(ParentNode,earlyIEList ,otherPieName, intermNewTab,leafRow);
+            deriveIntermAndIEListAndJoin_IntermTab_LeafRow(ParentNode,earlyCol,laterCol, intermNewTab,leafRow);
             // intermedia.Old JOIN leaf.New (N:1)
-            deriveIEListAndJoin_Interm_LeafNew(ParentNode,earlyIEList,otherPieName, intermOldTab,leafRow);
+            deriveIntermAndIEListAndJoin_IntermTab_LeafRow(ParentNode,earlyCol,laterCol, intermOldTab,leafRow);
         } if(intermNewSize!=0 && leafOldTab.getSize()!=0 ){
             // intermedia.New JOIN leaf.Old (N:K)
             // 分成 K 个 (N:1)
             LinkList<Row>.Node leafRowPtr =leafOldTab.getRows().getTail();
             while(leafRowPtr!=null  ){
-                deriveIEListAndJoin_Interm_LeafNew(ParentNode,earlyIEList,otherPieName, intermNewTab,leafRowPtr.getData());
+                deriveIntermAndIEListAndJoin_IntermTab_LeafRow(ParentNode,earlyCol,laterCol,intermNewTab,leafRowPtr.getData());
                 leafRowPtr=leafRowPtr.prev;
             }
         }
     }
-    private void deriveIEListAndJoin_Interm_LeafNew(TreeNode ParentNode,LinkList<IE>  earlyIEList, String otherPieName,  Table intermTab,  Row leafRow  ){
 
+    private void deriveIntermAndIEListAndJoin_IntermTab_LeafRow(TreeNode ParentNode,String earlyCol,String laterCol,Table intermTab, Row leafRow  ){
+        LinkList<Row>.Node intermPtr =intermTab.getRows().getTail();
+        while(intermPtr!=null && intermPtr.getData().getTimeData().get(laterCol) >= leafRow.getTimeData().get(laterCol) ){
+            Row intermRow =intermPtr.getData();
+            if(intermRow.getTimeData().get(laterCol) .equals(leafRow.getTimeData().get(laterCol)) ){ // find on FullKey
+                // notFullkey 小于等于才可以推导
+                if(intermRow.getTimeData().get(earlyCol).longValue() <= leafRow.getTimeData().get(earlyCol).longValue()){
+                    Row reindexRow=new Row(intermRow.getTimeData(),node2JoinedCols.get(ParentNode),intermRow.getSource(),intermRow.getTriggerTime(),ParentNode!=root);
+                    ParentNode.newT.addRow(reindexRow);
+                }
+            }
+            intermPtr=intermPtr.prev;
+        }
+    }
+
+    private void increDeriveFromIEListJoin(TreeNode ParentNode,EBA joinedPie,EBA unJoinedPie,Table intermNewTab, Table intermOldTab,Table leafNewTab,Table leafOldTab,LinkList<IE> earlyIEList){
+        long intermNewSize=intermNewTab.getSize();
+        long leafNewSize=leafNewTab.getSize();
+        if( leafNewSize>1){
+            throw new IllegalArgumentException("leafNewSize should not be greater than 1. Found: " + leafNewSize);
+        }
+        String unJoinedCol= EBA2String.get(unJoinedPie)+".ST";
+        if(leafNewSize!=0){
+            Row leafRow= leafNewTab.getRows().getHead().getData();
+            // intermedia.New JOIN leaf.New (N:1)
+            deriveIEListAndJoin_IntermTab_LeafRow(ParentNode,earlyIEList ,unJoinedCol, intermNewTab,leafRow);
+            // intermedia.Old JOIN leaf.New (N:1)
+            deriveIEListAndJoin_IntermTab_LeafRow(ParentNode,earlyIEList,unJoinedCol, intermOldTab,leafRow);
+        } if(intermNewSize!=0 && leafOldTab.getSize()!=0 ){
+            // intermedia.New JOIN leaf.Old (N:K)
+            // 分成 K 个 (N:1)
+            LinkList<Row>.Node leafRowPtr =leafOldTab.getRows().getTail();
+            while(leafRowPtr!=null  ){
+                deriveIEListAndJoin_IntermTab_LeafRow(ParentNode,earlyIEList,unJoinedCol, intermNewTab,leafRowPtr.getData());
+                leafRowPtr=leafRowPtr.prev;
+            }
+        }
+    }
+    private void deriveIEListAndJoin_IntermTab_LeafRow(TreeNode ParentNode, LinkList<IE>  earlyIEList, String unJoinedCol, Table intermTab, Row leafRow  ){
         String leafIndex=leafRow.getIndexKey();
         List<Row> intermRows =intermTab.getHashIndex().get(leafIndex);
         if( intermRows!=null  ){
             for (Row intermRow:intermRows ){
-
                 Row joinedRow=intermRow.join(leafRow,node2JoinedCols.get(ParentNode),ParentNode!=root );
                 ParentNode.newT.addRow(joinedRow);
-
                 // join on fullDataKey and derive in IEList ( 1:1 => 1:M )
                 LinkList<IE>.Node ieNode=earlyIEList.getTail();
                 // 跳过可能已经合并的
-                while(ieNode!=null && ieNode.getData().getStartTime()>=leafRow.getTimeData().get(otherPieName)){
+                while(ieNode!=null && ieNode.getData().getStartTime()>=leafRow.getTimeData().get(unJoinedCol)){
                     ieNode=ieNode.prev;
                 }
                 long derivedIEcnt=0;
                 while(ieNode!=null){
                     // join on ieNode
-                    joinRowWithIE(ParentNode,intermRow,otherPieName,ieNode.getData());
+                    joinRowWithIE(ParentNode,intermRow,unJoinedCol,ieNode.getData());
                     ieNode=ieNode.prev;
                     derivedIEcnt++;
                 }
@@ -401,7 +436,6 @@ public class BinTree {
                     logger.debug("derivedIEcnt: "+derivedIEcnt);
                 }
             }
-
         }
     }
 
@@ -416,9 +450,7 @@ public class BinTree {
         ParentNode.newT.addRow(newRow);
     }
 
-
-
-    private void increDeriveFromIntermJoin(TreeNode ParentNode,EBA joinedPie,EBA otherPieofLeaf,  Table  intermNewTab, Table intermOldTab,Table leafNewTab,Table leafOldTab ){
+    private void increDeriveFromIntermJoin(TreeNode ParentNode,EBA joinedPie,EBA unJoinedPie,  Table  intermNewTab, Table intermOldTab,Table leafNewTab,Table leafOldTab ){
         long intermNewSize=intermNewTab.getSize();
         long leafNewSize=leafNewTab.getSize();
         if( leafNewSize>1){
@@ -427,19 +459,19 @@ public class BinTree {
         LinkList<Row>.Node leafNewPtr=leafNewTab.getRows().getHead();
         LinkList<Row>.Node leafOldPtr=leafOldTab.getRows().getHead();
         String joinedCol=EBA2String.get(joinedPie)+".ST";
-        String otherPieName= EBA2String.get(otherPieofLeaf)+".ST";
+        String unJoinedCol= EBA2String.get(unJoinedPie)+".ST";
         if(leafNewSize!=0){
             // intermedia.New JOIN leaf.New (N:1)
-            deriveIntermAndJoin_Interm_LeafNew(ParentNode,joinedCol,otherPieName, intermNewTab,leafNewPtr);
+            deriveIntermAndJoin_Interm_LeafNew(ParentNode,joinedCol,unJoinedCol, intermNewTab,leafNewPtr);
             // intermedia.Old JOIN leaf.New (N:1)
-            deriveIntermAndJoin_Interm_LeafNew(ParentNode,joinedCol,otherPieName, intermOldTab,leafNewPtr);
+            deriveIntermAndJoin_Interm_LeafNew(ParentNode,joinedCol,unJoinedCol, intermOldTab,leafNewPtr);
         }
         if(intermNewSize!=0 && leafOldTab.getSize()!=0 ){
             // intermedia.New JOIN leaf.Old (N:M)
-            deriveIntermAndJoin_IntermNew_LeafOld(ParentNode,intermNewTab,joinedCol,otherPieName,leafOldPtr);
+            deriveIntermAndJoin_IntermNew_LeafOld(ParentNode,intermNewTab,joinedCol,unJoinedCol,leafOldPtr);
         }
     }
-    private void deriveIntermAndJoin_Interm_LeafNew(TreeNode ParentNode, String joinedCol, String otherPieName,  Table intermTab, LinkList<Row>.Node leafPtr ){
+    private void deriveIntermAndJoin_Interm_LeafNew(TreeNode ParentNode, String joinedCol, String unJoinedCol,  Table intermTab, LinkList<Row>.Node leafPtr ){
 
         if(intermTab.getSize() !=0){
             LinkList<Row>.Node intermNode=intermTab.getRows().getHead();
@@ -447,7 +479,7 @@ public class BinTree {
                 long intermTime = intermNode.getData().getTimeData().get(joinedCol);
                 if( intermTime<=leafPtr.getData().getTimeData().get(joinedCol)){
                     //  at most once every round
-                    joinTwoRows( ParentNode, intermNode.getData(),otherPieName,leafPtr.getData());
+                    joinTwoRows( ParentNode, intermNode.getData(),unJoinedCol,leafPtr.getData());
                 }
                 intermNode=intermNode.next;
             }
@@ -455,7 +487,7 @@ public class BinTree {
 
     }
 
-    private void deriveIntermAndJoin_IntermNew_LeafOld(TreeNode ParentNode, Table intermTab, String joinedCol, String otherPieName, LinkList<Row>.Node leafPtr ){
+    private void deriveIntermAndJoin_IntermNew_LeafOld(TreeNode ParentNode, Table intermTab, String joinedCol, String unJoinedCol, LinkList<Row>.Node leafPtr ){
 
         if(intermTab.getSize() !=0){
             LinkList<Row>.Node intermNode=intermTab.getRows().getHead();
@@ -468,7 +500,7 @@ public class BinTree {
                     }
                     // second : build the rows , build forword
                     while(leafPtr!=null){
-                        joinTwoRows( ParentNode, intermNode.getData(),otherPieName,leafPtr.getData());
+                        joinTwoRows( ParentNode, intermNode.getData(),unJoinedCol,leafPtr.getData());
                         leafPtr=leafPtr.next;
                     }
                 }
