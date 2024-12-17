@@ -87,16 +87,5 @@ public class CircularQueue<T> {
         return queue[index];
     }
 
-    // 打印队列中的所有元素
-    public void printQueue() {
-        if (isEmpty()) {
-            System.out.println("Queue is empty");
-        } else {
-            for (int i = 0; i < size; i++) {
-                System.out.print(queue[(front + i) % capacity] + " \n");
-            }
-            System.out.println();
-        }
-    }
 
 }

@@ -59,11 +59,6 @@ public class IEPCol   {
         return isTrigger;
     }
 
-    public void printNewIEPList() {
-        if (newIEPList.getSize()!=0){
-            System.out.println("    +"+newIEPList.getSize());
-        }
-    }
 
     public void setTriggerMSG(  IEP iep){
         this.newIEPList.safeAdd(iep);
@@ -78,18 +73,12 @@ public class IEPCol   {
     public void updateNewIepList2Table( Map<EBA, String> EBA2String,List<String> joinColumns){
         if(isTrigger){
             LinkList<IEP>.Node current = this.newIEPList.getHead() ;
-
-            int cnt=0;
             while (current != null) {
                 Row newRow=new Row(current.getData(), EBA2String,joinColumns);
                 this.newIEPTable.addRow(newRow);
-//            this.newIEPTable.addRow(current.getData(), EBA2String,joinColumns);
                 current = current.next;
-                cnt++;
             }
-            if(cnt> 1) {
-                System.out.println("CNT: ==>  " + cnt);
-            }
+
         }
     }
 

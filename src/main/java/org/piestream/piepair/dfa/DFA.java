@@ -1,8 +1,11 @@
 package org.piestream.piepair.dfa;
 
+import org.piestream.evaluation.Correct;
 import org.piestream.piepair.TemporalRelations;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,6 +13,7 @@ import java.util.Set;
 
 public class DFA {
 
+    private static final Logger logger = LoggerFactory.getLogger(DFA.class);
     private Graph<Node, LabeledEdge> graph;
     private Map<String, Node> nodeMap;
     private Node currentState;
@@ -96,14 +100,14 @@ public class DFA {
     }
 
     public void printGraph() {
-        System.out.println("Graph vertices:");
+        logger.info("Graph vertices:");
         for (Node vertex : graph.vertexSet()) {
-            System.out.println(vertex);
+//            logger.info(vertex);
         }
 
-        System.out.println("\nGraph edges:");
+        logger.info("\nGraph edges:");
         for (LabeledEdge edge : graph.edgeSet()) {
-            System.out.println(graph.getEdgeSource(edge) + " -> " + graph.getEdgeTarget(edge) + " [trans=" + edge.getTrans() + "]");
+            logger.info(graph.getEdgeSource(edge) + " -> " + graph.getEdgeTarget(edge) + " [trans=" + edge.getTrans() + "]");
         }
     }
 

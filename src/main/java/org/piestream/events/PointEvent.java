@@ -1,5 +1,6 @@
 package org.piestream.events;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class PointEvent {
@@ -9,6 +10,18 @@ public class PointEvent {
     public PointEvent(Map<Attribute, Object> payload, long timestamp) {
         this.payload = payload;
         this.timestamp = timestamp;
+    }
+    // 复制构造函数
+    public PointEvent(PointEvent other) {
+        this.timestamp = other.timestamp;
+
+        // 深拷贝 payload
+        this.payload = new HashMap<>();
+        for (Map.Entry<Attribute, Object> entry : other.payload.entrySet()) {
+            Attribute copiedAttribute = entry.getKey();
+            Object copiedValue = entry.getValue();
+            this.payload.put(copiedAttribute, copiedValue);
+        }
     }
 
     public Map<Attribute, Object> getPayload() {

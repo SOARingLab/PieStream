@@ -5,13 +5,17 @@ import org.piestream.datasource.FileDataSource;
 import org.piestream.engine.Engine;
 import org.piestream.engine.WindowType;
 import org.piestream.events.Attribute;
+import org.piestream.merger.BinTree;
 import org.piestream.parser.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
 
 public class Correct {
 
+    private static final Logger logger = LoggerFactory.getLogger(Correct.class);
     public static String buildSimpleJoinQuery(int Col, long windSize ) {
         StringBuilder defineBuilder = new StringBuilder();
         StringBuilder patternBuilder = new StringBuilder();
@@ -31,8 +35,8 @@ public class Correct {
 //                    .append("A").append(i + 1);
 //        }
 
-        String easyPattern=" A1 starts A2 AND A2 before A3 AND A3 overlaps A4 " ;
-
+        String easyPattern=" A1 starts A2 AND A3 before A2 AND A3 overlaps A4 " ;
+//        String easyPattern="   A3 before A2   " ;
         // 将所有部分组合成完整的查询语句
         String query = " FROM dataStream" +
                 "\n DEFINE " + defineBuilder.toString() +
@@ -75,22 +79,21 @@ public class Correct {
             while ((line = dataSource.readNext()) != null ) {
                 engine.apply("", line); // Process each line of data
                 if(cnt%(limit/10)==0){
-                    System.out.println(cnt);
+                    logger.info("processed events num: "+cnt);
                     engine.printResultCNT();
                 }
                 cnt++;
             }
             long endTime = System.currentTimeMillis();
-
-            System.out.println("\nTotal Lines Processed: " + (limit));
-            System.out.println("Processing time: " + (endTime - startTime) + " ms");
+            logger.info("\nTotal Lines Processed: " + (limit));
+            logger.info("Processing time: " + (endTime - startTime) + " ms");
             engine.printResultCNT();
             engine.printAccumulatedTimes();
             engine.printAVGprocessTime();
             return (endTime - startTime);
 
         } catch (IOException e) {
-            System.err.println("Failed to open file: " + e.getMessage());
+            logger.error("Failed to open file: " + e.getMessage());
         }
         return 0;
     }
@@ -98,9 +101,8 @@ public class Correct {
 
     public static void main(String[] args) throws Exception {
         if (args.length < 4) {
-            System.out.println("Runing Test : ");
             int col=4;
-            long limit = 500000L;
+            long limit = 10000L;
             long windSize= 10000L;
             String dataPath= "/Users/czq/Code/TPS_data/";
             execute(col, limit, windSize, dataPath);
@@ -112,7 +114,7 @@ public class Correct {
 
     private static void execute( int col,long limit, long windSize, String basePath) throws Exception {
         WindowType windowType = WindowType.TIME_WINDOW;
-        System.out.println("=====>  COL " + col + ", LIMIT " + limit  + ", WINDSIZE " + windSize + ", DATAPATH " + basePath + " <=====");
+        logger.info("=====>  COL " + col + ", LIMIT " + limit  + ", WINDSIZE " + windSize + ", DATAPATH " + basePath + " <=====");
 
         Long processedTime = buildRunner(col, limit, windSize, basePath, windowType);
     }

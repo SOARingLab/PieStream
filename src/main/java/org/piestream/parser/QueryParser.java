@@ -1,13 +1,17 @@
 package org.piestream.parser;
 
+import org.piestream.evaluation.Correct;
 import org.piestream.piepair.TemporalRelations;
 import org.piestream.piepair.eba.EBA;
 import org.piestream.piepair.eba.EBAParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class QueryParser {
 
+    private static final Logger logger = LoggerFactory.getLogger(QueryParser.class);
     private final List<String> tokens;
     private int currentIndex = 0;
     private Schema schema;
@@ -85,7 +89,7 @@ public class QueryParser {
         parseReturnClause();
         } catch (ParseException e) {
             // 捕获异常，输出异常信息
-            System.out.println("Exception caught: " + e.getMessage());
+            logger.error("Exception caught: " + e.getMessage());
             // 你也可以重新抛出异常，确保程序中断
             throw e;
         }

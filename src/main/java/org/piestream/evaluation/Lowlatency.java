@@ -6,12 +6,15 @@ import org.piestream.engine.Engine;
 import org.piestream.engine.WindowType;
 import org.piestream.events.Attribute;
 import org.piestream.parser.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
 
 public class Lowlatency {
 
+    private static final Logger logger = LoggerFactory.getLogger(Lowlatency.class);
     public static String buildSimpleJoinQuery(int Col, long windSize ) {
         StringBuilder defineBuilder = new StringBuilder();
         StringBuilder patternBuilder = new StringBuilder();
@@ -77,8 +80,8 @@ public class Lowlatency {
             }
             long endTime = System.currentTimeMillis();
 
-            System.out.println("\nTotal Lines Processed: " + (limit));
-            System.out.println("Processing time: " + (endTime - startTime) + " ms");
+            logger.info("\nTotal Lines Processed: " + (limit));
+            logger.info("Processing time: " + (endTime - startTime) + " ms");
             engine.printResultCNT();
 //            engine.printAccumulatedTimes();
             engine.printAVGprocessTime();
@@ -94,7 +97,7 @@ public class Lowlatency {
     public static void main(String[] args) throws Exception {
 
         if (args.length < 4) {
-            System.out.println("Runing Test : ");
+            logger.info("Runing Test : ");
             int col=4;
             long limit = 100000L;
             long windSize= 100000L;
@@ -110,7 +113,7 @@ public class Lowlatency {
 
     private static void execute( int col,long limit, long windSize, String basePath,long rate) throws Exception {
         WindowType windowType = WindowType.TIME_WINDOW;
-        System.out.println("=====>  COL " + col + ", LIMIT " + limit  + ", WINDSIZE " + windSize + ", DATAPATH " + basePath + ", RATE "   + rate +  ", <=====");
+        logger.info("=====>  COL " + col + ", LIMIT " + limit  + ", WINDSIZE " + windSize + ", DATAPATH " + basePath + ", RATE "   + rate +  ", <=====");
         Long processedTime = buildRunner(col, limit, windSize, basePath, rate,windowType);
     }
 }

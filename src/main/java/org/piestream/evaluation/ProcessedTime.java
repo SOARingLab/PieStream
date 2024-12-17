@@ -6,12 +6,15 @@ import org.piestream.engine.Engine;
 import org.piestream.engine.WindowType;
 import org.piestream.events.Attribute;
 import org.piestream.parser.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
 
 public class ProcessedTime {
 
+    private static final Logger logger = LoggerFactory.getLogger(ProcessedTime.class);
     public static String buildSimpleJoinQuery(int Col, long windSize ) {
         StringBuilder defineBuilder = new StringBuilder();
         StringBuilder patternBuilder = new StringBuilder();
@@ -72,8 +75,8 @@ public class ProcessedTime {
             }
             long endTime = System.currentTimeMillis();
 
-            System.out.println("\nTotal Lines Processed: " + (limit));
-            System.out.println("Processing time: " + (endTime - startTime) + " ms");
+            logger.info("\nTotal Lines Processed: " + (limit));
+            logger.info("Processing time: " + (endTime - startTime) + " ms");
             engine.printResultCNT();
             engine.printAVGprocessTime();
             return (endTime - startTime);
@@ -87,7 +90,7 @@ public class ProcessedTime {
 
     public static void main(String[] args) throws Exception {
         if (args.length < 4) {
-            System.out.println("Runing Test : ");
+            logger.info("Runing Test : ");
             int col=4;
             long limit = 100000L;
             long windSize= 100000L;
@@ -101,7 +104,7 @@ public class ProcessedTime {
 
     private static void execute( int col,long limit, long windSize, String basePath) throws Exception {
         WindowType windowType = WindowType.TIME_WINDOW;
-        System.out.println("=====>  COL " + col + ", LIMIT " + limit  + ", WINDSIZE " + windSize + ", DATAPATH " + basePath + ", <=====");
+        logger.info("=====>  COL " + col + ", LIMIT " + limit  + ", WINDSIZE " + windSize + ", DATAPATH " + basePath + ", <=====");
 
         Long processedTime = buildRunner(col, limit, windSize, basePath, windowType);
     }

@@ -2,13 +2,17 @@ package org.piestream.merger;
 
 import org.piestream.engine.Window;
 import org.piestream.engine.WindowType;
+import org.piestream.evaluation.Correct;
 import org.piestream.events.Expirable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LinkList<T extends Expirable> {
 
+    private static final Logger logger = LoggerFactory.getLogger(LinkList.class);
     public class Node {
         T data;       // 节点的数据
         Node next;    // 指向下一个节点的指针
@@ -29,14 +33,6 @@ public class LinkList<T extends Expirable> {
     private long size;     // 当前元素个数
     private final Window window;
 
-    // 构造函数，初始化链表，容量是传入的参数
-//    public LinkList(long capacity) {
-//        this.winType=WindowType.COUNT_WINDOW;
-//        this.capacity = capacity;
-//        this.size = 0;
-//        this.head = null;
-//        this.tail = null;
-//    }
     public LinkList( Window window) {
         this.window=window;
         this.size = 0;
@@ -54,25 +50,6 @@ public class LinkList<T extends Expirable> {
         return size == 0;
     }
 
-
-//    // safe add
-//    public void safeAdd(T data) {
-//        // 如果链表满了，删除头部节点
-//        if (isFull()) {
-//            deleteHead();
-//        }
-//
-//        // 添加新节点到尾部
-//        Node newNode = new Node(data, null, tail);
-//        if (isEmpty()) {
-//            head = newNode;
-//        } else {
-//            tail.next = newNode;
-//        }
-//        tail = newNode;
-//        size++;
-////        setIsTrigger();
-//    }
 
     public void safeAdd(T data) {
         // 如果链表满了，删除头部节点
@@ -122,7 +99,7 @@ public class LinkList<T extends Expirable> {
     // 删除头部节点
     public T  deleteHead() {
         if (isEmpty()) {
-            System.out.println("The list is empty. No elements to delete.");
+            logger.info("The list is empty. No elements to delete.");
             return null;
         }
         T  deletedData=head.getData();
@@ -140,7 +117,7 @@ public class LinkList<T extends Expirable> {
     // 从链表中删除一个节点
     public void deleteNode(Node node) {
         if (isEmpty()) {
-            System.out.println("The list is empty. No elements to delete.");
+            logger.info("The list is empty. No elements to delete.");
             return;
         }
 
@@ -174,7 +151,7 @@ public class LinkList<T extends Expirable> {
     // 打印链表中的所有元素
     public void printList() {
         if (isEmpty()) {
-            System.out.println("The list is empty.");
+            logger.info("The list is empty.");
             return;
         }
 
@@ -183,7 +160,7 @@ public class LinkList<T extends Expirable> {
             System.out.print(current.data + " -> ");
             current = current.next;
         }
-        System.out.println("null");
+        logger.info("null");
     }
 
     // TODO: bug
@@ -224,29 +201,6 @@ public class LinkList<T extends Expirable> {
         return size;
     }
 
-    public long getRealSize() {
-        long cnt=0;
-        Node pt=head;
-        if(pt!=null){
-            cnt++;
-        }
-
-        while(pt!=tail){
-            cnt++;
-            pt=pt.next;
-        }
-        return cnt;
-    }
-
-    public boolean  sizeNotEqual(String sentence){
-        if(getSize()!=getRealSize()){
-            System.out.println("size not equal: "+sentence);
-            System.out.println("size ：" +getSize());
-            System.out.println("link size ：" +getRealSize());
-            return true;
-        }
-        return false;
-    }
 
 
     // 获取链表的容量

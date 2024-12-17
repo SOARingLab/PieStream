@@ -68,7 +68,6 @@ public class MapMerger {
         indexMap.put("Key1", innerMap2);
 
         MapMerger.mergeNestedMaps(indexMap, updateindexMap);
-        System.out.println(indexMap);
 
         // 示例用法：合并单层 Map<B, List<T>>
         Map<Long, List<String>> simpleIndexMap = new HashMap<>();
@@ -78,6 +77,5 @@ public class MapMerger {
         simpleIndexMap.put(1L, new ArrayList<>(Arrays.asList("Row7")));
 
         MapMerger.mergeSimpleMaps(simpleIndexMap, simpleUpdateMap);
-        System.out.println(simpleIndexMap);
     }
 }

@@ -4,14 +4,18 @@ import org.piestream.datasource.DataSource;
 import org.piestream.datasource.FileDataSource;
 import org.piestream.engine.Engine;
 import org.piestream.engine.WindowType;
+import org.piestream.evaluation.Correct;
 import org.piestream.events.Attribute;
 import org.piestream.parser.Schema;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
 
 public class ExampleRunner {
 
+    private static final Logger logger = LoggerFactory.getLogger(ExampleRunner.class);
     public static String buildSimpleJoinQuery(int Col ) {
         StringBuilder defineBuilder = new StringBuilder();
         StringBuilder patternBuilder = new StringBuilder();
@@ -69,8 +73,8 @@ public class ExampleRunner {
             }
             long endTime = System.currentTimeMillis();
 
-            System.out.println("\nTotal Lines Processed: " + (limit));
-            System.out.println("Processing time: " + (endTime - startTime) + " ms");
+            logger.info("\nTotal Lines Processed: " + (limit));
+            logger.info("Processing time: " + (endTime - startTime) + " ms");
             engine.printResultCNT();
             engine.printAccumulatedTimes();
             return  (endTime - startTime);
@@ -97,10 +101,10 @@ public class ExampleRunner {
             col_row_proceTimeMap.computeIfAbsent(col, k -> new HashMap<>());
 
             for (long limit : limitList) {
-                System.out.println("===============  COL "+col+", LIMIT "+limit+" ===============");
+                logger.info("===============  COL "+col+", LIMIT "+limit+" ===============");
                 Long processedTime = buildRunner(col, limit, basePath, windowType );
                 col_row_proceTimeMap.get(col).put(limit, processedTime);
-                System.out.println(col_row_proceTimeMap);
+                logger.info("timeUsed: "+col_row_proceTimeMap);
             }
         }
 

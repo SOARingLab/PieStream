@@ -6,12 +6,17 @@ import org.piestream.events.PointEvent;
 import org.piestream.parser.MPIEPairSource;
 import org.piestream.piepair.IE;
 import org.piestream.piepair.IEP;
+import org.piestream.piepair.PIEPair;
 import org.piestream.piepair.TemporalRelations;
 import org.piestream.piepair.eba.EBA;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
 public class TreeNode {
+
+    private static final Logger logger = LoggerFactory.getLogger(TreeNode.class);
     final Set<EBA> predSet;      // 与节点关联的谓词集合
     final Set<EBA> keyPredSet;   // 节点之间共享的关键谓词集合 join key
     TreeNode parent;             // 树中的父节点
@@ -266,9 +271,12 @@ public class TreeNode {
 
             }
             lastFormerIE =  tail.getData();
-            befCol.setTriggerMSG( new IEP(TemporalRelations.AllenRel.BEFORE,mpp.getFormerPred(),mpp.getLatterPred(),
+            IEP newIEP= new IEP(TemporalRelations.AllenRel.BEFORE,mpp.getFormerPred(),mpp.getLatterPred(),
                     lastFormerIE.getStartEvent(),latterPieStart,lastFormerIE.getEndEvent(),null,
-                    lastFormerIE.getStartTime(),latterPieStart.getTimestamp(),latterPieStart,latterPieStart.getTimestamp()));
+                    lastFormerIE.getStartTime(),latterPieStart.getTimestamp(),latterPieStart,latterPieStart.getTimestamp());
+            befCol.setTriggerMSG( newIEP);
+            logger.debug("trigger(key): "
+                    +newIEP.getRelation()+"("+newIEP.getFormerStartTime() +","+newIEP.getLatterStartTime()+")");
             return tail.prev;
         }
         return null;
@@ -302,9 +310,12 @@ public class TreeNode {
             else { // follow  理想情况
             }
             lastLatterIE = tail.getData();
-            aftCol.setTriggerMSG(new IEP(TemporalRelations.AllenRel.AFTER, mpp.getFormerPred(), mpp.getLatterPred(),
+            IEP newIEP=new IEP(TemporalRelations.AllenRel.AFTER, mpp.getFormerPred(), mpp.getLatterPred(),
                     formerPieStart, lastLatterIE.getStartEvent(), null, lastLatterIE.getEndEvent(),
-                    formerPieStart.getTimestamp(), lastLatterIE.getStartTime(), formerPieStart, formerPieStart.getTimestamp()));
+                    formerPieStart.getTimestamp(), lastLatterIE.getStartTime(), formerPieStart, formerPieStart.getTimestamp());
+            aftCol.setTriggerMSG(newIEP);
+            logger.debug("trigger(key): "
+                    +newIEP.getRelation()+"("+newIEP.getFormerStartTime() +","+newIEP.getLatterStartTime()+")");
             return tail.prev;
         }
         return null;

@@ -9,11 +9,15 @@ import org.piestream.piepair.eba.EBA;
 import org.piestream.merger.IEPCol;
 
 import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * PIEPair类用于处理PointEvent事件，根据事件分类推进DFA状态并记录事件的起止点。
  */
 public class PIEPair {
+    // 获取 Logger 实例
+    private static final Logger logger = LoggerFactory.getLogger(PIEPair.class);
+
     private final DFA dfa; // 有限状态自动机，用于处理状态转换
     private final EventClassifier classifier; // 事件分类器，用于根据事件分类为不同的字母（Alphabet）
     private PointEvent formerPieStart; // formerPie的开始事件
@@ -60,15 +64,17 @@ public class PIEPair {
 
     private void tiggerEvents(PointEvent event ){
         this.onTriggering = true;
-//        System.out.println("\nTrigger! "+relation.toString()+ "\n");
         IEP newIEP =createIEPonTrigger(event);
+        logger.debug("trigger: "
+//                +newIEP.getRelation()+"["+newIEP.getFormerPie() +"," +newIEP.getLatterPie()+"] = "
+                +newIEP.getRelation()+"("+newIEP.getFormerStartTime() +","+newIEP.getLatterStartTime()+")");
         Col.setTriggerMSG(  newIEP );
+
     }
 
 
     private void completeEvents(){
         this.onTriggering = false;
-//        System.out.println("\nCompleted!\n");
         updeteColWhenCompleted(Col);
 
     }
@@ -183,13 +189,6 @@ public class PIEPair {
         }
         return newIep;
     }
-
-//    private void enQueueByTrigger() {
-//
-//        Q.enqueue(createIEPonTrigger());
-////        System.out.println(newIep.toString());
-//
-//    }
 
 
     private void updeteColWhenCompleted(IEPCol updateCol) {

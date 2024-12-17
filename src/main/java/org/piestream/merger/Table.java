@@ -8,11 +8,8 @@ import org.piestream.piepair.eba.EBA;
 import java.util.*;
 
 public class Table {
-//    private final List<Row> rows;
     private final LinkList<Row> rows;
-//    private final long  capacity; // 表的最大容量
     private long size; // 当前行数
-//    private final WindowType winType; // 当前行数
     private final Window window;
     private final Map<String, List<Row>> hashIndex;
 
@@ -25,22 +22,16 @@ public class Table {
     public static long startTime;
     public static long endTime;
 
-//    // 构造函数，接受容量参数
-//    public Table(long capacity) {
-////        this.rows = new ArrayList<>();
-//        this.winType=WindowType.COUNT_WINDOW;
-//        this.capacity = capacity;
-//        this.size = 0;
-//        this.hashIndex=new HashMap<>();
-//        this.rows =new LinkList<Row>(capacity);
-//    }
 
+    // TODO: detele window
     public Table(Window window ) {
         this.window = window;
         this.size = 0;
         this.hashIndex=new HashMap<>();
         this.rows =new LinkList<Row>(window);
     }
+
+
 
 
     public void update(String pred,Long startTime,Long endTime){
@@ -140,179 +131,6 @@ public class Table {
     public LinkList<Row> getRows() {
         return rows;
     }
-
-//    // 返回表中某列的所有值
-//    public Set<String> getColumnNames() {
-//        if (!rows.isEmpty()) {
-//            return rows.get(0).getColumnNames();
-//        }
-//        return null;
-//    }
-//
-//    // 打印表的所有行
-//    public void printTable() {
-//        if (rows.isEmpty()) {
-//            System.out.println("The table is empty.");
-//        } else {
-//            for (Row row : rows) {
-//                System.out.println(row.toString()); // 打印每一行
-//            }
-//        }
-//    }
-//
-//    // Print all rows of the table with aligned columns
-//    public void printTableFormat() {
-//        if (rows.isEmpty()) {
-//            System.out.println("The table is empty.");
-//        } else {
-//            // Get the column names in order
-//            List<String> columnNames = new ArrayList<>(getColumnNames());
-//
-//            // Calculate the maximum width for each column
-//            Map<String, Integer> columnWidths = new LinkedHashMap<>();
-//            for (String columnName : columnNames) {
-//                int maxWidth = columnName.length(); // Start with the length of the header
-//                for (Row row : rows) {
-//                    String value = row.getValue(columnName).toString();
-//                    if (value != null && value.length() > maxWidth) {
-//                        maxWidth = value.length();
-//                    }
-//                }
-//                columnWidths.put(columnName, maxWidth);
-//            }
-//
-//            // Build the format string for each column
-//            StringBuilder formatBuilder = new StringBuilder();
-//            for (String columnName : columnNames) {
-//                int width = columnWidths.get(columnName) + 2; // Add padding
-//                formatBuilder.append("%-").append(width).append("s");
-//            }
-//            String format = formatBuilder.toString().trim(); // Remove trailing spaces
-//
-//            // Print the header
-//            Object[] headerValues = columnNames.toArray();
-//            System.out.printf(format + "%n", headerValues);
-//
-//            // Print each row
-//            for (Row row : rows) {
-//                List<String> values = new ArrayList<>();
-//                for (String columnName : columnNames) {
-//                    String value = row.getValue(columnName).toString();
-//                    values.add(value != null ? value : ""); // Handle null values
-//                }
-//                System.out.printf(format + "%n", values.toArray());
-//            }
-//        }
-//    }
-//
-//    public void printTableOrdered() {
-//        if (rows.isEmpty()) {
-//            System.out.println("The table is empty.");
-//        } else {
-//            // Get the column names
-//            Set<String> columnNameSet = getColumnNames();
-//
-//            // Identify stCols and otherCols
-//            List<String> stCols = new ArrayList<>();
-//            List<String> otherCols = new ArrayList<>();
-//
-//            for (String colName : columnNameSet) {
-//                if (colName.endsWith(".ST")) {
-//                    stCols.add(colName);
-//                } else {
-//                    otherCols.add(colName);
-//                }
-//            }
-//
-//            // Sort stCols according to the character before ".ST"
-//            stCols.sort(new Comparator<String>() {
-//                @Override
-//                public int compare(String s1, String s2) {
-//                    String c1 = s1.substring(0, s1.length() - 3); // Remove ".ST"
-//                    String c2 = s2.substring(0, s2.length() - 3);
-//                    return c1.compareTo(c2);
-//                }
-//            });
-//
-//            // Sort the rows according to the values in stCols
-//            Collections.sort(rows, new Comparator<Row>() {
-//                @Override
-//                public int compare(Row r1, Row r2) {
-//                    for (String col : stCols) {
-//                        String v1 = r1.getValue(col).toString();
-//                        String v2 = r2.getValue(col).toString();
-//                        int cmp = compareValues(v1, v2);
-//                        if (cmp != 0) {
-//                            return cmp;
-//                        }
-//                    }
-//                    return 0;
-//                }
-//
-//                private int compareValues(String v1, String v2) {
-//                    // Handle nulls
-//                    if (v1 == null && v2 == null) {
-//                        return 0;
-//                    }
-//                    if (v1 == null) {
-//                        return -1;
-//                    }
-//                    if (v2 == null) {
-//                        return 1;
-//                    }
-//                    // Try to parse as numbers
-//                    try {
-//                        double d1 = Double.parseDouble(v1);
-//                        double d2 = Double.parseDouble(v2);
-//                        return Double.compare(d1, d2);
-//                    } catch (NumberFormatException e) {
-//                        // Compare as strings
-//                        return v1.compareTo(v2);
-//                    }
-//                }
-//            });
-//
-//            // Combine stCols and otherCols
-//            List<String> columnNames = new ArrayList<>();
-//            columnNames.addAll(stCols);
-//            columnNames.addAll(otherCols);
-//
-//            // Calculate the maximum width for each column
-//            Map<String, Integer> columnWidths = new LinkedHashMap<>();
-//            for (String columnName : columnNames) {
-//                int maxWidth = columnName.length(); // Start with the length of the header
-//                for (Row row : rows) {
-//                    String value = row.getValue(columnName).toString();
-//                    if (value != null && value.length() > maxWidth) {
-//                        maxWidth = value.length();
-//                    }
-//                }
-//                columnWidths.put(columnName, maxWidth);
-//            }
-//
-//            // Build the format string for each column
-//            StringBuilder formatBuilder = new StringBuilder();
-//            for (String columnName : columnNames) {
-//                int width = columnWidths.get(columnName) + 2; // Add padding
-//                formatBuilder.append("%-").append(width).append("s");
-//            }
-//            String format = formatBuilder.toString().trim(); // Remove trailing spaces
-//
-//            // Print the header
-//            Object[] headerValues = columnNames.toArray();
-//            System.out.printf(format + "%n", headerValues);
-//
-//            // Print each row
-//            for (Row row : rows) {
-//                List<String> values = new ArrayList<>();
-//                for (String columnName : columnNames) {
-//                    String value = row.getValue(columnName).toString();
-//                    values.add(value != null ? value : ""); // Handle null values
-//                }
-//                System.out.printf(format + "%n", values.toArray());
-//            }
-//        }
-//    }
 
     // 返回表的当前行数
     public long getSize() {
