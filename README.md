@@ -1,4 +1,4 @@
-## Overview
+## PieStream
 
 **PieStream** implements a method for efficient interval temporal pattern detection in complex event processing (CEP) for data streaming. 
 
@@ -6,12 +6,13 @@ Traditional CEP systems struggle with handling complex queries due to the ineffi
 
 Experimental evaluations show that our method significantly outperforms state-of-the-art techniques, offering nearly quasilinear time and space complexity.
 
-## Paper Reference
+## About Paper
 
 * **Title**: A Scalable Framework to Detect Interval Temporal Patterns in Data Streaming
 * **Authors**: Zhongqing Chen, Feng Liu, Hongyu Jia, and Liang Zhang
 * **Conference**: Submitted to the International Conference on Advanced Information Systems Engineering (CAiSE 2025)
 * **PDF of the paper**:  [Full Paper](attachments/caise2025_paper_67_submission.pdf)
+* **Proofs of theorem and the proposition in the paper**:  [appendix](attachments/appendix.pdf)
 
 ### Challenges
 
@@ -34,10 +35,6 @@ Once the binary event pairs are detected, they are seamlessly joined using natur
 - Proposing a novel framework for transforming predicate-based interval event pairs into regular expressions and automata. This enables efficient encoding of temporal relationships, achieving low-latency detection for complex interval patterns in streaming data.
 
 - Developing a scalable approach to support above framework, not only reduces time complexity from exponential to nearly quasilinear but also achieves nearly quasilinear space complexity, significantly improving the efficiency of handling complex queries in real-time streaming systems.
-
-### Proofs
-
-The proofs for both the theorem and the proposition are provided in the [appendix](attachments/appendix.pdf)
 
 ### Experiments
 
