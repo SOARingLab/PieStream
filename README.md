@@ -9,7 +9,7 @@ Experimental evaluations show that our method significantly outperforms state-of
 ## About Paper
 
 * **Title**: A Scalable Framework to Detect Interval Temporal Patterns in Data Streaming
-* **Authors**: Zhongqing Chen, Feng Liu, Hongyu Jia, and Liang Zhang
+* **Authors**: [Zhongqing Chen]((mailto:21210240135@m.fudan.edu.cn)), Feng Liu, Hongyu Jia, and [Liang Zhang](mailto:lzhang@fudan.edu.cn)(Corresponding Author)
 * **Conference**: Submitted to the International Conference on Advanced Information Systems Engineering (CAiSE 2025)
 * **PDF of the paper**:  [Full Paper](attachments/caise2025_paper_67_submission.pdf)
 * **Proofs of theorem and the proposition in the paper**:  [appendix](attachments/appendix.pdf)
@@ -89,6 +89,3 @@ We propose a novel framework for efficient complex event processing (CEP) that c
 
 This work is supported by Projects of International Cooperation and Exchanges NSFC-DFG (Grant No. 62061136006).
 
-## Contact
-
-For questions or comments, please contact **Zhongqing Chen** at [21210240135@m.fudan.edu.cn](mailto:21210240135@m.fudan.edu.cn) or **Liang Zhang** at [lzhang@fudan.edu.cn](mailto:lzhang@fudan.edu.cn)
