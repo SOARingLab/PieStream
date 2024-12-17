@@ -9,7 +9,7 @@ Experimental evaluations show that our method significantly outperforms state-of
 ## About Paper
 
 * **Title**: A Scalable Framework to Detect Interval Temporal Patterns in Data Streaming
-* **Authors**: [Zhongqing Chen]((mailto:21210240135@m.fudan.edu.cn)), Feng Liu, Hongyu Jia, and [Liang Zhang](mailto:lzhang@fudan.edu.cn)(Corresponding Author)
+* **Authors**: [Zhongqing Chen](mailto:21210240135@m.fudan.edu.cn), Feng Liu, Hongyu Jia, and [Liang Zhang](mailto:lzhang@fudan.edu.cn)(Corresponding Author)
 * **Conference**: Submitted to the International Conference on Advanced Information Systems Engineering (CAiSE 2025)
 * **PDF of the paper**:  [Full Paper](attachments/caise2025_paper_67_submission.pdf)
 * **Proofs of theorem and the proposition in the paper**:  [appendix](attachments/appendix.pdf)
