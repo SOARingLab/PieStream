@@ -9,22 +9,26 @@ import org.piestream.merger.BinTree;
 import java.util.List;
 import java.util.Map;
 
-
-
 public class Worker {
 
-    private final MPIEPairsManager mpiEPairsManager;  // MPIEPairs 管理器
-    private final List<MPIEPair> MPPS;  // 所有的 PIEPair 对象
-    private final Map<MPIEPairSource, TreeNode> source2Node ;  // 源到节点的映射
-    private final  BinTree tree;
-    private final Window  window;
+    private final MPIEPairsManager mpiEPairsManager;  // MPIEPairs manager
+    private final List<MPIEPair> MPPS;  // List of all PIEPair objects
+    private final Map<MPIEPairSource, TreeNode> source2Node ;  // Mapping from source to node
+    private final BinTree tree;
+    private final Window window;
 
-    // 构造函数，创建树并映射源到节点
-    public Worker(List<MPIEPairSource> MPPSourceList,Window window, Map<EBA,String> EBA2String) {
+    /**
+     * Constructor that creates a tree and maps sources to nodes.
+     *
+     * @param MPPSourceList List of MPIEPairSource objects
+     * @param window        The window used for processing
+     * @param EBA2String    Map from EBA objects to strings for representation
+     */
+    public Worker(List<MPIEPairSource> MPPSourceList, Window window, Map<EBA, String> EBA2String) {
 
-        this.window=window;
+        this.window = window;
 
-        this.tree=new BinTree(MPPSourceList,window, EBA2String);
+        this.tree = new BinTree(MPPSourceList, window, EBA2String);
 
         try {
             tree.constructTree();
@@ -32,89 +36,89 @@ public class Worker {
         } catch (Exception e) {
             throw new IllegalArgumentException("Failed to construct tree");
         }
-        // 初始化 MPIEPairsManager 并获取所有的 PIEPair 对象
-//        this.source2Col=tree.getSource2Col();
-        this.source2Node=tree.getSourceToNode();
+
+        // Initialize MPIEPairsManager and retrieve all PIEPair objects
+//        this.source2Col = tree.getSource2Col();
+        this.source2Node = tree.getSourceToNode();
         this.mpiEPairsManager = new MPIEPairsManager(MPPSourceList, source2Node);
         this.MPPS = mpiEPairsManager.getMPIEPairList();
-
     }
 
-    public BinTree getTree(){
+    /**
+     * Gets the BinTree instance.
+     *
+     * @return BinTree object
+     */
+    public BinTree getTree() {
         return tree;
     }
 
-    // 获取 MPIEPairsManager
+    /**
+     * Gets the MPIEPairsManager instance.
+     *
+     * @return MPIEPairsManager object
+     */
     public MPIEPairsManager getMpiEPairsManager() {
         return mpiEPairsManager;
     }
 
-    // 处理事件，通过 MPIEPairsManager 来处理事件
-    public void processEvent(Object event) {
-        mpiEPairsManager.runByPE((PointEvent) event);
-    }
-
-
-    public void printResultCNT() {
-        tree.printResultCNT();
-    }
-
+    /**
+     * Gets the result count from the tree.
+     *
+     * @return The result count
+     */
     public long getResultCNT() {
         return tree.getResultCNT();
     }
 
-
-    public void printDetailResult() {
-        tree.printDetailResult();
-    }
-
-    public void printResultFormat() {
-        tree.printDetailResultFormat();
-    }
-
-    public void printResultOrdered() {
-        tree.printDetailResultOrdered();
-    }
-
-
-
-    public void printAllTable() {
-//        root.getTable().printTable();
-    }
-
-    public void resetBeforeRun(long currentTime){
+    /**
+     * Resets the state before running the processing.
+     *
+     * Clears previous data and refreshes data based on the window type.
+     *
+     * @param currentTime Current timestamp used to calculate old data
+     */
+    public void resetBeforeRun(long currentTime) {
 
         tree.clearMergedNodeData_NewT();
         tree.clearLeafNodeData_NewT();
 
-        if(window.getWindowType()==WindowType.TIME_WINDOW){
-            long deadLine=currentTime-window.getWindowCapacity();
-            tree.refreshMergedNodeData_OldT(deadLine );
+        if (window.getWindowType() == WindowType.TIME_WINDOW) {
+            long deadLine = currentTime - window.getWindowCapacity();
+            tree.refreshMergedNodeData_OldT(deadLine);
             tree.refreshLeafNodeData_OldT(deadLine);
         }
-
     }
 
-    public void mergeAfterRun(){
+    /**
+     * Merges the tree data after the run.
+     */
+    public void mergeAfterRun() {
 //        tree.mergeTree();
         tree.mergeTree();
     }
 
-    public void deriveBeforeAfterRel(){
+    /**
+     * Derives the "before-after" relationships in the tree.
+     */
+    public void deriveBeforeAfterRel() {
         tree.deriveBeforeAfterRel();
     }
 
-
-    public void updateData(){
+    /**
+     * Updates the tree data after the run.
+     */
+    public void updateData() {
 
         tree.updateMergedNodeData();
         tree.updateLeafNodeData();
-
     }
 
-
-
-    // 逐个执行 PIEPair 的 stepByPE 方法，处理 PointEvent
+    /**
+     * Processes a PointEvent by executing the stepByPE method for each PIEPair.
+     *
+     * @param pe The PointEvent to process
+     */
     public void runOneByOne(PointEvent pe) {
         MPPS.forEach(pair -> pair.run(pe));
     }

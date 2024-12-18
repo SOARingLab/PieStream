@@ -12,38 +12,49 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The MPIEPair class represents a pattern matching mechanism that uses PIEPair objects
+ * for precise temporal relationships detection between events. It manages the transitions
+ * of different states for temporal relations and processes incoming events according
+ * to defined temporal relations.
+ *
+ * It includes the following functionalities:
+ * 1. Classifies and processes events based on temporal relations.
+ * 2. Handles transitions for both former and latter PIE events.
+ * 3. Provides methods to manage PIEPair objects and their interactions.
+ */
 public class MPIEPair {
-    private final Set<TemporalRelations.PreciseRel> relations;  // 时间关系的精确关系列表
-    private final EventClassifier classifier;                      // 事件分类器
-    private final EBA formerPred;                                  // 前EBA
-    private final EBA latterPred;                                  // 后EBA
-    private final int QCapacity;                                   // 队列容量
-    private final List<PIEPair> piePairs;                         // PIEPair 列表
-    private Alphabet lastAlphabet;                                  // 上一个字母
-    private Alphabet currentAlphabet;                               // 当前字母
-    private PointEvent formerPieStart;                             // 前PIE开始事件
-    private PointEvent formerPieEnd;                               // 前PIE结束事件
-    private PointEvent latterPieStart;                             // 后PIE开始事件
-    private PointEvent latterPieEnd;                               // 后PIE结束事件
-    private LinkList<IE> formerIEList;                            // 前事件列表
-    private LinkList<IE> latterIEList;                            // 后事件列表
-    private final TreeNode node;                                   // 树节点
-    private final boolean hasBefore;                               // 是否有before关系
-    private final boolean hasAfter;                                // 是否有after关系
-    private boolean hasNewFormerIE;                                // 是否有新前事件
-    private boolean hasNewLatterIE;                                // 是否有新后事件
+    private final Set<TemporalRelations.PreciseRel> relations;  // List of precise temporal relations
+    private final EventClassifier classifier;                    // Classifier to classify incoming events
+    private final EBA formerPred;                                // Former EBA (Event Based Automaton)
+    private final EBA latterPred;                                // Latter EBA
+    private final int QCapacity;                                 // Queue capacity
+    private final List<PIEPair> piePairs;                        // List of PIEPairs
+    private Alphabet lastAlphabet;                               // Last alphabet state
+    private Alphabet currentAlphabet;                            // Current alphabet state
+    private PointEvent formerPieStart;                           // Start event for former PIE
+    private PointEvent formerPieEnd;                             // End event for former PIE
+    private PointEvent latterPieStart;                           // Start event for latter PIE
+    private PointEvent latterPieEnd;                             // End event for latter PIE
+    private final LinkList<IE> formerIEList;                           // List of former interval events
+    private final LinkList<IE> latterIEList;                           // List of latter interval events
+    private final TreeNode node;                                  // Tree node representing the pattern
+    private final boolean hasBefore;                             // Flag indicating the presence of a "before" relationship
+    private final boolean hasAfter;                              // Flag indicating the presence of an "after" relationship
+    private boolean hasNewFormerIE;                              // Flag indicating new former interval event
+    private boolean hasNewLatterIE;                              // Flag indicating new latter interval event
 
     /**
-     * 构造函数，初始化 MPIEPair 并创建多个 PIEPair。
+     * Constructor to initialize the MPIEPair object and create PIEPairs for the given relations.
      *
-     * @param relations  精确关系列表
-     * @param formerPred 前EBA
-     * @param latterPred 后EBA
-     * @param node      树节点
+     * @param relations Set of precise temporal relations
+     * @param formerPred Former EBA (Event-Based Automaton) to classify the events
+     * @param latterPred Latter EBA to classify the events
+     * @param node TreeNode representing the state of the pattern
      */
     public MPIEPair(Set<TemporalRelations.PreciseRel> relations, EBA formerPred, EBA latterPred, TreeNode node) {
         if (relations == null || formerPred == null || latterPred == null) {
-            throw new IllegalArgumentException("参数不能为空");
+            throw new IllegalArgumentException("Parameters cannot be null");
         }
         this.relations =  relations;
         this.formerPred = formerPred;
@@ -84,7 +95,7 @@ public class MPIEPair {
         return hasNewLatterIE;
     }
 
-    public PointEvent getFormerPieStart(){
+    public PointEvent getFormerPieStart() {
         return formerPieStart;
     }
 
@@ -96,7 +107,7 @@ public class MPIEPair {
         return latterPieStart;
     }
 
-    public PointEvent getLatterPieEnd(){
+    public PointEvent getLatterPieEnd() {
         return latterPieEnd;
     }
 
@@ -105,6 +116,12 @@ public class MPIEPair {
         hasNewLatterIE = false;
     }
 
+    /**
+     * Processes an incoming PointEvent and updates the MPIEPair accordingly.
+     * It classifies the event and manages transitions between states.
+     *
+     * @param event The incoming event to be processed
+     */
     public void run(PointEvent event) {
         resetNewIE();
         Alphabet newAlphabet = classifier.classify(event);
@@ -118,47 +135,58 @@ public class MPIEPair {
     }
 
     /**
-     * 获取时间关系的精确关系列表。
+     * Returns the set of precise temporal relations that this MPIEPair is monitoring.
      *
-     * @return 精确关系列表
+     * @return Set of precise temporal relations
      */
     public Set<TemporalRelations.PreciseRel> getRelations() {
         return relations;
     }
 
     /**
-     * 获取前EBA。
+     * Returns the former EBA.
      *
-     * @return 前EBA
+     * @return Former EBA
      */
     public EBA getFormerPred() {
         return formerPred;
     }
 
     /**
-     * 获取后EBA。
+     * Returns the latter EBA.
      *
-     * @return 后EBA
+     * @return Latter EBA
      */
     public EBA getLatterPred() {
         return latterPred;
     }
 
     /**
-     * 获取队列容量。
+     * Returns the queue capacity.
      *
-     * @return 队列容量
+     * @return Queue capacity
      */
     public int getQCapacity() {
         return QCapacity;
     }
 
+    /**
+     * Returns the IEPCol associated with the current TreeNode.
+     *
+     * @return IEPCol of the TreeNode
+     */
     public IEPCol getCol() {
         return node.getCol();
     }
 
+    /**
+     * Records an event and updates the respective PIE start and end events.
+     * Depending on the transition types, the corresponding PIE start and end events
+     * are updated, and interval events are added to the respective lists.
+     *
+     * @param event The incoming event to be recorded
+     */
     private void recordIntervalEvent(PointEvent event) {
-
         if (isFormerPieStartTransition()) {
             formerPieStart = event;
             formerPieEnd = null;
@@ -167,11 +195,10 @@ public class MPIEPair {
         if (isFormerPieEndTransition()) {
             formerPieEnd = event;
             if (hasBefore) {
-                formerIEList.safeAdd(new IE(formerPred, formerPieStart, formerPieEnd,event.getTimestamp()));
+                formerIEList.safeAdd(new IE(formerPred, formerPieStart, formerPieEnd, event.getTimestamp()));
             }
             if (hasAfter) {
-                node.getAftCol().updateCompletedMSG("former",formerPred,formerPieStart.getTimestamp(),formerPieEnd);
-//                node.getAftCol().printCol();
+                node.getAftCol().updateCompletedMSG("former", formerPred, formerPieStart.getTimestamp(), formerPieEnd);
             }
         }
         if (isLatterPieStartTransition()) {
@@ -182,20 +209,18 @@ public class MPIEPair {
         if (isLatterPieEndTransition()) {
             latterPieEnd = event;
             if (hasAfter) {
-                latterIEList.safeAdd(new IE(latterPred, latterPieStart, latterPieEnd,event.getTimestamp()));
+                latterIEList.safeAdd(new IE(latterPred, latterPieStart, latterPieEnd, event.getTimestamp()));
             }
             if (hasBefore) {
-
-                node.getBefCol().updateCompletedMSG("latter",latterPred,latterPieStart.getTimestamp(),latterPieEnd);
-//                node.getBefCol().printCol();
+                node.getBefCol().updateCompletedMSG("latter", latterPred, latterPieStart.getTimestamp(), latterPieEnd);
             }
         }
     }
 
     /**
-     * 判断是否为前PIE开始转换。
+     * Checks if the transition is the start of a former PIE.
      *
-     * @return 如果是开始转换则返回true
+     * @return true if it is the start of a former PIE, false otherwise
      */
     public boolean isFormerPieStartTransition() {
         return (lastAlphabet == Alphabet.O || lastAlphabet == Alphabet.I || lastAlphabet == null) &&
@@ -203,9 +228,9 @@ public class MPIEPair {
     }
 
     /**
-     * 判断是否为前PIE结束转换。
+     * Checks if the transition is the end of a former PIE.
      *
-     * @return 如果是结束转换则返回true
+     * @return true if it is the end of a former PIE, false otherwise
      */
     public boolean isFormerPieEndTransition() {
         return (lastAlphabet == Alphabet.Z || lastAlphabet == Alphabet.E) &&
@@ -213,9 +238,9 @@ public class MPIEPair {
     }
 
     /**
-     * 判断是否为后PIE开始转换。
+     * Checks if the transition is the start of a latter PIE.
      *
-     * @return 如果是开始转换则返回true
+     * @return true if it is the start of a latter PIE, false otherwise
      */
     public boolean isLatterPieStartTransition() {
         return (lastAlphabet == Alphabet.O || lastAlphabet == Alphabet.Z || lastAlphabet == null) &&
@@ -223,9 +248,9 @@ public class MPIEPair {
     }
 
     /**
-     * 判断是否为后PIE结束转换。
+     * Checks if the transition is the end of a latter PIE.
      *
-     * @return 如果是结束转换则返回true
+     * @return true if it is the end of a latter PIE, false otherwise
      */
     public boolean isLatterPieEndTransition() {
         return (lastAlphabet == Alphabet.I || lastAlphabet == Alphabet.E) &&
@@ -233,70 +258,13 @@ public class MPIEPair {
     }
 
     /**
-     * 获取所有 PIEPair 的列表。
+     * Returns the list of all PIEPairs in this MPIEPair.
      *
-     * @return 所有 PIEPair 列表
+     * @return List of PIEPairs
      */
     public List<PIEPair> getPiePairs() {
         return piePairs;
     }
-
-//
-//    private void updeteColWhenCompleted(IEPCol updateCol) {
-//        // 确定需要更新 FormerPieEnd 还是 LatterPieEnd
-//        int n = 0;  // 用于跟踪更新的 IEP 数量
-//        PointEvent currentStartEvent;
-//
-//        if (this.relation.triggerWithoutLatterPieEnd()) {
-//            // 从 Col 的 colMap 中查找 LatterPieStart 对应的 IEP
-//            currentStartEvent = latterPieStart;
-//            Long latterStartTime = currentStartEvent.getTimestamp();
-//            if (latterPieEnd.getTimestamp() <= latterStartTime) {
-//                throw new IllegalArgumentException("latterPieEnd timestamp is earlier than latterStartTime.");
-//            }
-//
-//            // 从 colMap 中获取与 latterPred 和 latterStartTime 匹配的 IEP 列表
-//            List<IEP> iepList = updateCol.getIEP(latterPred, latterStartTime);
-//
-//            // 更新所有找到的 IEP 的 LatterPieEnd
-//            for (IEP iep : iepList) {
-//                iep.setLatterPieEnd(latterPieEnd);
-////                iep.complete();
-//                n++;
-//
-//            }
-//        } else if (this.relation.triggerWithoutFormerPieEnd()) {
-//            // 从 Col 的 colMap 中查找 FormerPieStart 对应的 IEP
-//            currentStartEvent = formerPieStart;
-//            Long formerStartTime = currentStartEvent.getTimestamp();
-//            if (formerPieEnd.getTimestamp() <= formerStartTime) {
-//                throw new IllegalArgumentException("latterPieEnd timestamp is earlier than latterStartTime.");
-//            }
-//            // 从 colMap 中获取与 formerPred 和 formerStartTime 匹配的 IEP 列表
-//            List<IEP> iepList = updateCol.getIEP(formerPred, formerStartTime);
-//
-//
-//            // 更新所有找到的 IEP 的 FormerPieEnd
-//            for (IEP iep : iepList) {
-//                iep.setFormerPieEnd(formerPieEnd);
-////                iep.complete();
-//                n++;
-//
-//            }
-//        }else if( this.relation.triggerWithCompleted() ){
-//            // 已经更新好，直接跳过
-//            return ;
-//
-//        }else{
-//            throw new IllegalStateException("No matching IEP found to update.");
-//        }
-//
-//        // 如果 n == 0，表示没有找到匹配的 IEP，抛出异常
-//        if (n == 0) {
-//            throw new IllegalStateException("No matching IEP found to update.");
-//        }
-//    }
-
 
     @Override
     public String toString() {

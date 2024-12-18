@@ -13,78 +13,86 @@ import java.util.List;
 public class LinkList<T extends Expirable> {
 
     private static final Logger logger = LoggerFactory.getLogger(LinkList.class);
-    public class Node {
-        T data;       // 节点的数据
-        Node next;    // 指向下一个节点的指针
-        Node prev;    // 指向前一个节点的指针
 
+    // Node class represents each element in the doubly linked list
+    public class Node {
+        T data;       // The data contained in the node
+        Node next;    // Pointer to the next node in the list
+        Node prev;    // Pointer to the previous node in the list
+
+        // Constructor to initialize a new node
         Node(T data, Node next, Node prev) {
             this.data = data;
             this.next = next;
             this.prev = prev;
         }
+
+        // Getter for the data in the node
         public T getData(){
             return data;
         }
     }
 
-    private Node head;    // 头指针
-    private Node tail;    // 尾指针
-    private long size;     // 当前元素个数
-    private final Window window;
+    private Node head;    // Pointer to the first node in the list (head)
+    private Node tail;    // Pointer to the last node in the list (tail)
+    private long size;     // The current number of elements in the list
+    private final Window window;  // Window object to manage the capacity and type
 
-    public LinkList( Window window) {
-        this.window=window;
+    // Constructor to initialize the LinkList with a specified window
+    public LinkList(Window window) {
+        this.window = window;
         this.size = 0;
         this.head = null;
         this.tail = null;
     }
 
-    // 检查链表是否已满
+    // Checks whether the list is full based on the window's capacity
     public boolean isFull() {
         return window.getWindowType() == WindowType.CAPACITY_WINDOW && size == window.getWindowCapacity();
     }
 
-    // 检查链表是否为空
+    // Checks whether the list is empty
     public boolean isEmpty() {
         return size == 0;
     }
 
-
+    // Safely adds a new element to the list, removing the head if necessary
     public void safeAdd(T data) {
-        // 如果链表满了，删除头部节点
+        // If the list is full, remove the head element
         if (isFull()) {
             deleteHead();
         }
+        // Create a new node with the provided data and insert it in sorted order
         Node newNode = new Node(data, null, null);
         this.sortedInsert(newNode);
     }
 
+    // Inserts a node into the list in a sorted manner based on the data's sort key
     private void sortedInsert(Node node) {
         if (isEmpty()) {
-            // 如果链表为空，将新节点设为 head 和 tail
+            // If the list is empty, set the new node as both the head and the tail
             head = node;
             tail = node;
         } else {
             Node crt = tail;
 
-            // 向前遍历链表，找到合适的插入位置
+            // Traverse the list from the tail to find the correct insertion point
             while (crt != null && node.getData().getSortKey() < crt.getData().getSortKey()) {
                 crt = crt.prev;
             }
 
             if (crt == null) {
-                // 插入到链表头部，成为新的 head
+                // Insert the node at the head of the list
                 node.next = head;
                 head.prev = node;
                 head = node;
             } else if (crt == tail) {
-                // 插入到链表尾部，成为新的 tail
+                // Insert the node at the tail of the list
                 crt.next = node;
                 node.prev = crt;
                 tail = node;
             } else {
-                // 插入到中间位置
+                // Insert the node in the middle of the list
                 node.next = crt.next;
                 node.prev = crt;
                 crt.next.prev = node;
@@ -94,16 +102,14 @@ public class LinkList<T extends Expirable> {
         size++;
     }
 
-
-
-    // 删除头部节点
-    public T  deleteHead() {
+    // Deletes the head node of the list and returns its data
+    public T deleteHead() {
         if (isEmpty()) {
             logger.info("The list is empty. No elements to delete.");
             return null;
         }
-        T  deletedData=head.getData();
-        // 将头指针指向下一个节点
+        T deletedData = head.getData();
+        // Update the head pointer to the next node
         head = head.next;
         if (head != null) {
             head.prev = null;
@@ -114,20 +120,20 @@ public class LinkList<T extends Expirable> {
         return deletedData;
     }
 
-    // 从链表中删除一个节点
+    // Deletes a specific node from the list
     public void deleteNode(Node node) {
         if (isEmpty()) {
             logger.info("The list is empty. No elements to delete.");
             return;
         }
 
-        // 如果要删除的是头节点
+        // If the node is the head, delete the head
         if (node == head) {
             deleteHead();
             return;
         }
 
-        // 如果要删除的是尾节点
+        // If the node is the tail, delete the tail
         if (node == tail) {
             tail = tail.prev;
             if (tail != null) {
@@ -137,7 +143,7 @@ public class LinkList<T extends Expirable> {
             return;
         }
 
-        // 如果要删除的是中间节点
+        // For a middle node, update the previous and next pointers
         if (node.prev != null) {
             node.prev.next = node.next;
         }
@@ -147,8 +153,7 @@ public class LinkList<T extends Expirable> {
         size--;
     }
 
-
-    // 打印链表中的所有元素
+    // Prints all elements in the list
     public void printList() {
         if (isEmpty()) {
             logger.info("The list is empty.");
@@ -163,84 +168,85 @@ public class LinkList<T extends Expirable> {
         logger.info("null");
     }
 
-    // TODO: bug
-    public void concat(LinkList<T > otherLinkList){
-        if(otherLinkList.getSize()==0){
+    // Concatenates another LinkList to the current list
+    public void concat(LinkList<T> otherLinkList) {
+        if (otherLinkList.getSize() == 0) {
             return;
         }
-        if(window.getWindowType() ==WindowType.CAPACITY_WINDOW && this.size+otherLinkList.getSize()>this.getCapacity()){
+        // Check if the combined size exceeds the capacity of the list
+        if (window.getWindowType() == WindowType.CAPACITY_WINDOW && this.size + otherLinkList.getSize() > this.getCapacity()) {
             throw new IllegalArgumentException("Excess size exceeds capacity of LinkList.");
         }
-
-
-
-        //change head
-        if (this.size==0){
-            this.head=otherLinkList.head;
-        }else{
-            this.tail.next=otherLinkList.head;
-            otherLinkList.head.prev=this.tail;
+        // Change head if the current list is empty
+        if (this.size == 0) {
+            this.head = otherLinkList.head;
+        } else {
+            this.tail.next = otherLinkList.head;
+            otherLinkList.head.prev = this.tail;
         }
-        //change tail
-        this.tail=otherLinkList.tail;
+        // Update the tail of the list
+        this.tail = otherLinkList.tail;
 
-        //change size
-        this.size+=otherLinkList.getSize();
-
+        // Update the size of the list
+        this.size += otherLinkList.getSize();
     }
 
+    // Clears the entire list by setting head, tail to null and size to 0
     public void clear() {
-        // 清除所有节点
         head = null;
         tail = null;
         size = 0;
     }
 
-    // 获取链表的大小
+    // Returns the current size of the list
     public long getSize() {
         return size;
     }
 
-
-
-    // 获取链表的容量
+    // Returns the capacity of the list based on the window's capacity
     public long getCapacity() {
         return window.getWindowCapacity();
     }
 
-    // 获取头节点
+    // Returns the head node of the list
     public Node getHead() {
         return head;
     }
 
-    // 获取尾节点
+    // Returns the tail node of the list
     public Node getTail() {
         return tail;
     }
 
-    //TIME WINDOW
-    public List<T> refresh(long deadLine ){
-        List<T> dataList= new ArrayList<T>();
-        Node current=head;
-        long cnt=0;
-        while(current!=null && current.data.isExpired(deadLine)){
+    // TIME WINDOW: Removes expired data based on the provided deadline and returns the expired items
+    public List<T> refresh(long deadLine) {
+        List<T> dataList = new ArrayList<T>();
+        Node current = head;
+        long cnt = 0;
+
+        // Traverse the list and collect all expired data
+        while (current != null && current.data.isExpired(deadLine)) {
             dataList.add(current.data);
-            current=current.next;
+            current = current.next;
             cnt++;
         }
-        head=current;
+
+        // Update the head pointer to the first non-expired node
+        head = current;
         if (head != null) {
             head.prev = null;
         } else {
             tail = null;
         }
-        size-=cnt;
+        size -= cnt;
 
         return dataList;
     }
-    public List<T> deleteFromHead(long excess){
-        List<T> dataList= new ArrayList<T>();
-        while(excess>0){
+
+    // Deletes elements from the head until the excess limit is reached, and returns the deleted elements
+    public List<T> deleteFromHead(long excess) {
+        List<T> dataList = new ArrayList<T>();
+        while (excess > 0) {
             dataList.add(deleteHead());
             excess--;
         }

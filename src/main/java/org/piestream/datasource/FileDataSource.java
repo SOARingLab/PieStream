@@ -8,68 +8,103 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A {@link DataSource} implementation that reads data from a file.
+ * Supports reading data with optional rate limiting and an optional limit on the number of lines to be read.
+ */
 public class FileDataSource implements DataSource {
     private BufferedReader reader;
-    private long limit;
-    private long readCount;
-    private RateLimiter rateLimiter; // 用于速率控制
+    private long limit; // The maximum number of lines to read from the file
+    private long readCount; // The number of lines that have been read so far
+    private RateLimiter rateLimiter; // Rate limiter for controlling the read speed
 
-
-    // 原构造函数
+    /**
+     * Constructs a FileDataSource that reads from the specified file.
+     * No limit is imposed on the number of lines to read by default.
+     *
+     * @param filePath the path to the file to read from
+     * @throws IOException if an error occurs while opening the file
+     */
     public FileDataSource(String filePath) throws IOException {
         reader = new BufferedReader(new FileReader(filePath));
-        this.limit = Long.MAX_VALUE; // 默认不限制读取行数
-        this.readCount = 0; // 初始化已读取的数据量
+        this.limit = Long.MAX_VALUE; // Default to no limit on the number of lines
+        this.readCount = 0; // Initialize the read count
     }
 
-    // 新增的构造函数，接受一个 limit 参数
+    /**
+     * Constructs a FileDataSource with a limit on the number of lines to read.
+     *
+     * @param filePath the path to the file to read from
+     * @param limit the maximum number of lines to read
+     * @throws IOException if an error occurs while opening the file
+     */
     public FileDataSource(String filePath, long limit) throws IOException {
         reader = new BufferedReader(new FileReader(filePath));
         this.limit = limit;
-        this.readCount = 0; // 初始化已读取的数据量
+        this.readCount = 0; // Initialize the read count
     }
 
+    /**
+     * Constructs a FileDataSource with a limit on the number of lines to read and a rate limit on reading speed.
+     * The rate limiting controls how fast data is read from the file.
+     *
+     * @param filePath the path to the file to read from
+     * @param limit the maximum number of lines to read
+     * @param rates the rate limit (in number of reads per second), 0 or negative values disable rate limiting
+     * @throws IOException if an error occurs while opening the file
+     */
     public FileDataSource(String filePath, long limit, long rates) throws IOException {
         reader = new BufferedReader(new FileReader(filePath));
         this.limit = limit;
-        this.readCount = 0; // 初始化已读取的数据量
+        this.readCount = 0; // Initialize the read count
         if (rates > 0) {
-            this.rateLimiter = RateLimiter.create(rates); // 初始化 RateLimiter
+            this.rateLimiter = RateLimiter.create(rates); // Initialize the rate limiter
         } else {
-            this.rateLimiter = null; // 如果 rates <= 0，则不进行速率限制
+            this.rateLimiter = null; // No rate limiting if rates <= 0
         }
     }
 
-
+    /**
+     * Checks if there are more lines to read from the file.
+     * If the number of lines read exceeds the limit, returns false.
+     *
+     * @return true if there are more lines to read, false otherwise
+     */
     @Override
     public boolean hasNext() {
         try {
             if (readCount >= limit) {
-                return false; // 如果已经读取超过 limit 个数据，返回 false
+                return false; // No more lines to read if limit is reached
             }
-            reader.mark(1); // 标记当前位置
+            reader.mark(1); // Mark the current position
             if (reader.readLine() == null) {
-                return false; // 文件没有更多内容
+                return false; // No more content in the file
             }
-            reader.reset(); // 重置到标记的位置
-            return true; // 文件中还有更多内容
+            reader.reset(); // Reset to the marked position
+            return true; // More lines are available
         } catch (IOException e) {
             throw new RuntimeException("Error reading from file", e);
         }
     }
 
+    /**
+     * Reads the next line from the file.
+     * Applies rate limiting if enabled, and stops if the read limit is exceeded.
+     *
+     * @return the next line of the file, or null if there are no more lines to read
+     */
     @Override
     public String readNext() {
         try {
             if (readCount >= limit) {
-                return null; // 如果读取超过 limit，返回 null
+                return null; // Stop reading if the limit is reached
             }
             if (rateLimiter != null) {
-                rateLimiter.acquire(); // 进行速率限制
+                rateLimiter.acquire(); // Apply rate limiting if enabled
             }
             String line = reader.readLine();
             if (line != null) {
-                readCount++; // 增加已读取的数据量
+                readCount++; // Increment the read count
             }
             return line;
         } catch (IOException e) {
@@ -77,23 +112,31 @@ public class FileDataSource implements DataSource {
         }
     }
 
+    /**
+     * Reads a batch of lines from the file.
+     * Returns a list of lines, up to the specified batch size.
+     * Stops reading if the read limit is exceeded or if there are no more lines.
+     *
+     * @param batchSize the number of lines to read in the batch
+     * @return a list of lines read from the file
+     */
     @Override
     public List<String> readBatch(int batchSize) {
         List<String> batch = new ArrayList<>();
         try {
             for (int i = 0; i < batchSize; i++) {
                 if (readCount >= limit) {
-                    break; // 如果已经读取超过 limit，停止读取
+                    break; // Stop reading if the limit is reached
                 }
                 if (rateLimiter != null) {
-                    rateLimiter.acquire(); // 进行速率限制
+                    rateLimiter.acquire(); // Apply rate limiting if enabled
                 }
                 String line = reader.readLine();
                 if (line != null) {
                     batch.add(line);
-                    readCount++; // 增加已读取的数据量
+                    readCount++; // Increment the read count
                 } else {
-                    break; // 没有更多数据了
+                    break; // Stop if there are no more lines
                 }
             }
         } catch (IOException e) {
@@ -102,91 +145,16 @@ public class FileDataSource implements DataSource {
         return batch;
     }
 
-
+    /**
+     * Closes the file reader.
+     * Ensures that the resources are properly released when done reading.
+     */
     @Override
     public void close() {
         try {
             reader.close();
         } catch (IOException e) {
             throw new RuntimeException("Error closing file", e);
-        }
-    }
-
-    /**
-     * 简单的 main 方法用于测试 FileDataSource 类。
-     * 该方法将展示如何使用不同的构造函数来读取 CSV 文件。
-     */
-    public static void main(String[] args) {
-        // 确保你有一个大的 CSV 文件，例如 "large_file.csv" 在指定路径
-        String filePath = "/Users/czq/Code/TPS_data/events_col4_row10000000.csv";
-
-        // 测试 1: 使用原始构造函数，读取所有数据
-        System.out.println("=== 测试 1: 读取所有数据 ===");
-        try (DataSource dataSource = new FileDataSource(filePath)) {
-            String line;
-            long startTime = System.currentTimeMillis();
-            long count = 0;
-            while ((line = dataSource.readNext()) != null) {
-                // 这里可以选择不打印每一行，以提高性能
-                // System.out.println(line);
-                count++;
-                if (count % 100000 == 0) {
-                    System.out.println("已读取 " + count + " 行");
-                }
-            }
-            long endTime = System.currentTimeMillis();
-            double durationSeconds = (endTime - startTime) / 1000.0;
-            System.out.println("总共读取 " + count + " 行，耗时 " + durationSeconds + " 秒");
-        } catch (IOException e) {
-            System.err.println("无法打开文件: " + e.getMessage());
-        }
-
-        // 测试 2: 使用带 limit 和 rate 的构造函数，读取前 1000 行，速率为 50 行/秒
-        System.out.println("\n=== 测试 2: 读取前 1000 行，速率限制为 50 行/秒 ===");
-        long limit = 1000;
-        long rate = 50; // 50 行每秒
-        try (DataSource dataSource = new FileDataSource(filePath, limit, rate)) {
-            String line;
-            long startTime = System.currentTimeMillis();
-            long count = 0;
-            while ((line = dataSource.readNext()) != null) {
-                // 这里可以选择不打印每一行，以提高性能
-                // System.out.println(line);
-                count++;
-                if (count % 100 == 0) {
-                    System.out.println("已读取 " + count + " 行");
-                }
-            }
-            long endTime = System.currentTimeMillis();
-            double durationSeconds = (endTime - startTime) / 1000.0;
-            System.out.println("总共读取 " + count + " 行，耗时 " + durationSeconds + " 秒");
-            System.out.println("预期耗时约 " + (limit / (double) rate) + " 秒");
-        } catch (IOException e) {
-            System.err.println("无法打开文件: " + e.getMessage());
-        }
-
-        // 测试 3: 使用带 limit 和 rate 的构造函数，读取前 2000 行，速率为 100 行/秒
-        System.out.println("\n=== 测试 3: 读取前 2000 行，速率限制为 100 行/秒 ===");
-        limit = 2000;
-        rate = 100; // 100 行每秒
-        try (DataSource dataSource = new FileDataSource(filePath, limit, rate)) {
-            String line;
-            long startTime = System.currentTimeMillis();
-            long count = 0;
-            while ((line = dataSource.readNext()) != null) {
-                // 这里可以选择不打印每一行，以提高性能
-                // System.out.println(line);
-                count++;
-                if (count % 500 == 0) {
-                    System.out.println("已读取 " + count + " 行");
-                }
-            }
-            long endTime = System.currentTimeMillis();
-            double durationSeconds = (endTime - startTime) / 1000.0;
-            System.out.println("总共读取 " + count + " 行，耗时 " + durationSeconds + " 秒");
-            System.out.println("预期耗时约 " + (limit / (double) rate) + " 秒");
-        } catch (IOException e) {
-            System.err.println("无法打开文件: " + e.getMessage());
         }
     }
 }

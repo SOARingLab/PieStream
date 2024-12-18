@@ -6,28 +6,50 @@ import org.piestream.events.Expirable;
 import org.piestream.events.PointEvent;
 import org.piestream.piepair.eba.EBA;
 
+/**
+ * The IEP class represents an Interval Event Pair, encapsulating the relationship between two events
+ * with their respective start and end points, temporal relations, and trigger information.
+ * It implements the Expirable interface to determine if the event pair has expired based on a deadline.
+ */
 public class IEP implements Expirable {
-    private EBA formerPie;
-    private EBA latterPie;
-    private TemporalRelations.AllRel relation; // 时间关系
-    private PointEvent formerPieStart;         // formerPie的开始事件
-    private PointEvent latterPieStart;         // latterPie的开始事件 (可以为 null)
-    private PointEvent formerPieEnd;           // formerPie的结束事件
-    private PointEvent latterPieEnd;           // latterPie的结束事件 (可以为 null)
-    private Long formerStartTime;     // 前事件的开始时间
-    private Long latterStartTime;     // 后事件的开始时间
-    private PointEvent triggerEvent;
-    private Long triggerTime;
-    private Long systemTriggerTime;
-    private CompletedTime compTime;
-//    private boolean isCompleted;
+    private final EBA formerPie;
+    private final EBA latterPie;
+    private final TemporalRelations.AllRel relation; /* Temporal relation */
+    private final PointEvent formerPieStart;         /* Start event of the former PIE */
+    private final PointEvent latterPieStart;         /* Start event of the latter PIE (can be null) */
+    private PointEvent formerPieEnd;           /* End event of the former PIE */
+    private PointEvent latterPieEnd;           /* End event of the latter PIE (can be null) */
+    private Long formerStartTime;              /* Start time of the former event */
+    private Long latterStartTime;              /* Start time of the latter event */
+    private final PointEvent triggerEvent;
+    private final Long triggerTime;
+    private final Long systemTriggerTime;
+    private final CompletedTime compTime;
 
+    /**
+     * Enum representing the completion time of the IEP.
+     */
     public enum CompletedTime {
         FormerEnd,
         LatterEnd,
         NoNeed
     }
-    // 构造函数
+
+    /**
+     * Constructs an IEP instance with the specified temporal relation, EBAs, events, and trigger information.
+     *
+     * @param relation         The temporal relation defining the relationship between events (AllRel)
+     * @param formerPie        The former Event-Based Attribute (EBA)
+     * @param latterPie        The latter Event-Based Attribute (EBA)
+     * @param formerPieStart   The start event of the former PIE
+     * @param latterPieStart   The start event of the latter PIE
+     * @param formerPieEnd     The end event of the former PIE
+     * @param latterPieEnd     The end event of the latter PIE
+     * @param formerStartTime  The start time of the former event
+     * @param latterStartTime  The start time of the latter event
+     * @param triggerEvent     The event that triggers this IEP
+     * @param triggerTime      The time when the trigger event occurs
+     */
     public IEP(TemporalRelations.AllRel relation,
                EBA formerPie,
                EBA latterPie,
@@ -40,7 +62,7 @@ public class IEP implements Expirable {
                PointEvent triggerEvent,
                Long triggerTime) {
 
-        // 对不允许为null的参数进行检查
+        /* Validate non-null parameters */
         this.relation = Objects.requireNonNull(relation, "relation cannot be null");
         this.formerPieStart = Objects.requireNonNull(formerPieStart, "formerPieStart cannot be null");
         this.latterPieStart = Objects.requireNonNull(latterPieStart, "latterPieStart cannot be null");
@@ -49,19 +71,32 @@ public class IEP implements Expirable {
         this.triggerEvent = Objects.requireNonNull(triggerEvent, "triggerEvent cannot be null");
         this.triggerTime = Objects.requireNonNull(triggerTime, "triggerTime cannot be null");
 
-
-        // 允许 formerPieEnd 和 latterPieEnd 为 null
+        /* Allow formerPieEnd and latterPieEnd to be null */
         this.formerPieEnd = formerPieEnd;
         this.latterPieEnd = latterPieEnd;
         this.formerPie = formerPie;
         this.latterPie = latterPie;
-        this.compTime=determinCompTimeByRel();
-        this.systemTriggerTime= System.nanoTime();
+        this.compTime = determinCompTimeByRel();
+        this.systemTriggerTime = System.nanoTime();
 
-//        this.isCompleted=false;
+        // this.isCompleted = false;
     }
 
-    // 构造函数，从 PreciseRel 构造
+    /**
+     * Constructs an IEP instance from a precise temporal relation.
+     *
+     * @param relation         The precise temporal relation (PreciseRel)
+     * @param formerPie        The former Event-Based Attribute (EBA)
+     * @param latterPie        The latter Event-Based Attribute (EBA)
+     * @param formerPieStart   The start event of the former PIE
+     * @param latterPieStart   The start event of the latter PIE
+     * @param formerPieEnd     The end event of the former PIE
+     * @param latterPieEnd     The end event of the latter PIE
+     * @param formerStartTime  The start time of the former event
+     * @param latterStartTime  The start time of the latter event
+     * @param triggerEvent     The event that triggers this IEP
+     * @param triggerTime      The time when the trigger event occurs
+     */
     public IEP(TemporalRelations.PreciseRel relation,
                EBA formerPie,
                EBA latterPie,
@@ -74,10 +109,26 @@ public class IEP implements Expirable {
                PointEvent triggerEvent,
                Long triggerTime) {
 
-        // 对不允许为null的参数进行检查
-        this(TemporalRelations.AllRel.fromPreciseRel(relation),formerPie,latterPie,formerPieStart,latterPieStart,formerPieEnd,latterPieEnd,formerStartTime,latterStartTime,triggerEvent,triggerTime);
+        /* Delegate to the main constructor after converting PreciseRel to AllRel */
+        this(TemporalRelations.AllRel.fromPreciseRel(relation), formerPie, latterPie, formerPieStart, latterPieStart,
+                formerPieEnd, latterPieEnd, formerStartTime, latterStartTime, triggerEvent, triggerTime);
     }
-    // 构造函数，从 AllenRel 构造
+
+    /**
+     * Constructs an IEP instance from an Allen temporal relation.
+     *
+     * @param relation         The Allen temporal relation (AllenRel)
+     * @param formerPie        The former Event-Based Attribute (EBA)
+     * @param latterPie        The latter Event-Based Attribute (EBA)
+     * @param formerPieStart   The start event of the former PIE
+     * @param latterPieStart   The start event of the latter PIE
+     * @param formerPieEnd     The end event of the former PIE
+     * @param latterPieEnd     The end event of the latter PIE
+     * @param formerStartTime  The start time of the former event
+     * @param latterStartTime  The start time of the latter event
+     * @param triggerEvent     The event that triggers this IEP
+     * @param triggerTime      The time when the trigger event occurs
+     */
     public IEP(TemporalRelations.AllenRel relation,
                EBA formerPie,
                EBA latterPie,
@@ -90,99 +141,180 @@ public class IEP implements Expirable {
                PointEvent triggerEvent,
                Long triggerTime) {
 
-        // 对不允许为null的参数进行检查
-        this(TemporalRelations.AllRel.fromAllenRel(relation),formerPie,latterPie,formerPieStart,latterPieStart,formerPieEnd,latterPieEnd,formerStartTime,latterStartTime,triggerEvent,triggerTime);
+        /* Delegate to the main constructor after converting AllenRel to AllRel */
+        this(TemporalRelations.AllRel.fromAllenRel(relation), formerPie, latterPie, formerPieStart, latterPieStart,
+                formerPieEnd, latterPieEnd, formerStartTime, latterStartTime, triggerEvent, triggerTime);
+    }
+    /**
+     * Retrieves the former Event-Based Attribute (EBA).
+     *
+     * @return the former EBA.
+     */
+    public EBA getFormerPie() {
+        return formerPie;
     }
 
-    public EBA getFormerPie(){
-            return formerPie;
-    }
-
-    public EBA getLatterPie(){
+    /**
+     * Retrieves the latter Event-Based Attribute (EBA).
+     *
+     * @return the latter EBA.
+     */
+    public EBA getLatterPie() {
         return latterPie;
     }
 
-    // Getters and setters
+    /**
+     * Retrieves the temporal relation of this IEP.
+     *
+     * @return the temporal relation (AllRel).
+     */
     public TemporalRelations.AllRel getRelation() {
         return relation;
     }
 
-
+    /**
+     * Retrieves the system trigger time in nanoseconds.
+     *
+     * @return the system trigger time.
+     */
     public Long getSystemTriggerTime() {
         return systemTriggerTime;
     }
 
+    /**
+     * Retrieves the start event of the former PIE.
+     *
+     * @return the former PIE start event.
+     */
     public PointEvent getFormerPieStart() {
         return formerPieStart;
     }
 
-
+    /**
+     * Retrieves the completion time of this IEP.
+     *
+     * @return the completion time (CompletedTime).
+     */
     public CompletedTime getCompTime() {
         return compTime;
     }
 
+    /**
+     * Retrieves the start event of the latter PIE.
+     *
+     * @return the latter PIE start event.
+     */
     public PointEvent getLatterPieStart() {
         return latterPieStart;
     }
 
-
+    /**
+     * Retrieves the end event of the former PIE.
+     *
+     * @return the former PIE end event.
+     */
     public PointEvent getFormerPieEnd() {
         return formerPieEnd;
     }
 
+    /**
+     * Sets the end event of the former PIE.
+     *
+     * @param formerPieEnd the former PIE end event to set.
+     */
     public void setFormerPieEnd(PointEvent formerPieEnd) {
         this.formerPieEnd = formerPieEnd;
     }
 
+    /**
+     * Retrieves the end event of the latter PIE.
+     *
+     * @return the latter PIE end event.
+     */
     public PointEvent getLatterPieEnd() {
         return latterPieEnd;
     }
 
+    /**
+     * Sets the end event of the latter PIE.
+     *
+     * @param latterPieEnd the latter PIE end event to set.
+     */
     public void setLatterPieEnd(PointEvent latterPieEnd) {
         this.latterPieEnd = latterPieEnd;
     }
 
-
-
+    /**
+     * Sets the start time of the former event.
+     *
+     * @param formerStartTime the former event start time to set.
+     */
     public void setFormerStartTime(Long formerStartTime) {
         this.formerStartTime = formerStartTime;
     }
 
+    /**
+     * Retrieves the start time of the former event.
+     *
+     * @return the former event start time.
+     */
     public Long getFormerStartTime() {
-        return formerStartTime ;
+        return formerStartTime;
     }
 
-
+    /**
+     * Retrieves the start time of the latter event.
+     *
+     * @return the latter event start time.
+     */
     public Long getLatterStartTime() {
-        return latterStartTime ;
+        return latterStartTime;
     }
 
+    /**
+     * Retrieves the end time of the former PIE.
+     *
+     * @return the former PIE end time, or 0L if not finished.
+     */
     public Long getFormerEndTime() {
-        if (formerPieEnd==null){
+        if (formerPieEnd == null) {
             return 0L;
-        }
-        else{
-            return  formerPieEnd.getTimestamp();
+        } else {
+            return formerPieEnd.getTimestamp();
         }
     }
 
+    /**
+     * Retrieves the end time of the latter PIE.
+     *
+     * @return the latter PIE end time, or 0L if not finished.
+     */
     public Long getLatterEndTime() {
-        if (latterPieEnd==null){
+        if (latterPieEnd == null) {
             return 0L;
-        }
-        else{
+        } else {
             return latterPieEnd.getTimestamp();
         }
     }
 
+    /**
+     * Sets the start time of the latter event.
+     *
+     * @param latterStartTime the latter event start time to set.
+     */
     public void setLatterStartTime(Long latterStartTime) {
         this.latterStartTime = latterStartTime;
     }
 
+    /**
+     * Returns a string representation of the IEP.
+     *
+     * @return a string describing the IEP.
+     */
     @Override
     public String toString() {
-        String formerPieEndTime=formerPieEnd==null?"not finish": String.valueOf(formerPieEnd.getTimestamp());
-        String latterPieEndTime=latterPieEnd==null?"not finish": String.valueOf(latterPieEnd.getTimestamp());
+        String formerPieEndTime = formerPieEnd == null ? "not finish" : String.valueOf(formerPieEnd.getTimestamp());
+        String latterPieEndTime = latterPieEnd == null ? "not finish" : String.valueOf(latterPieEnd.getTimestamp());
         return "IEP{" +
                 relation +
                 ", " + formerPieStart.getTimestamp() +
@@ -191,38 +323,51 @@ public class IEP implements Expirable {
                 ", " + latterPieEndTime +
                 '}';
     }
+
+    /**
+     * Computes the hash code for this IEP.
+     *
+     * @return the hash code.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(relation, formerPieStart, latterPieStart, formerPieEnd, latterPieEnd, formerStartTime, latterStartTime);
     }
 
-    private CompletedTime determinCompTimeByRel(){
-        if (relation.isPreciseRel()){
-            TemporalRelations.PreciseRel preRel=relation.getPreciseRel();
-            if(preRel.triggerWithoutLatterPieEnd()){
+    /**
+     * Determines the completion time based on the temporal relation.
+     *
+     * @return the completion time (CompletedTime).
+     */
+    private CompletedTime determinCompTimeByRel() {
+        if (relation.isPreciseRel()) {
+            TemporalRelations.PreciseRel preRel = relation.getPreciseRel();
+            if (preRel.triggerWithoutLatterPieEnd()) {
                 return CompletedTime.LatterEnd;
             } else if (preRel.triggerWithoutFormerPieEnd()) {
                 return CompletedTime.FormerEnd;
-            }
-            else if(preRel.triggerWithCompleted()) {
+            } else if (preRel.triggerWithCompleted()) {
                 return CompletedTime.NoNeed;
-            }
-            else{
+            } else {
                 throw new IllegalStateException("Unexpected precise relation state.");
-
             }
-        }else{
-            if(relation.getAllenRel()== TemporalRelations.AllenRel.AFTER){
-                return  CompletedTime.FormerEnd;
-            } else if (relation.getAllenRel()==TemporalRelations.AllenRel.BEFORE) {
+        } else {
+            if (relation.getAllenRel() == TemporalRelations.AllenRel.AFTER) {
+                return CompletedTime.FormerEnd;
+            } else if (relation.getAllenRel() == TemporalRelations.AllenRel.BEFORE) {
                 return CompletedTime.LatterEnd;
-            }else{
+            } else {
                 throw new IllegalStateException("Unexpected precise relation state.");
-
             }
         }
     }
 
+    /**
+     * Determines if this IEP is equal to another object.
+     *
+     * @param o the object to compare with.
+     * @return true if equal, false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -230,12 +375,12 @@ public class IEP implements Expirable {
 
         IEP iep = (IEP) o;
 
-        // 如果 hashCode 不相等，直接返回 false
+        /* If hash codes are not equal, objects are not equal */
         if (this.hashCode() != iep.hashCode()) {
             return false;
         }
 
-        // 进一步比较所有字段
+        /* Compare all relevant fields for equality */
         return relation == iep.relation &&
                 Objects.equals(formerPieStart, iep.formerPieStart) &&
                 Objects.equals(latterPieStart, iep.latterPieStart) &&
@@ -245,10 +390,22 @@ public class IEP implements Expirable {
                 Objects.equals(latterStartTime, iep.latterStartTime);
     }
 
-    public Long getTriggerTime(){
+    /**
+     * Retrieves the trigger time of this IEP.
+     *
+     * @return the trigger time.
+     */
+    public Long getTriggerTime() {
         return triggerTime;
     }
 
+    /**
+     * Retrieves the start time based on the provided EBA predicate.
+     *
+     * @param pred the EBA predicate (formerPie or latterPie).
+     * @return the corresponding start time.
+     * @throws IllegalArgumentException if the predicate does not match formerPie or latterPie.
+     */
     public Long getStartTime(EBA pred) {
         if (pred == formerPie) {
             return formerStartTime;
@@ -258,12 +415,6 @@ public class IEP implements Expirable {
             throw new IllegalArgumentException("The provided EBA predicate does not match formerPie or latterPie.");
         }
     }
-
-//    @Override
-//    public  boolean isExpired(long deadLine){
-//        return triggerTime<deadLine;
-//    }
-
 
     public  boolean isExpired(long deadLine){
         return formerStartTime<=latterStartTime?formerStartTime<deadLine:latterStartTime<deadLine;

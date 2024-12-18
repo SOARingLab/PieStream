@@ -1,0 +1,15 @@
+
+col,limit,windSize,output
+6,1000000,10000,18:52:15 [main] INFO : =====>  COL 6, LIMIT 1000000, WINDSIZE 10000, DATAPATH /Users/czq/Code/TPS_data/, <=====
+18:52:18 [main] INFO : 
+Total Lines Processed: 1000000
+18:52:18 [main] INFO : Processing time: 2878 ms
+18:52:18 [main] INFO : RESULT: 21003
+18:52:18 [main] INFO : AVG-latencyTime: 238518.58953482835 ns
+8,1000000,10000,18:52:19 [main] INFO : =====>  COL 8, LIMIT 1000000, WINDSIZE 10000, DATAPATH /Users/czq/Code/TPS_data/, <=====
+18:52:22 [main] INFO : 
+Total Lines Processed: 1000000
+18:52:22 [main] INFO : Processing time: 3659 ms
+18:52:22 [main] INFO : RESULT: 29528
+18:52:22 [main] INFO : AVG-latencyTime: 416218.54148604715 ns
+10,1000000,10000,18:52:23 [main] INFO : =====>  COL 10, LIMIT 1000000, WINDSIZE 10000, DATAPATH /Users/czq/Code/TPS_data/, <=====

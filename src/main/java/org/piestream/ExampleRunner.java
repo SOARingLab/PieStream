@@ -4,7 +4,6 @@ import org.piestream.datasource.DataSource;
 import org.piestream.datasource.FileDataSource;
 import org.piestream.engine.Engine;
 import org.piestream.engine.WindowType;
-import org.piestream.evaluation.Correct;
 import org.piestream.events.Attribute;
 import org.piestream.parser.Schema;
 import org.slf4j.Logger;
@@ -13,30 +12,41 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * The ExampleRunner class is designed to execute a series of example runs for testing the performance of the stream processing engine.
+ * It constructs dynamic queries for join operations, builds schemas, and runs simulations on streaming data, evaluating the processing time for various configurations.
+ * The class supports the creation of queries with different column counts and row limits, and it processes input data from CSV files using a defined schema and windowing type.
+ *
+ */
 public class ExampleRunner {
 
     private static final Logger logger = LoggerFactory.getLogger(ExampleRunner.class);
+
+    /**
+     * Builds a simple join query string for the given number of columns.
+     *
+     * @param Col The number of columns to include in the query.
+     * @return The constructed SQL-like query string.
+     */
     public static String buildSimpleJoinQuery(int Col ) {
         StringBuilder defineBuilder = new StringBuilder();
         StringBuilder patternBuilder = new StringBuilder();
 
-        // 构建 DEFINE 部分
+        // Build the DEFINE part of the query
         for (int i = 1; i <= Col; i++) {
             if (i > 1) defineBuilder.append(", ");
             defineBuilder.append("A").append(i).append(" AS a_").append(i).append(" = 1 ");
         }
 
-        // 构建 PATTERN 部分
+        // Build the PATTERN part of the query
         for (int i = 1; i < Col; i++) {
             if (i > 1) patternBuilder.append(" AND ");
             patternBuilder.append("A").append(i)
-//                    .append(" meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals ")
-//                    .append(" meets;met-by;overlaps;started-by;during;finished-by;equals ")
                     .append(" meets;overlaps;overlapped-by;starts;started-by;contains ")
                     .append("A").append(i + 1);
         }
 
-        // 将所有部分组合成完整的查询语句
+        // Combine all parts into a complete query string
         String query = " FROM dataStream" +
                 "\n DEFINE " + defineBuilder.toString() +
                 "\n PATTERN " + patternBuilder.toString() +
@@ -46,6 +56,12 @@ public class ExampleRunner {
         return query;
     }
 
+    /**
+     * Builds a schema for the data stream based on the number of columns.
+     *
+     * @param Col The number of columns in the schema.
+     * @return A Schema object containing the attributes for the data stream.
+     */
     public static Schema buildSchema(int Col) {
         List<Attribute> attriList = new ArrayList<>();
         for (int i = 1; i <= Col; i++) {
@@ -56,6 +72,15 @@ public class ExampleRunner {
         return new Schema("CSV","ts",  attriList);
     }
 
+    /**
+     * Initializes the stream processing engine and processes the input data, measuring the processing time.
+     *
+     * @param col The number of columns in the schema.
+     * @param limit The limit on the number of rows to process.
+     * @param basePath The base path where the data file is located.
+     * @param windowType The type of windowing used in the stream processing.
+     * @return The processing time in milliseconds.
+     */
     public static long buildRunner(int col, long limit, String basePath, WindowType windowType ) {
         Schema schema = ExampleRunner.buildSchema(col);
         String query = ExampleRunner.buildSimpleJoinQuery(col ); // Assuming buildQuery is used here
@@ -85,7 +110,11 @@ public class ExampleRunner {
         return 0;
     }
 
-
+    /**
+     * The main entry point for running the example with different configurations of column counts and row limits.
+     *
+     * @param args Command-line arguments (not used).
+     */
     public static void main(String[] args) {
 
         List<Integer> colList = new ArrayList<>(Arrays.asList(4 ));
@@ -97,7 +126,7 @@ public class ExampleRunner {
         Map<Integer, Map<Long, Long>> col_row_proceTimeMap = new HashMap<>();
 
         for (int col : colList) {
-            // 使用 computeIfAbsent 保证每个 col 对应一个新的 Map<Long, Long>
+            // Use computeIfAbsent to ensure each col corresponds to a new Map<Long, Long>
             col_row_proceTimeMap.computeIfAbsent(col, k -> new HashMap<>());
 
             for (long limit : limitList) {
@@ -110,4 +139,3 @@ public class ExampleRunner {
 
     }
 }
-
