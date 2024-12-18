@@ -35,7 +35,7 @@ public class Correct {
 //                    .append("A").append(i + 1);
 //        }
 
-        String easyPattern=" A1 starts A2 AND A2 overlaps A3 AND A1 before A3 AND A3 overlaps A4 " ;
+        String easyPattern=" A1 starts A2 AND A3 before A2 AND A3 overlaps A4 " ;
 //        String easyPattern="   A3 before A2   " ;
         // 将所有部分组合成完整的查询语句
         String query = " FROM dataStream" +
@@ -79,9 +79,10 @@ public class Correct {
             while ((line = dataSource.readNext()) != null ) {
                 cnt++;
                 engine.apply("", line); // Process each line of data
-                if(cnt%(limit/10)==0){
+//                if(cnt%(limit/10)==0)
+                {
                     logger.info("processed events num: "+cnt);
-                    engine.printResultCNT();
+//                    engine.printResultCNT();
                 }
 
             }
@@ -103,7 +104,7 @@ public class Correct {
     public static void main(String[] args) throws Exception {
         if (args.length < 4) {
             int col=4;
-            long limit = 100000L;
+            long limit = 10000L;
             long windSize= 10000L;
             String dataPath= "/Users/czq/Code/TPS_data/";
             execute(col, limit, windSize, dataPath);

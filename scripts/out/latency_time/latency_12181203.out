@@ -1,0 +1,49 @@
+
+  
+col=4,limit=1000000,windSize=10000,rate=100000   
+12:03:19 [main] INFO : =====>  COL 4, LIMIT 1000000, WINDSIZE 10000, DATAPATH /Users/czq/Code/TPS_data/, RATE 100000, <=====
+12:03:30 [main] INFO : 
+Total Lines Processed: 1000000
+12:03:30 [main] INFO : Processing time: 9997 ms
+12:03:30 [main] INFO : RESULT:15449
+12:03:30 [main] INFO : AVG-latencyTime: 448266.8550715257 ns
+  
+col=4,limit=1000000,windSize=10000,rate=50000   
+12:03:30 [main] INFO : =====>  COL 4, LIMIT 1000000, WINDSIZE 10000, DATAPATH /Users/czq/Code/TPS_data/, RATE 50000, <=====
+12:03:50 [main] INFO : 
+Total Lines Processed: 1000000
+12:03:50 [main] INFO : Processing time: 19996 ms
+12:03:50 [main] INFO : RESULT:15449
+12:03:50 [main] INFO : AVG-latencyTime: 881917.6917599845 ns
+  
+col=6,limit=1000000,windSize=10000,rate=100000   
+12:03:50 [main] INFO : =====>  COL 6, LIMIT 1000000, WINDSIZE 10000, DATAPATH /Users/czq/Code/TPS_data/, RATE 100000, <=====
+12:04:00 [main] INFO : 
+Total Lines Processed: 1000000
+12:04:00 [main] INFO : Processing time: 9996 ms
+12:04:00 [main] INFO : RESULT:21003
+12:04:00 [main] INFO : AVG-latencyTime: 788140.6025329715 ns
+  
+col=6,limit=1000000,windSize=10000,rate=50000   
+12:04:00 [main] INFO : =====>  COL 6, LIMIT 1000000, WINDSIZE 10000, DATAPATH /Users/czq/Code/TPS_data/, RATE 50000, <=====
+12:04:21 [main] INFO : 
+Total Lines Processed: 1000000
+12:04:21 [main] INFO : Processing time: 19994 ms
+12:04:21 [main] INFO : RESULT:21003
+12:04:21 [main] INFO : AVG-latencyTime: 1571359.8283102415 ns
+  
+col=8,limit=1000000,windSize=10000,rate=100000   
+12:04:21 [main] INFO : =====>  COL 8, LIMIT 1000000, WINDSIZE 10000, DATAPATH /Users/czq/Code/TPS_data/, RATE 100000, <=====
+12:04:31 [main] INFO : 
+Total Lines Processed: 1000000
+12:04:31 [main] INFO : Processing time: 10000 ms
+12:04:31 [main] INFO : RESULT:29528
+12:04:31 [main] INFO : AVG-latencyTime: 1084145.2903007315 ns
+  
+col=8,limit=1000000,windSize=10000,rate=50000   
+12:04:31 [main] INFO : =====>  COL 8, LIMIT 1000000, WINDSIZE 10000, DATAPATH /Users/czq/Code/TPS_data/, RATE 50000, <=====
+12:04:52 [main] INFO : 
+Total Lines Processed: 1000000
+12:04:52 [main] INFO : Processing time: 19995 ms
+12:04:52 [main] INFO : RESULT:29528
+12:04:52 [main] INFO : AVG-latencyTime: 2147532.7071593064 ns
