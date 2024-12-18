@@ -13,25 +13,20 @@ import static java.lang.Math.min;
 public class Merger {
 
     private static final Logger logger = LoggerFactory.getLogger(Merger.class);
-    private TreeNode root;
-    private TreeNode bottomLeaf;
+    private final TreeNode  root;
+    private final TreeNode bottomLeaf;
     private final Map<TreeNode, List<String>> node2JoinedCols;
-
     private final Map<EBA, String> EBA2String;
-    private final Map<TreeNode, Set<String>> node2AcmltJoinedCols;
 
     public long refreshNewIepTable=0;
-    public long joinTime=0;
-    public long update_leaf=0;
     public long startTime=0;
     public long endTime=0;
 
-    public Merger(TreeNode root, TreeNode bottomLeaf, Map<EBA,String> EBA2String, Map<TreeNode, List<String>> node2JoinedCols, Map<TreeNode, Set<String>> node2AcmltJoinedCols) {
+    public Merger(TreeNode root, TreeNode bottomLeaf, Map<EBA,String> EBA2String, Map<TreeNode, List<String>> node2JoinedCols ) {
         this.root = root;
         this.bottomLeaf = bottomLeaf;
         this.EBA2String = EBA2String;
         this.node2JoinedCols=node2JoinedCols ;
-        this.node2AcmltJoinedCols=node2AcmltJoinedCols ;
     }
 
     // join 之前将 本轮次的匹配结果（包括before 和 after ）全部统一到叶子节点的 col下的NewTable中
@@ -79,7 +74,7 @@ public class Merger {
                     node2JoinedCols.get(bottomLeaf));
         }
     }
-    public void mergeTreeWithDeriving() {
+    public void mergeTree() {
 
         megreBottomLeaf();
         TreeNode mergedNode = bottomLeaf.parent;
@@ -88,85 +83,95 @@ public class Merger {
 
         while (pn != null) {    // merge Intermediate node
 
-            mergeIntermedNodeWithDeriving(pn, mergedNode, leafNode);
+            mergeIntermedNode(pn, mergedNode, leafNode);
             mergedNode = pn;
             pn = pn.parent;
             leafNode = mergedNode.brother;
         }
     }
 
-    private void mergeIntermedNodeWithDeriving(TreeNode ParentNode, TreeNode mergedNode, TreeNode leafNode) {
+    private void mergeIntermedNode(TreeNode ParentNode, TreeNode mergedNode, TreeNode leafNode) {
 
         updateNewIepToTable(leafNode);
         Table intermNewTab=mergedNode.getNewT();
         Table intermOldTab=mergedNode.getT();
         Table leafOldTab=leafNode.getCol().getIEPTable();
 
-
         // for result not in BefCol.NewT and AftCol.NewT
         // Normal
         incrementalNaturalJoin(ParentNode,intermNewTab,intermOldTab,leafNode.getCol().getNewIEPTable(),leafOldTab);
 
-
         Set<EBA> keyPredSet=  leafNode.parent.keyPredSet;
+        EBA earlyPie;
+        EBA laterPie;
+        // for result in AfterCol.NewT
+        if(leafNode.hasAfter  ) {
+            earlyPie= leafNode.mpp.getLatterPred();
+            laterPie= leafNode.mpp.getFormerPred();
+            mergeIntermedNodeDerivingAfter(ParentNode,leafNode,keyPredSet,earlyPie, laterPie,  intermNewTab,intermOldTab);
+        }
         // for result in BefCol.NewT
         if(leafNode.hasBefore  ) {
-            EBA earlyPie= leafNode.mpp.getFormerPred();
-            EBA laterPie= leafNode.mpp.getLatterPred();
-            EBA joinedPie;
-            EBA unJoinedPie;
-
-            // 3. JoinOn Both  [ first join on latterPie, then derive formerPie according to formalIEList and intermTable
-            if (keyPredSet.contains(earlyPie) &&  keyPredSet.contains(laterPie) ){
-                increDeriveFromIntermAndIEListJoin(ParentNode,earlyPie,laterPie,intermNewTab,intermOldTab, leafNode.getBefCol().getNewIEPTable(),leafNode.getBefCol().getIEPTable() );
-            }
-            // 1. JoinOn formerPie [ first traverse intermTable, then derive formerPie according to intermTable
-            else if(keyPredSet.contains(earlyPie)){
-                joinedPie=earlyPie;
-                unJoinedPie=laterPie;
-                increDeriveFromIntermJoin(ParentNode,joinedPie ,unJoinedPie,earlyPie,laterPie,intermNewTab,intermOldTab, leafNode.getBefCol().getNewIEPTable(),leafNode.getBefCol().getIEPTable() );
-            }
-            // 2. JoinOn latterPie [ first join on latterPie, then derive formerPie according to formalIEList
-            else if (keyPredSet.contains(laterPie) ){
-                joinedPie=laterPie;
-                unJoinedPie=earlyPie;
-                LinkList<IE> earlyList=leafNode.formerIEList;
-                increDeriveFromIEListJoin(ParentNode,joinedPie ,unJoinedPie,earlyPie,laterPie,intermNewTab,intermOldTab, leafNode.getBefCol().getNewIEPTable(),leafNode.getBefCol().getIEPTable(),earlyList );
-            }
-            else{
-                throw new IllegalStateException("Unexpected state: No matching condition for join logic.");
-            }
+            earlyPie= leafNode.mpp.getFormerPred();
+            laterPie= leafNode.mpp.getLatterPred();
+            mergeIntermedNodeDerivingBefore(ParentNode,leafNode,keyPredSet,earlyPie, laterPie,  intermNewTab,intermOldTab);
         }
 
-        if(leafNode.hasAfter  ) {
-            EBA earlyPie= leafNode.mpp.getLatterPred();
-            EBA laterPie= leafNode.mpp.getFormerPred();
-            EBA joinedPie;
-            EBA unJoinedPie;
+    }
 
-            // 3. JoinOn Both  [ first join on latterPie, then derive formerPie according to formalIEList and intermTable
-            if (keyPredSet.contains(earlyPie) &&  keyPredSet.contains(laterPie) ){
-                increDeriveFromIntermAndIEListJoin(ParentNode,earlyPie,laterPie,intermNewTab,intermOldTab, leafNode.getBefCol().getNewIEPTable(),leafNode.getBefCol().getIEPTable() );
-            }
-            // 1. JoinOn earlyPie [ first traverse intermTable, then derive formerPie according to intermTable
-            else if(keyPredSet.contains(earlyPie)){
-                joinedPie=earlyPie;
-                unJoinedPie=laterPie;
-                increDeriveFromIntermJoin(ParentNode,joinedPie ,unJoinedPie,earlyPie,laterPie,intermNewTab,intermOldTab, leafNode.getBefCol().getNewIEPTable(),leafNode.getBefCol().getIEPTable() );
-            }
-            // 2. JoinOn latterPie [ first join on latterPie, then derive formerPie according to formalIEList
-            else if (keyPredSet.contains(laterPie) ){
-                joinedPie=laterPie;
-                unJoinedPie=earlyPie;
-                LinkList<IE> earlyList=leafNode.latterIEList;
-                increDeriveFromIEListJoin(ParentNode,joinedPie ,unJoinedPie,earlyPie,laterPie,intermNewTab,intermOldTab, leafNode.getBefCol().getNewIEPTable(),leafNode.getBefCol().getIEPTable(),earlyList );
-            }
-            else{
-                throw new IllegalStateException("Unexpected state: No matching condition for join logic.");
-            }
+    private  void mergeIntermedNodeDerivingBefore(TreeNode ParentNode,TreeNode leafNode,Set<EBA> keyPredSet,EBA earlyPie, EBA laterPie, Table  intermNewTab, Table intermOldTab){
+
+        EBA joinedPie;
+        EBA unJoinedPie;
+
+        // 3. JoinOn Both  [ first join on latterPie, then derive formerPie according to formalIEList and intermTable
+        if (keyPredSet.contains(earlyPie) &&  keyPredSet.contains(laterPie) ){
+            increDeriveFromIntermAndIEListJoin(ParentNode,earlyPie,laterPie,intermNewTab,intermOldTab, leafNode.getBefCol().getNewIEPTable(),leafNode.getBefCol().getIEPTable() );
+        }
+        // 1. JoinOn formerPie [ first traverse intermTable, then derive formerPie according to intermTable
+        else if(keyPredSet.contains(earlyPie)){
+            joinedPie=earlyPie;
+            unJoinedPie=laterPie;
+            beforeIncreDeriveFromIntermJoin(ParentNode,joinedPie ,unJoinedPie,earlyPie,laterPie,intermNewTab,intermOldTab, leafNode.getBefCol().getNewIEPTable(),leafNode.getBefCol().getIEPTable() );
+        }
+        // 2. JoinOn latterPie [ first join on latterPie, then derive formerPie according to formalIEList
+        else if (keyPredSet.contains(laterPie) ){
+            joinedPie=laterPie;
+            unJoinedPie=earlyPie;
+            LinkList<IE> earlyList=leafNode.formerIEList;
+            beforeIncreDeriveFromIEListJoin(ParentNode,joinedPie ,unJoinedPie,earlyPie,laterPie,intermNewTab,intermOldTab, leafNode.getBefCol().getNewIEPTable(),leafNode.getBefCol().getIEPTable(),earlyList );
+        }
+        else{
+            throw new IllegalStateException("Unexpected state: No matching condition for join logic.");
         }
     }
 
+    private  void mergeIntermedNodeDerivingAfter(TreeNode ParentNode,TreeNode leafNode,Set<EBA> keyPredSet,EBA earlyPie, EBA laterPie, Table  intermNewTab, Table intermOldTab){
+
+        EBA joinedPie;
+        EBA unJoinedPie;
+
+        // 3. JoinOn Both  [ first join on latterPie, then derive formerPie according to formalIEList and intermTable
+        if (keyPredSet.contains(earlyPie) &&  keyPredSet.contains(laterPie) ){
+            increDeriveFromIntermAndIEListJoin(ParentNode,earlyPie,laterPie,intermNewTab,intermOldTab, leafNode.getBefCol().getNewIEPTable(),leafNode.getBefCol().getIEPTable() );
+        }
+        // 1. JoinOn formerPie [ first traverse intermTable, then derive formerPie according to intermTable
+        else if(keyPredSet.contains(earlyPie)){
+            joinedPie=earlyPie;
+            unJoinedPie=laterPie;
+            afterIncreDeriveFromIntermJoin(ParentNode,joinedPie ,unJoinedPie,earlyPie,laterPie,intermNewTab,intermOldTab, leafNode.getAftCol().getNewIEPTable(),leafNode.getAftCol().getIEPTable() );
+        }
+        // 2. JoinOn latterPie [ first join on latterPie, then derive formerPie according to formalIEList
+        else if (keyPredSet.contains(laterPie) ){
+            joinedPie=laterPie;
+            unJoinedPie=earlyPie;
+            LinkList<IE> earlyList=leafNode.latterIEList;
+            afterIncreDeriveFromIEListJoin(ParentNode,joinedPie ,unJoinedPie,earlyPie,laterPie,intermNewTab,intermOldTab, leafNode.getAftCol().getNewIEPTable(),leafNode.getAftCol().getIEPTable(),earlyList );
+        }
+        else{
+            throw new IllegalStateException("Unexpected state: No matching condition for join logic.");
+        }
+    }
     private void increDeriveFromIntermAndIEListJoin(TreeNode ParentNode,EBA earlyPie,EBA laterPie,Table intermNewTab, Table intermOldTab,Table leafNewTab,Table leafOldTab){
         long intermNewSize=intermNewTab.getSize();
         long leafNewSize=leafNewTab.getSize();
@@ -209,8 +214,30 @@ public class Merger {
             intermPtr=intermPtr.prev;
         }
     }
-
-    private void increDeriveFromIEListJoin(TreeNode ParentNode,EBA joinedPie,EBA unJoinedPie,EBA earlyPie,EBA laterPie,Table intermNewTab, Table intermOldTab,Table leafNewTab,Table leafOldTab,LinkList<IE> earlyIEList){
+    private void afterIncreDeriveFromIEListJoin(TreeNode ParentNode,EBA joinedPie,EBA unJoinedPie,EBA earlyPie,EBA laterPie,Table intermNewTab, Table intermOldTab,Table leafNewTab,Table leafOldTab,LinkList<IE> earlyIEList){
+        long intermNewSize=intermNewTab.getSize();
+        long leafNewSize=leafNewTab.getSize();
+        if( leafNewSize>1){
+            throw new IllegalArgumentException("leafNewSize should not be greater than 1. Found: " + leafNewSize);
+        }
+        String unJoinedCol= EBA2String.get(unJoinedPie)+".ST";
+        if(leafNewSize!=0){
+            Row leafRow= leafNewTab.getRows().getHead().getData();
+            // intermedia.New JOIN leaf.New (N:1)
+            deriveIEListAndJoin_IntermTab_LeafRow(ParentNode,earlyIEList ,unJoinedCol, intermNewTab,leafRow);
+            // intermedia.Old JOIN leaf.New (N:1)
+            deriveIEListAndJoin_IntermTab_LeafRow(ParentNode,earlyIEList,unJoinedCol, intermOldTab,leafRow);
+        } if(intermNewSize!=0 && leafOldTab.getSize()!=0 ){
+            // intermedia.New JOIN leaf.Old (N:K)
+            // 分成 K 个 (N:1)
+            LinkList<Row>.Node leafRowPtr =leafOldTab.getRows().getTail();
+            while(leafRowPtr!=null  ){
+                deriveIEListAndJoin_IntermTab_LeafRow(ParentNode,earlyIEList,unJoinedCol, intermNewTab,leafRowPtr.getData());
+                leafRowPtr=leafRowPtr.prev;
+            }
+        }
+    }
+    private void beforeIncreDeriveFromIEListJoin(TreeNode ParentNode,EBA joinedPie,EBA unJoinedPie,EBA earlyPie,EBA laterPie,Table intermNewTab, Table intermOldTab,Table leafNewTab,Table leafOldTab,LinkList<IE> earlyIEList){
         long intermNewSize=intermNewTab.getSize();
         long leafNewSize=leafNewTab.getSize();
         if( leafNewSize>1){
@@ -271,7 +298,30 @@ public class Merger {
         ParentNode.newT.addRow(newRow);
     }
 
-    private void increDeriveFromIntermJoin(TreeNode ParentNode,EBA joinedPie,EBA unJoinedPie,EBA earlyPie,EBA laterPie,  Table  intermNewTab, Table intermOldTab,Table leafNewTab,Table leafOldTab ){
+
+    private void afterIncreDeriveFromIntermJoin(TreeNode ParentNode,EBA joinedPie,EBA unJoinedPie,EBA earlyPie,EBA laterPie,  Table  intermNewTab, Table intermOldTab,Table leafNewTab,Table leafOldTab ){
+        long intermNewSize=intermNewTab.getSize();
+        long leafNewSize=leafNewTab.getSize();
+        if( leafNewSize>1){
+            throw new IllegalArgumentException("leafNewSize should not be greater than 1. Found: " + leafNewSize);
+        }
+        LinkList<Row>.Node leafNewPtr=leafNewTab.getRows().getHead();
+        LinkList<Row>.Node leafOldPtr=leafOldTab.getRows().getHead();
+        String joinedCol=EBA2String.get(joinedPie)+".ST";
+        String unJoinedCol= EBA2String.get(unJoinedPie)+".ST";
+        if(leafNewSize!=0){
+            // intermedia.New JOIN leaf.New (N:1)
+            deriveIntermAndJoin_Interm_LeafNew(ParentNode,joinedCol,unJoinedCol, intermNewTab,leafNewPtr);
+            // intermedia.Old JOIN leaf.New (N:1)
+            deriveIntermAndJoin_Interm_LeafNew(ParentNode,joinedCol,unJoinedCol, intermOldTab,leafNewPtr);
+        }
+        if(intermNewSize!=0 && leafOldTab.getSize()!=0 ){
+            // intermedia.New JOIN leaf.Old (N:M)
+            deriveIntermAndJoin_IntermNew_LeafOld(ParentNode,intermNewTab,joinedCol,unJoinedCol,leafOldPtr);
+        }
+    }
+
+    private void beforeIncreDeriveFromIntermJoin(TreeNode ParentNode,EBA joinedPie,EBA unJoinedPie,EBA earlyPie,EBA laterPie,  Table  intermNewTab, Table intermOldTab,Table leafNewTab,Table leafOldTab ){
         long intermNewSize=intermNewTab.getSize();
         long leafNewSize=leafNewTab.getSize();
         if( leafNewSize>1){

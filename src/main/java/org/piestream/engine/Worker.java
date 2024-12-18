@@ -97,7 +97,7 @@ public class Worker {
 
     public void mergeAfterRun(){
 //        tree.mergeTree();
-        tree.mergeTreeWithDeriving();
+        tree.mergeTree();
     }
 
     public void deriveBeforeAfterRel(){

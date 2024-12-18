@@ -35,7 +35,8 @@ public class Correct {
 //                    .append("A").append(i + 1);
 //        }
 
-        String easyPattern=" A1 starts A2 AND A3 before A2 AND A3 overlaps A4 " ;
+//        String easyPattern=" A1 starts A2 AND A2 before A3 AND A3 overlaps A4 " ;
+        String easyPattern=" A1 starts A2 AND A2  after  A3 AND A3 overlaps A4 " ;
 //        String easyPattern="   A3 before A2   " ;
         // 将所有部分组合成完整的查询语句
         String query = " FROM dataStream" +

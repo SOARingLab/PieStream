@@ -1,9 +1,7 @@
 package org.piestream.merger;
 
 import org.piestream.engine.Window;
-import org.piestream.events.Expirable;
 import org.piestream.parser.MPIEPairSource;
-import org.piestream.piepair.IE;
 import org.piestream.piepair.IEP;
 import org.piestream.piepair.eba.EBA;
 import org.slf4j.Logger;
@@ -69,7 +67,7 @@ public class BinTree {
         this.node2AcmltJoinedCols.put(root,null);
         buildJoinedCols(root);
 
-        this.merger=new Merger(root,bottomLeaf,EBA2String,node2JoinedCols,node2AcmltJoinedCols);
+        this.merger=new Merger(root,bottomLeaf,EBA2String,node2JoinedCols );
         return root;
     }
 
@@ -212,8 +210,8 @@ public class BinTree {
         return mergedNode;
     }
 
-    public void mergeTreeWithDeriving() {
-        merger.mergeTreeWithDeriving();
+    public void mergeTree() {
+        merger.mergeTree();
     }
 
     public void deriveBeforeAfterRel() {
