@@ -65,6 +65,7 @@ public class Lowlatency {
      */
     public static Schema buildSchema(int Col) {
         List<Attribute> attriList = new ArrayList<>();
+        attriList.add(new Attribute("id", "long"));
         for (int i = 1; i <= Col; i++) {
             attriList.add(new Attribute("a_" + i, "int"));
         }
@@ -81,18 +82,16 @@ public class Lowlatency {
      * @param col       Number of columns
      * @param limit     The maximum number of events to process
      * @param windSize  The window size for processing
-     * @param basePath  The base path for data files
+     * @param dataPath  The base path for data files
      * @param rate      The rate at which data is processed
      * @param windowType The window type for processing (TIME_WINDOW or other types)
      * @return The total processing time in milliseconds
      */
-    public static long buildRunner(int col, long limit, long windSize, String basePath, long rate, WindowType windowType) {
+    public static long buildRunner(int col, long limit, long windSize, String dataPath, long rate, WindowType windowType) {
         Schema schema = buildSchema(col);
         String query = buildSimpleJoinQuery(col, windSize); // Assuming buildQuery is used here
 
         Engine engine = new Engine(schema, query, windowType);
-        StringBuilder dataPath = new StringBuilder();
-        dataPath.append(basePath).append("events_col").append(col).append("_row").append(10000000).append(".csv");
 
         // Initialize FileDataSource and process data with the Engine
         try (DataSource dataSource = new FileDataSource(dataPath.toString(), limit, rate)) {
@@ -102,12 +101,20 @@ public class Lowlatency {
                 engine.apply("", line); // Process each line of data
             }
             long endTime = System.currentTimeMillis();
+            long processedTime=endTime - startTime;
+            long avgLatency=engine.getAVGprocessLatency();
+//            logger.info("Total Lines Processed: " + (limit));
+//            logger.info("Processing time: " + processedTime + " ms");
+//            logger.info("Processing time: " + processedTime + " ms");
+//            logger.info("RESULT: " + engine.getResultCNT());
 
-            logger.info("\nTotal Lines Processed: " + (limit));
-            logger.info("Processing time: " + (endTime - startTime) + " ms");
-            engine.printResultCNT();
-//            engine.printAccumulatedTimes();
-            engine.printAVGprocessTime();
+//            method,PIEs,MPPs,events,wind_size,rates,avg_process_latency,result,processed_time(ms)
+            StringBuilder resMsg=new StringBuilder();
+            resMsg.append("PieStream,").append(col).append(",").append(col-1).append(",").append(limit).append(",")
+                    .append(windSize).append(",").append(rate).append(",").append(avgLatency).append(",").append(engine.getResultCNT())
+                    .append(",").append(processedTime);
+            logger.info(resMsg.toString());
+
             return (endTime - startTime);
 
         } catch (IOException e) {
@@ -129,9 +136,10 @@ public class Lowlatency {
             int col = 4;
             long limit = 100000L;
             long windSize = 100000L;
-            String dataPath = "/Users/czq/Code/TPS_data/";
-//            String dataPath= "/home/uzi/Code/TPSdata/";
+            String dataPath = "/Users/czq/Code/TPS_data/events_col4_row10000000.csv";
             long rate = 100000;
+            logger.info("method,PIEs,MPPs,events,wind_size,rates,avg_process_latency(ns),result,processed_time(ms)");
+
             execute(col, limit, windSize, dataPath, rate);
         } else {
             execute(Integer.valueOf(args[0]), Integer.valueOf(args[1]), Long.valueOf(args[2]), args[3], Long.valueOf(args[4]));
@@ -144,13 +152,12 @@ public class Lowlatency {
      * @param col      Number of columns
      * @param limit    The maximum number of events to process
      * @param windSize The window size for processing
-     * @param basePath The base path for data files
+     * @param dataPath The base path for data files
      * @param rate     The rate at which data is processed
      * @throws Exception If any error occurs during execution
      */
-    private static void execute(int col, long limit, long windSize, String basePath, long rate) throws Exception {
+    private static void execute(int col, long limit, long windSize, String dataPath, long rate) throws Exception {
         WindowType windowType = WindowType.TIME_WINDOW;
-        logger.info("=====>  COL " + col + ", LIMIT " + limit + ", WINDSIZE " + windSize + ", DATAPATH " + basePath + ", RATE " + rate + ", <=====");
-        Long processedTime = buildRunner(col, limit, windSize, basePath, rate, windowType);
+        Long processedTime = buildRunner(col, limit, windSize, dataPath, rate, windowType);
     }
 }

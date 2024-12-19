@@ -1,0 +1,3 @@
+method,PIEs,MPPs,events,wind_size,rates,avg_process_latency(ns),result,processed_time(ms)
+PieStream,4,3,1000000,10000,100000,479031,17797,9998
+PieStream,4,3,1000000,10000,10000,4706570,17797,99970

@@ -129,7 +129,7 @@ public class Correctness {
             long windSize = limit;
             String dataPath = "/Users/czq/Code/TPS_data/events_col4_row10000000.csv";
             int existFinRel=1;
-            logger.info("=====>  COL " + col + ", LIMIT " + limit + ", WINDSIZE " + windSize + ", DATAPATH " + dataPath + ", ExistFinRel " + existFinRel+ " <=====");
+            logger.info("method,PIEs,MPPs,events,wind_size,result,processed_time(ms),query_include_finish_rels");
             execute(col, limit, windSize, dataPath,existFinRel);
         } else {
             execute(Integer.valueOf(args[0]), Integer.valueOf(args[1]), Long.valueOf(args[2]), args[3],Integer.valueOf(args[4]));

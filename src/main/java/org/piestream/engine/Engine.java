@@ -178,14 +178,14 @@ public class Engine implements ForeachAction<String, String> {
     /**
      * Prints the average processing time for the events handled by the worker.
      */
-    public void printAVGprocessTime() {
-        logger.info("AVG-latencyTime: " + worker.getTree().getRoot().getAVGprocessTime() + " ns");
+    public void printAVGprocessLatency() {
+        logger.info("AVG-latencyTime: " + worker.getTree().getRoot().getAVGprocessLatency() + " ns");
     }
 
     /**
      * Get the average processing time for the events handled by the worker.
      */
-    public double getAVGprocessTime() {
-        return worker.getTree().getRoot().getAVGprocessTime();
+    public long getAVGprocessLatency() {
+        return worker.getTree().getRoot().getAVGprocessLatency();
     }
 }

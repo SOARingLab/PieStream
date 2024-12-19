@@ -110,7 +110,7 @@ public class BeforeAfter {
             logger.info("\nTotal Lines Processed: " + (limit));
             logger.info("Processing time: " + (endTime - startTime) + " ms");
             engine.printResultCNT();
-            engine.printAVGprocessTime();
+            engine.printAVGprocessLatency();
             return (endTime - startTime);
 
         } catch (IOException e) {

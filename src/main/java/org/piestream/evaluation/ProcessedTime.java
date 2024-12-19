@@ -129,7 +129,7 @@ public class ProcessedTime {
             long windSize = 100000L;
             String dataPath = "/Users/czq/Code/TPS_data/events_col4_row10000000.csv";
             execute(col, limit, windSize, dataPath);
-            logger.info("=====>  COL " + col + ", LIMIT " + limit + ", WINDSIZE " + windSize + ", DATAPATH " + dataPath + " <=====");
+            logger.info("method,PIEs,MPPs,events,wind_size,result,processed_time");
 
         } else {
             execute(Integer.valueOf(args[0]), Integer.valueOf(args[1]), Long.valueOf(args[2]), args[3]);

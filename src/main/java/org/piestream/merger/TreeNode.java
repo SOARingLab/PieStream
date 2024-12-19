@@ -6,7 +6,6 @@ import org.piestream.events.PointEvent;
 import org.piestream.parser.MPIEPairSource;
 import org.piestream.piepair.IE;
 import org.piestream.piepair.IEP;
-import org.piestream.piepair.PIEPair;
 import org.piestream.piepair.TemporalRelations;
 import org.piestream.piepair.eba.EBA;
 import org.slf4j.Logger;
@@ -497,8 +496,8 @@ public class TreeNode {
      *
      * @return The average processing time.
      */
-    public double getAVGprocessTime() {
-        return (double) this.processTime / (double) this.resCount;
+    public long getAVGprocessLatency() {
+        return   this.processTime /   this.resCount;
     }
 
 

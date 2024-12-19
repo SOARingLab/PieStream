@@ -1,51 +1,48 @@
 #!/bin/bash
 
-# 设置环境变量和输出目录
+# Set environment variables and output directory
 . ./env
 
+#echo  $JAVA_CMD
 OUT_DIR="out/latency_time"
 mkdir -p $OUT_DIR
 
-TIMESTAMP=$(date +"%m%d%H%M")  # 获取当前的月日时分
-OUT_FILE="$OUT_DIR/latency_$TIMESTAMP.out"  # 文件名中包含时间戳
+TIMESTAMP=$(date +"%m%d%H%M")
+OUT_FILE="$OUT_DIR/latency_$TIMESTAMP.out"
 
-echo > $OUT_FILE  # 清空文件
+echo -n > $OUT_FILE
 
-# 定义参数范围
-cols=( 4 6 8  )
+cols=( 4 )
 limits=(  1000000 )
 windSize=( 10000 )
-#rates=( 100000 50000 10000 5000 1000 500 )
+rates=( 1000000 100000   10000   1000   )
+loopNum=1
 
-rates=( 100000 50000   )
 
+# Write the header
+echo "method,PIEs,MPPs,events,wind_size,rates,avg_process_latency(ns),result,processed_time(ms)" >> $OUT_FILE
 
-# 循环参数并调用 Java 程序
+# Loop over the parameters and call the Java program
 for col in "${cols[@]}"
 do
     for limit in "${limits[@]}"
     do
-        for third in "${windSize[@]}"
+        for wind in "${windSize[@]}"
         do
-          for r in "${rates[@]}"
-          do
-              # 构建执行的 Java 命令
-              EXEC="$JAVA_CMD  org.piestream.evaluation.Lowlatency $col $limit $third $DATA_DIR $r "
+            for r in "${rates[@]}"
+            do
+                for ((i = 1; i <= loopNum; i++))
+                do
 
-              echo "  "  >> $OUT_FILE
-              # 输出到文件
-              echo   "col=$col,limit=$limit,windSize=$third,rate=$r   " >> $OUT_FILE
-
-
-              # 执行命令并将结果写入文件
-              $EXEC >> $OUT_FILE
-
-              # 输出每次执行的结果
-              echo "Executed: $EXEC  "
+                  # Build the Java command to execute
+                  dataPath=$DATA_DIR"events_col"$col"_row10000000.csv"
+                  EXEC="$JAVA_CMD  org.piestream.evaluation.Lowlatency $col $limit $wind $dataPath $r "
+                  # Execute the command and write the results to the file
+                  $EXEC >> $OUT_FILE
+                  # Output the result of each execution
+                  echo $EXEC
+                done
             done
         done
     done
 done
-
-#java  -Xms12g -Xmx12g  -cp "target/classes:lib/*" org.piestream.evaluation.ProcessedTime 4 10000000 100000 /home/uzi/Code/TPSdata/
-
