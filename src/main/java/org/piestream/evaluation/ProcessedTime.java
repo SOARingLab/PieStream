@@ -60,6 +60,8 @@ public class ProcessedTime {
      */
     public static Schema buildSchema(int Col) {
         List<Attribute> attriList = new ArrayList<>();
+
+        attriList.add(new Attribute("id", "long"));
         for (int i = 1; i <= Col; i++) {
             attriList.add(new Attribute("a_" + i, "int"));
         }
