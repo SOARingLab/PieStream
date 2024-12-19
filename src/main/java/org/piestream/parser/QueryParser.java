@@ -1,6 +1,5 @@
 package org.piestream.parser;
 
-import org.piestream.evaluation.Correct;
 import org.piestream.piepair.TemporalRelations;
 import org.piestream.piepair.eba.EBA;
 import org.piestream.piepair.eba.EBAParser;

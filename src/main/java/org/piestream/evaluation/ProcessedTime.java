@@ -132,7 +132,6 @@ public class ProcessedTime {
             logger.info("=====>  COL " + col + ", LIMIT " + limit + ", WINDSIZE " + windSize + ", DATAPATH " + dataPath + " <=====");
 
         } else {
-//            exctuteReadOnly();
             execute(Integer.valueOf(args[0]), Integer.valueOf(args[1]), Long.valueOf(args[2]), args[3]);
         }
     }

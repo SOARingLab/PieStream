@@ -2,7 +2,6 @@ package org.piestream.datasource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.piestream.engine.Engine;
-import org.piestream.evaluation.Correct;
 import org.piestream.events.Attribute;
 import org.piestream.parser.Schema;
 import org.slf4j.Logger;

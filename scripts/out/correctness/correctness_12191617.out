@@ -1,0 +1,9 @@
+method,PIEs,MPPs,events,wind_size,result,processed_time(ms),if_query_include_finish_rels
+PieStream,4,3,1000,1000000,29,28,1
+PieStream,4,3,1000,1000000,29,27,0
+PieStream,4,3,10000,1000000,284,80,1
+PieStream,4,3,10000,1000000,272,71,0
+PieStream,4,3,100000,1000000,2851,311,1
+PieStream,4,3,100000,1000000,2796,304,0
+PieStream,4,3,1000000,1000000,27790,2047,1
+PieStream,4,3,1000000,1000000,27098,1999,0

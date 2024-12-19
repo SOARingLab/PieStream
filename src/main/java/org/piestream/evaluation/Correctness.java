@@ -5,17 +5,15 @@ import org.piestream.datasource.FileDataSource;
 import org.piestream.engine.Engine;
 import org.piestream.engine.WindowType;
 import org.piestream.events.Attribute;
-import org.piestream.merger.BinTree;
 import org.piestream.parser.Schema;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.*;
 
-public class Correct {
+public class Correctness {
 
-    private static final Logger logger = LoggerFactory.getLogger(Correct.class);
+    private static final Logger logger = LoggerFactory.getLogger(Correctness.class);
 
     /**
      * Builds a simple join query based on the given column count and window size.
@@ -24,7 +22,7 @@ public class Correct {
      * @param windSize Window size for the query
      * @return The constructed query as a string
      */
-    public static String buildSimpleJoinQuery(int Col, long windSize) {
+    public static String buildSimpleJoinQuery(int Col, long windSize,int existFinRel) {
         StringBuilder defineBuilder = new StringBuilder();
         StringBuilder patternBuilder = new StringBuilder();
 
@@ -33,24 +31,23 @@ public class Correct {
             if (i > 1) defineBuilder.append(", ");
             defineBuilder.append("A").append(i).append(" AS a_").append(i).append(" = 1 ");
         }
-
-//        // Build the PATTERN part of the query
-//        for (int i = 1; i < Col; i++) {
-//            if (i > 1) patternBuilder.append(" AND ");
-//            patternBuilder.append("A").append(i)
-////                    .append(" meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals ")
-//                    .append(" before  ")
-//                    .append("A").append(i + 1);
-//        }
-
-//        String easyPattern=" A1 starts A2 AND A2 before A3 AND A3 overlaps A4 " ;
-        String easyPattern = " A1 starts;overlaps  A2 AND A2 overlaps;starts  A3 AND A3  overlaps;starts A4 " ;
-//        String easyPattern="   A3 before A2   " ;
+        String pattern;
+        if(existFinRel==0){
+            // Not include finishes/finished-by 不包含
+            pattern = " A1 starts;meets;overlaps;overlapped-by;contains;during;equals  A2 " +
+                              "AND A2 starts;meets;overlaps;overlapped-by;contains;during;equals  A3 " +
+                              "AND A3 starts;meets;overlaps;overlapped-by;contains;during;equals  A4 " ;
+        }else{
+            // Include finishes/finished-by
+            pattern = " A1 starts;meets;overlaps;overlapped-by;contains;during;equals;finishes;finished-by  A2 " +
+                    "AND A2 starts;meets;overlaps;overlapped-by;contains;during;equals;finishes;finished-by  A3 " +
+                    "AND A3 starts;meets;overlaps;overlapped-by;contains;during;equals;finishes;finished-by  A4 " ;
+        }
 
         // Combine all parts into a complete query string
         String query = " FROM dataStream" +
                 "\n DEFINE " + defineBuilder.toString() +
-                "\n PATTERN " + easyPattern +
+                "\n PATTERN " + pattern +
                 "\n WITHIN " + windSize + " s " +
                 "\n RETURN A1.ts, A1.te";
 
@@ -73,7 +70,6 @@ public class Correct {
         attriList.add(new Attribute("t2", "long"));
 
         Schema schema = new Schema("CSV", "t1", attriList);
-
         return schema;
     }
 
@@ -83,39 +79,35 @@ public class Correct {
      * @param col       Number of columns
      * @param limit     The maximum number of events to process
      * @param windSize  The window size for processing
-     * @param basePath  The base path for data files
+     * @param dataPath  The base path for data files
      * @param windowType The window type for processing (TIME_WINDOW or other types)
      * @return The total processing time in milliseconds
      */
-    public static long buildRunner(int col, long limit, long windSize, String basePath, WindowType windowType) {
+    public static long buildRunner(int col, long limit, long windSize, String dataPath, WindowType windowType,int existFinRel) {
         Schema schema = buildSchema(col);
-        String query = buildSimpleJoinQuery(col, windSize); // Assuming buildQuery is used here
+        String query = buildSimpleJoinQuery(col, windSize,existFinRel); // Assuming buildQuery is used here
 
         Engine engine = new Engine(schema, query, windowType);
-        StringBuilder dataPath = new StringBuilder();
-//        dataPath.append(basePath).append("events_col").append(col).append("_row").append(10000000).append(".csv");
-
-        dataPath.append(basePath).append("bef_aft_col_4_id.csv");
         // Initialize FileDataSource and process data with the Engine
-        try (DataSource dataSource = new FileDataSource(dataPath.toString(), limit)) {
+        try (DataSource dataSource = new FileDataSource(dataPath, limit)) {
             String line;
-            long cnt = 0;
             long startTime = System.currentTimeMillis(); // Start timing
             while ((line = dataSource.readNext()) != null) {
-                cnt++;
                 engine.apply("", line); // Process each line of data
-                if (cnt % (limit / 10) == 0) {
-                    logger.info("Processed events num: " + cnt);
-                    engine.printResultCNT();
-                }
-
             }
             long endTime = System.currentTimeMillis();
-            logger.info("\nTotal Lines Processed: " + (limit));
-            logger.info("Processing time: " + (endTime - startTime) + " ms");
-            engine.printResultCNT();
-            engine.printAccumulatedTimes();
-            engine.printAVGprocessTime();
+            long processedTime=endTime - startTime;
+//            logger.info("Total Lines Processed: " + (limit));
+//            logger.info("Processing time: " + processedTime + " ms");
+//            logger.info("Processing time: " + processedTime + " ms");
+//            logger.info("RESULT: " + engine.getResultCNT());
+
+//          CSV head:  method,PIEs,MPPs,events,wind_size,result,processed_time(ms),query_include_finish_rels
+            StringBuilder resMsg=new StringBuilder();
+            resMsg.append("PieStream,").append(col).append(",").append(col-1).append(",").append(limit).append(",")
+                    .append(windSize).append(",").append(engine.getResultCNT()).append(",").append(processedTime)
+                    .append(",").append(existFinRel);
+            logger.info(resMsg.toString());
             return (endTime - startTime);
 
         } catch (IOException e) {
@@ -133,28 +125,29 @@ public class Correct {
     public static void main(String[] args) throws Exception {
         if (args.length < 4) {
             int col = 4;
-            long limit = 500000L;
-            long windSize = 500000L;
-            String dataPath = "/Users/czq/Code/TPS_data/";
-            execute(col, limit, windSize, dataPath);
+            long limit = 100000L;
+            long windSize = limit;
+            String dataPath = "/Users/czq/Code/TPS_data/events_col4_row10000000.csv";
+            int existFinRel=1;
+            logger.info("=====>  COL " + col + ", LIMIT " + limit + ", WINDSIZE " + windSize + ", DATAPATH " + dataPath + ", ExistFinRel " + existFinRel+ " <=====");
+            execute(col, limit, windSize, dataPath,existFinRel);
         } else {
-            execute(Integer.valueOf(args[0]), Integer.valueOf(args[1]), Long.valueOf(args[2]), args[3]);
+            execute(Integer.valueOf(args[0]), Integer.valueOf(args[1]), Long.valueOf(args[2]), args[3],Integer.valueOf(args[4]));
         }
     }
 
     /**
      * Executes the evaluation test with the given parameters.
      *
-     * @param col      Number of columns
-     * @param limit    The maximum number of events to process
-     * @param windSize The window size for processing
-     * @param basePath The base path for data files
-     * @throws Exception If any error occurs during execution
+     * @param col           Number of columns
+     * @param limit         The maximum number of events to process
+     * @param windSize      The window size for processing
+     * @param dataPath      The base path for data files
+     * @param existFinRel   If the query includes rel "finishes" or "finished-by"
+     * @throws Exception    If any error occurs during execution
      */
-    private static void execute(int col, long limit, long windSize, String basePath) throws Exception {
+    private static void execute(int col, long limit, long windSize, String dataPath,int existFinRel) throws Exception {
         WindowType windowType = WindowType.TIME_WINDOW;
-        logger.info("=====>  COL " + col + ", LIMIT " + limit + ", WINDSIZE " + windSize + ", DATAPATH " + basePath + " <=====");
-
-        Long processedTime = buildRunner(col, limit, windSize, basePath, windowType);
+        Long processedTime = buildRunner(col, limit, windSize, dataPath, windowType,existFinRel);
     }
 }

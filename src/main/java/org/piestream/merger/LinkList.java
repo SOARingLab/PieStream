@@ -2,7 +2,6 @@ package org.piestream.merger;
 
 import org.piestream.engine.Window;
 import org.piestream.engine.WindowType;
-import org.piestream.evaluation.Correct;
 import org.piestream.events.Expirable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

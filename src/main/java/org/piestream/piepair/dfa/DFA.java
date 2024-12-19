@@ -1,6 +1,5 @@
 package org.piestream.piepair.dfa;
 
-import org.piestream.evaluation.Correct;
 import org.piestream.piepair.TemporalRelations;
 import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultDirectedGraph;
