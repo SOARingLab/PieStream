@@ -77,33 +77,36 @@ public class ProcessedTime {
      * @param col The number of columns in the data
      * @param limit The maximum number of data lines to process
      * @param windSize The window size for processing
-     * @param basePath The base path to the data files
+     * @param dataPath The dataPath to the data files
      * @param windowType The type of window (e.g., TIME_WINDOW)
      * @return The total processing time in milliseconds
      */
-    public static long buildRunner(int col, long limit, long windSize, String basePath, WindowType windowType) {
+    public static long buildRunner(int col, long limit, long windSize, String dataPath, WindowType windowType) {
         Schema schema = buildSchema(col);
         String query = buildSimpleJoinQuery(col, windSize); // Assuming buildQuery is used here
 
         Engine engine = new Engine(schema, query, windowType);
-        StringBuilder dataPath = new StringBuilder();
-        dataPath.append(basePath).append("events_col").append(col).append("_row").append(10000000).append(".csv");
 
         // Initialize FileDataSource and process data with the Engine
-        try (DataSource dataSource = new FileDataSource(dataPath.toString(), limit)) {
+        try (DataSource dataSource = new FileDataSource(dataPath , limit)) {
             String line;
             long startTime = System.currentTimeMillis(); // Start timing
             while ((line = dataSource.readNext()) != null) {
                 engine.apply("", line); // Process each line of data
             }
             long endTime = System.currentTimeMillis();
+            long processedTime=endTime - startTime;
+//            logger.info("Total Lines Processed: " + (limit));
+//            logger.info("Processing time: " + processedTime + " ms");
+//            logger.info("Processing time: " + processedTime + " ms");
+//            logger.info("RESULT: " + engine.getResultCNT());
 
-            logger.info("\nTotal Lines Processed: " + (limit));
-            logger.info("Processing time: " + (endTime - startTime) + " ms");
-            engine.printResultCNT();
-            engine.printAVGprocessTime();
-            return (endTime - startTime);
-
+//          CSV head:  method,PIEs,MPPs,events,wind_size,result,processed_time
+            StringBuilder resMsg=new StringBuilder();
+            resMsg.append("PieStream,").append(col).append(",").append(col-1).append(",").append(limit).append(",")
+                    .append(windSize).append(",").append(engine.getResultCNT()).append(",").append(processedTime);
+            logger.info(resMsg.toString());
+            return processedTime;
         } catch (IOException e) {
             System.err.println("Failed to open file: " + e.getMessage());
         }
@@ -122,9 +125,12 @@ public class ProcessedTime {
             int col = 4;
             long limit = 100000L;
             long windSize = 100000L;
-            String dataPath = "/Users/czq/Code/TPS_data/";
+            String dataPath = "/Users/czq/Code/TPS_data/events_col4_row10000000.csv";
             execute(col, limit, windSize, dataPath);
+            logger.info("=====>  COL " + col + ", LIMIT " + limit + ", WINDSIZE " + windSize + ", DATAPATH " + dataPath + " <=====");
+
         } else {
+//            exctuteReadOnly();
             execute(Integer.valueOf(args[0]), Integer.valueOf(args[1]), Long.valueOf(args[2]), args[3]);
         }
     }
@@ -135,13 +141,11 @@ public class ProcessedTime {
      * @param col The number of columns in the data
      * @param limit The maximum number of data lines to process
      * @param windSize The window size for processing
-     * @param basePath The base path to the data files
+     * @param dataPath The base path to the data files
      * @throws Exception If any error occurs during execution
      */
-    private static void execute(int col, long limit, long windSize, String basePath) throws Exception {
+    private static void execute(int col, long limit, long windSize, String dataPath) throws Exception {
         WindowType windowType = WindowType.TIME_WINDOW;
-        logger.info("=====>  COL " + col + ", LIMIT " + limit + ", WINDSIZE " + windSize + ", DATAPATH " + basePath + ", <=====");
-
-        Long processedTime = buildRunner(col, limit, windSize, basePath, windowType);
+        Long processedTime = buildRunner(col, limit, windSize, dataPath, windowType);
     }
 }

@@ -3,7 +3,7 @@ package org.piestream.piepair.eba;
 import org.piestream.events.PointEvent;
 
 /**
- * Represents an "AND" (logical conjunction) EBA (Event-Based Automaton) that evaluates two other EBAs.
+ * Represents an "AND" (logical conjunction) EBA  that evaluates two other EBAs.
  * This class combines two EBAs using a logical AND operation: it returns true if both the left and right EBAs evaluate to true for a given event.
  */
 public class AndEBA extends EBA {

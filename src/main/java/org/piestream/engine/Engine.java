@@ -169,9 +169,23 @@ public class Engine implements ForeachAction<String, String> {
     }
 
     /**
+     * Get the current count of the results processed by the worker.
+     */
+    public long getResultCNT() {
+        return worker.getResultCNT();
+    }
+
+    /**
      * Prints the average processing time for the events handled by the worker.
      */
     public void printAVGprocessTime() {
         logger.info("AVG-latencyTime: " + worker.getTree().getRoot().getAVGprocessTime() + " ns");
+    }
+
+    /**
+     * Get the average processing time for the events handled by the worker.
+     */
+    public double getAVGprocessTime() {
+        return worker.getTree().getRoot().getAVGprocessTime();
     }
 }

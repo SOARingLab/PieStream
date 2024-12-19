@@ -3,7 +3,7 @@ package org.piestream.piepair.eba;
 import org.piestream.events.PointEvent;
 
 /**
- * Represents a "NOT" (logical negation) EBA (Event-Based Automaton) that negates the evaluation of another EBA.
+ * Represents a "NOT" (logical negation) EBA  that negates the evaluation of another EBA.
  * This class evaluates the expression and returns the opposite boolean value of the evaluation result.
  */
 public class NotEBA extends EBA {

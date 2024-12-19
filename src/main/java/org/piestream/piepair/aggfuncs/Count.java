@@ -2,7 +2,7 @@ package org.piestream.piepair.aggfuncs;
 
 /**
  * Implementation of the "Count" aggregation function.
- * This function counts the number of events or values processed.
+ * This function counts the number of events processed.
  * It is used to track the number of occurrences of an event or item in a stream.
  */
 public class Count implements AggregationFunction<Long> {

@@ -5,7 +5,7 @@ import org.piestream.events.PointEvent;
 import org.piestream.piepair.predicate.Predicate;
 
 /**
- * Represents an EBA (Event-Based Automaton) that evaluates an event based on a predicate applied to an attribute.
+ * Represents an EBA  that evaluates an event based on a predicate applied to an attribute.
  * The predicate is tested on a specific attribute of the event with a parameter.
  */
 public class PredicateEBA extends EBA {

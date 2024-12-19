@@ -46,8 +46,8 @@ public class PIEPair {
      * Constructor that initializes PIEPair based on temporal relations and two EBA conditions.
      *
      * @param relation   The precise temporal relation used to define the temporal relationship (PreciseRel)
-     * @param formerPred The former EBA (Event Attribute Expression)
-     * @param latterPred The latter EBA (Event Attribute Expression)
+     * @param formerPred The former EBA
+     * @param latterPred The latter EBA
      * @param mpp        The MPIEPair instance
      */
     public PIEPair(TemporalRelations.PreciseRel relation, EBA formerPred, EBA latterPred, MPIEPair mpp) {

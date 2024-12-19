@@ -48,7 +48,7 @@ public class MPIEPair {
      * Constructor to initialize the MPIEPair object and create PIEPairs for the given relations.
      *
      * @param relations Set of precise temporal relations
-     * @param formerPred Former EBA (Event-Based Automaton) to classify the events
+     * @param formerPred Former EBA  to classify the events
      * @param latterPred Latter EBA to classify the events
      * @param node TreeNode representing the state of the pattern
      */

@@ -44,7 +44,7 @@ public class Correct {
 //        }
 
 //        String easyPattern=" A1 starts A2 AND A2 before A3 AND A3 overlaps A4 " ;
-        String easyPattern = " A1 starts A2 AND A2 before A3 AND A3 overlaps A4 " ;
+        String easyPattern = " A1 starts;overlaps  A2 AND A2 overlaps;starts  A3 AND A3  overlaps;starts A4 " ;
 //        String easyPattern="   A3 before A2   " ;
 
         // Combine all parts into a complete query string
@@ -133,8 +133,8 @@ public class Correct {
     public static void main(String[] args) throws Exception {
         if (args.length < 4) {
             int col = 4;
-            long limit = 10000L;
-            long windSize = 10000L;
+            long limit = 500000L;
+            long windSize = 500000L;
             String dataPath = "/Users/czq/Code/TPS_data/";
             execute(col, limit, windSize, dataPath);
         } else {
