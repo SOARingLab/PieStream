@@ -121,16 +121,14 @@ public class Row implements Expirable {
         this.timeData.put(colName, value);  // Add the new column to the timeData map
     }
 
-    // Calculate the process time of this row based on the earliest trigger time
-    // This method is used to determine if the row is expired based on the oldest trigger time
+    // Calculate the process time of this row based on the latest trigger time
     public long getProcessTime(long value) {
-        long minTriggerTime = Long.MAX_VALUE;
+        long maxTriggerTime = 0;
         for (Map.Entry<String, Long> entry : this.timeData.entrySet()) {
-            // Find the minimum trigger time across all columns
-            if (entry.getKey().endsWith("_triggerTime") && entry.getValue() < minTriggerTime) {
-                minTriggerTime = entry.getValue();
+            if (entry.getKey().endsWith("_triggerTime") && entry.getValue() > maxTriggerTime) {
+                maxTriggerTime = entry.getValue();
             }
         }
-        return value - minTriggerTime;  // Return the difference between the provided value and the minimum trigger time
+        return value - maxTriggerTime;  // Return the difference between the provided value and the max trigger time
     }
 }

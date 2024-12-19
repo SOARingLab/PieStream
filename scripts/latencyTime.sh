@@ -15,9 +15,8 @@ echo -n > $OUT_FILE
 cols=( 4 )
 limits=(  1000000 )
 windSize=( 10000 )
-rates=( 1000000 100000   10000   1000   )
-loopNum=1
-
+rates=( 1000000 500000  100000 50000  10000  5000 1000   )
+loopNum=10
 
 # Write the header
 echo "method,PIEs,MPPs,events,wind_size,rates,avg_process_latency(ns),result,processed_time(ms)" >> $OUT_FILE

@@ -1,20 +1,12 @@
 #!/bin/bash
 
-# Set JAVA_HOME
-JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home
-#JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+#JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home
+#PIE_STREAM_HOME=/Users/czq/Code/PieStream
+#DATA_DIR="/Users/czq/Code/TPS_data/"
 
-# Set PIE_STREAM_HOME
-PIE_STREAM_HOME=/Users/czq/Code/PieStream
-#PIE_STREAM_HOME=/home/uzi/Code/TPStream_expr/pieP
-
-#DATA_DIR="/home/uzi/Code/TPSdata/"
-DATA_DIR="/Users/czq/Code/TPS_data/"
-
-
-
-
-
+PIE_STREAM_HOME=/home/uzi/Code/pieP
+DATA_DIR="/home/uzi/Code/TPSdata/"
+JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
 
 # Set CLASSPATH for your project (target/classes and libraries)
 CLASSPATH=$PIE_STREAM_HOME/target/classes:$PIE_STREAM_HOME/lib/*
