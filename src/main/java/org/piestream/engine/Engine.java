@@ -26,6 +26,7 @@ public class Engine implements ForeachAction<String, String> {
     // Logger for this class
     private static final Logger logger = LoggerFactory.getLogger(Engine.class);
 
+    private long lastLoggedPercentage = -1;
     // Event preprocessing instance
     private final EventPreprocessor processor;
     // Partition attribute used to partition the incoming data stream
@@ -136,6 +137,21 @@ public class Engine implements ForeachAction<String, String> {
         endTime = System.currentTimeMillis();
         updateTime += (endTime - startTime);
     }
+    public void showPercentage(long cnt, long limit){
+        if(limit == 0){
+            logger.warn("Limit is zero, cannot compute percentage.");
+            return;
+        }
+
+        long res = (cnt * 100) / limit;
+        long currentPercentage = res / 10;
+
+        if(res % 10 == 0 && currentPercentage > 0 && currentPercentage != lastLoggedPercentage){
+            lastLoggedPercentage = currentPercentage;
+            logger.info(currentPercentage+"0%");
+        }
+    }
+
 
     /**
      * Prints the accumulated time spent on various stages of the processing pipeline.

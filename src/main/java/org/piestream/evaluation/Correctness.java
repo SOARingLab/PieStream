@@ -34,14 +34,14 @@ public class Correctness {
         String pattern;
         if(existFinRel==0){
             // Not include finishes/finished-by 不包含
-            pattern = " A1 starts;meets;overlaps;overlapped-by;contains;during;equals  A2 " +
-                              "AND A2 starts;meets;overlaps;overlapped-by;contains;during;equals  A3 " +
-                              "AND A3 starts;meets;overlaps;overlapped-by;contains;during;equals  A4 " ;
+            pattern = " A1  meets;met-by;overlaps;overlapped-by;finishes;finished-by   A2 " +
+                              "AND A2  starts;started-by;contains;during;finishes;finished-by  A3 " +
+                              "AND A3  before;after;equals;finishes;finished-by  A4 " ;
         }else{
             // Include finishes/finished-by
-            pattern = " A1 starts;meets;overlaps;overlapped-by;contains;during;equals;finishes;finished-by  A2 " +
-                    "AND A2 starts;meets;overlaps;overlapped-by;contains;during;equals;finishes;finished-by  A3 " +
-                    "AND A3 starts;meets;overlaps;overlapped-by;contains;during;equals;finishes;finished-by  A4 " ;
+            pattern = " A1  meets;met-by;overlaps;overlapped-by   A2 " +
+                    "AND A2  starts;started-by;contains;during  A3 " +
+                    "AND A3  before;after;equals  A4 " ;
         }
 
         // Combine all parts into a complete query string
@@ -92,8 +92,10 @@ public class Correctness {
         try (DataSource dataSource = new FileDataSource(dataPath, limit)) {
             String line;
             long startTime = System.currentTimeMillis(); // Start timing
+            long cnt=1;
             while ((line = dataSource.readNext()) != null) {
                 engine.apply("", line); // Process each line of data
+//                engine.showPercentage(cnt++,limit);
             }
             long endTime = System.currentTimeMillis();
             long processedTime=endTime - startTime;
@@ -125,14 +127,15 @@ public class Correctness {
     public static void main(String[] args) throws Exception {
         if (args.length < 4) {
             int col = 4;
-            long limit = 100000L;
+            long limit = 10000L;
             long windSize = limit;
-            String dataPath = "/Users/czq/Code/TPS_data/events_col4_row10000000.csv";
+//            String dataPath = "/Users/czq/Code/TPS_data/events_col4_row10000000.csv";
+            String dataPath = "/home/uzi/Code/TPSdata/events_col4_row10000000.csv";
             int existFinRel=1;
             logger.info("method,PIEs,MPPs,events,wind_size,result,processed_time(ms),query_include_finish_rels");
             execute(col, limit, windSize, dataPath,existFinRel);
         } else {
-            execute(Integer.valueOf(args[0]), Integer.valueOf(args[1]), Long.valueOf(args[2]), args[3],Integer.valueOf(args[4]));
+            execute(Integer.valueOf(args[0]), Long.valueOf(args[1]),Long.valueOf(args[1]), args[2],Integer.valueOf(args[3]));
         }
     }
 

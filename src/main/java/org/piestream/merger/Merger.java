@@ -433,19 +433,21 @@ public class Merger {
 
     // Derives and joins intermediate rows from the intermediate table to the leaf row (Old leaf) in the "after" case.
     private void deriveIntermAndJoin_IntermNew_LeafOld(TreeNode ParentNode, Table intermTab, String joinedCol, String unJoinedCol, LinkList<Row>.Node leafPtr) {
+
         if (intermTab.getSize() != 0) {
             LinkList<Row>.Node intermNode = intermTab.getRows().getHead();
             while (intermNode != null) {
+                LinkList<Row>.Node Ptr=leafPtr;
                 long intermTime = intermNode.getData().getTimeData().get(joinedCol);
-                if (intermTime <= leafPtr.getData().getTimeData().get(joinedCol)) {
+                if (intermTime <= Ptr.getData().getTimeData().get(joinedCol)) {
                     // First: Find the steer, search backward
-                    while (leafPtr != null && leafPtr.getData().getTimeData().get(joinedCol) > intermTime) {
-                        leafPtr = leafPtr.prev;
+                    while (Ptr != null && Ptr.getData().getTimeData().get(joinedCol) > intermTime) {
+                        Ptr = Ptr.prev;
                     }
                     // Second: Build the rows, build forward
-                    while (leafPtr != null) {
-                        joinTwoRows(ParentNode, intermNode.getData(), unJoinedCol, leafPtr.getData());
-                        leafPtr = leafPtr.next;
+                    while (Ptr != null) {
+                        joinTwoRows(ParentNode, intermNode.getData(), unJoinedCol, Ptr.getData());
+                        Ptr = Ptr.next;
                     }
                 }
                 intermNode = intermNode.next;
