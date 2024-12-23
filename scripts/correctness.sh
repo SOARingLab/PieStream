@@ -8,7 +8,7 @@ OUT_DIR="out/correctness"
 mkdir -p $OUT_DIR
 
 TIMESTAMP=$(date +"%m%d%H%M")  # Get the current month, day, hour, and minute
-OUT_FILE="$OUT_DIR/correctness_$TIMESTAMP.out"  # The filename contains a timestamp
+OUT_FILE="$OUT_DIR/correctness_$TIMESTAMP.csv"  # The filename contains a timestamp
 
 #OUT_FILE=$OUT_DIR/full.txt
 echo -n > $OUT_FILE  # Clear the file
@@ -20,7 +20,7 @@ include_finish_rels=( 1 0 )
 # windSize is equals to limit
 
 # Write the header
-echo "method,PIEs,MPPs,events,wind_size,result,processed_time(ms),if_query_include_finish_rels" >> $OUT_FILE
+echo "($ENV_NAME)method,PIEs,MPPs,events,wind_size,result,processed_time(ms),if_query_include_finish_rels" >> $OUT_FILE
 
 # Loop over the parameters and call the Java program
 for col in "${cols[@]}"

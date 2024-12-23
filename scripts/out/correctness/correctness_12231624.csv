@@ -1,0 +1,11 @@
+(MACmini)method,PIEs,MPPs,events,wind_size,result,processed_time(ms),if_query_include_finish_rels
+PieStream,4,3,1000,1000,29,31,1
+PieStream,4,3,1000,1000,29,27,0
+PieStream,4,3,5000,5000,1105,62,1
+PieStream,4,3,5000,5000,1053,58,0
+PieStream,4,3,10000,10000,5026,86,1
+PieStream,4,3,10000,10000,4915,157,0
+PieStream,4,3,50000,50000,118716,408,1
+PieStream,4,3,50000,50000,115762,298,0
+PieStream,4,3,100000,100000,500519,1041,1
+PieStream,4,3,100000,100000,481677,1019,0

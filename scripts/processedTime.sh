@@ -21,7 +21,7 @@ windList=( 10000 )
 loopNum=10
 
 # Write the header
-echo "method,PIEs,MPPs,events,wind_size,result,processed_time(ms)" >> $OUT_FILE
+echo "($ENV_NAME)method,PIEs,MPPs,events,wind_size,result,processed_time(ms)" >> $OUT_FILE
 
 # Loop over the parameters and call the Java program
 for col in "${cols[@]}"
