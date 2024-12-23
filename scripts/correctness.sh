@@ -14,8 +14,8 @@ OUT_FILE="$OUT_DIR/correctness_$TIMESTAMP.out"  # The filename contains a timest
 echo -n > $OUT_FILE  # Clear the file
 
 # Define the parameter range
-cols=( 4 6 8 )
-limits=( 1000  10000  100000  )
+cols=( 4 )
+limits=( 1000 5000  10000 50000 100000 500000 )
 include_finish_rels=( 1 0 )
 # windSize is equals to limit
 
