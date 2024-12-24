@@ -35,16 +35,16 @@ public class Lowlatency {
 
         String patternA4;
         // Build the PATTERN part of the query
-        for (int i = 1; i < Col; i++) {
-            if (i > 1) patternBuilder.append(" AND ");
-            patternBuilder.append("A").append(i)
-//                    .append(" meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals ")
-//                    .append(" meets;met-by;overlapped-by;starts;started-by;during;contains ")
-                    .append(" meets;overlaps;overlapped-by;starts;started-by;contains ")
-                    .append("A").append(i + 1);
-        }
-//         patternA4=" A1 starts A2 AND A2 before A3 AND A3 overlaps A4";
-        patternA4 = patternBuilder.toString();
+//        for (int i = 1; i < Col; i++) {
+//            if (i > 1) patternBuilder.append(" AND ");
+//            patternBuilder.append("A").append(i)
+////                    .append(" meets;met-by;overlapped-by;overlaps;started-by;starts;during;contains;finishes;finished-by;equals ")
+////                    .append(" meets;met-by;overlapped-by;starts;started-by;during;contains ")
+//                    .append(" meets;overlaps;overlapped-by;starts;started-by;contains ")
+//                    .append("A").append(i + 1);
+//        }
+         patternA4=" A1 starts A2 AND A2 before A3 AND A3 overlaps A4";
+//        patternA4 = patternBuilder.toString();
 
         // Combine all parts into a complete query string
         String query =

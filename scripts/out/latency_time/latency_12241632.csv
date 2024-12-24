@@ -1,0 +1,4 @@
+(MACmini)method,PIEs,MPPs,events,wind_size,rates,avg_process_latency(ns),result,all_used_time(ms)
+PieStream,4,3,10000000,10000,10000000,2565,37024,14641
+PieStream,4,3,10000000,10000,1000000,2875,37024,15251
+PieStream,4,3,10000000,10000,100000,11478,37024,99983

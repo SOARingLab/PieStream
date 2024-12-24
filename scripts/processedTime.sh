@@ -8,7 +8,7 @@ OUT_DIR="out/processed_time"
 mkdir -p $OUT_DIR
 
 TIMESTAMP=$(date +"%m%d%H%M")  # Get the current month, day, hour, and minute
-OUT_FILE="$OUT_DIR/processTime_$TIMESTAMP.out"  # The filename contains a timestamp
+OUT_FILE="$OUT_DIR/processTime_$TIMESTAMP.csv"  # The filename contains a timestamp
 
 #OUT_FILE=$OUT_DIR/full.txt
 echo -n > $OUT_FILE  # Clear the file
@@ -21,7 +21,7 @@ windList=( 10000 )
 loopNum=10
 
 # Write the header
-echo "($ENV_NAME)method,PIEs,MPPs,events,wind_size,result,processed_time(ms)" >> $OUT_FILE
+echo "($ENV_NAME)method,PIEs,MPPs,events,wind_size,result,all_used_time(ms)" >> $OUT_FILE
 
 # Loop over the parameters and call the Java program
 for col in "${cols[@]}"

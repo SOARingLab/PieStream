@@ -8,18 +8,18 @@ OUT_DIR="out/latency_time"
 mkdir -p $OUT_DIR
 
 TIMESTAMP=$(date +"%m%d%H%M")
-OUT_FILE="$OUT_DIR/latency_$TIMESTAMP.out"
+OUT_FILE="$OUT_DIR/latency_$TIMESTAMP.csv"
 
 echo -n > $OUT_FILE
 
 cols=( 4 )
-limits=(  1000000 )
+limits=(  10000000 )
 windSize=( 10000 )
-rates=( 1000000 500000  100000 50000  10000  5000 1000   )
-loopNum=10
+rates=(10000000 1000000 100000  )
+loopNum=1
 
 # Write the header
-echo "($ENV_NAME)method,PIEs,MPPs,events,wind_size,rates,avg_process_latency(ns),result,processed_time(ms)" >> $OUT_FILE
+echo "($ENV_NAME)method,PIEs,MPPs,events,wind_size,rates,avg_process_latency(ns),result,all_used_time(ms)" >> $OUT_FILE
 
 # Loop over the parameters and call the Java program
 for col in "${cols[@]}"
