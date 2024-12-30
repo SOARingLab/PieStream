@@ -1,5 +1,6 @@
 package org.piestream.merger;
 
+import org.piestream.engine.RuntimeSet;
 import org.piestream.engine.Window;
 import org.piestream.parser.MPIEPairSource;
 import org.piestream.piepair.IEP;
@@ -277,13 +278,17 @@ public class BinTree {
      */
     public void updateMergedNodeData() {
         for (TreeNode node : mergedNodes) {
-            if (node == root) {
-                long time = node.newT.addDetectTimeAndCalProcessTime("detectTime", System.nanoTime());
-                node.addProcessTime(time);
-                node.T.concatenate(node.newT); // Merge new data into the node's table
-                node.addResCount(node.newT.getSize()); // Update result count
-            } else {
-                node.T.concatenate(node.newT); // Merge new data for non-root nodes
+            if(node.newT.getSize()!=0){
+                if (node == root) {
+                    if(RuntimeSet.getInstance().isRecordAVGProceTime()){
+                        long time = node.newT.addDetectTimeAndCalProcessTime("detectTime", System.nanoTime());
+                        node.addProcessTime(time);
+                    }
+                    if(RuntimeSet.getInstance().isLoggerResultASAPConsole()){
+                        logger.info( node.newT.getPredST() );
+                    }
+                }
+                node.T.concatenate(node.newT);
                 node.addResCount(node.newT.getSize());
             }
         }

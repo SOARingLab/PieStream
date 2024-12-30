@@ -309,4 +309,16 @@ public class Table {
         size -= (toDelRows.size());
         refreshIndex(deadLine, toDelRows);
     }
+
+
+    public String getPredST(){
+        StringBuilder sb=new StringBuilder();
+        LinkList<Row>.Node nd=rows.getHead();
+        while (nd!=null){
+            sb.append(nd.getData().getSTstring());
+            nd=nd.next;
+        }
+        return sb.toString();
+    }
+
 }

@@ -5,6 +5,7 @@ import org.piestream.parser.Schema;
 import org.piestream.piepair.predicate.Predicate;
 import org.piestream.piepair.predicate.PredicateUtils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
@@ -246,18 +247,40 @@ public class EBAParser {
         }
     }
 
+    // 按照“长的在前、短的在后”的顺序排列，可以避免例如 ">" 被优先匹配到而忽略了 ">="
+    private static final List<String> PREDICATE_OPERATORS = Arrays.asList(
+              ">=",
+             "<=",
+              "==", "=",
+              "!==", "!=",
+              ">",
+             "<"
+    );
+
     /**
-     * Splits a predicate expression into three parts: attribute, operator, and value.
-     *
-     * @param expression the predicate expression to split.
-     * @return an array containing the attribute, operator, and value.
-     * @throws EBA.ParseException if the predicate expression is invalid.
+     * 根据固定的操作符集合来拆分表达式
+     * @param expression 谓词表达式（如 "age >= 30" 或 "salary greater 1000"）
+     * @return [attribute, operator, value]
+     * @throws EBA.ParseException 如果找不到匹配的操作符，或解析失败
      */
     private static String[] splitPredicateExpression(String expression) throws EBA.ParseException {
-        String[] parts = expression.trim().split("\\s+");
-        if (parts.length != 3) {
-            throw new EBA.ParseException("Invalid predicate expression: " + expression);
+
+        for (String op : PREDICATE_OPERATORS) {
+            int idx = expression.indexOf(op);
+            if (idx >= 0) {
+                String attribute = expression.substring(0, idx).trim();
+                String value = expression.substring(idx + op.length()).trim();
+
+                if (attribute.isEmpty() || value.isEmpty()) {
+                    throw new EBA.ParseException("Invalid predicate expression: " + expression);
+                }
+
+                return new String[] {attribute, op, value};
+            }
         }
-        return parts;
+
+        // 如果循环结束还没找到匹配，说明表达式不合法
+        throw new EBA.ParseException("No valid operator found in expression: " + expression);
     }
+
 }

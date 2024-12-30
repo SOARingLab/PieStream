@@ -3,6 +3,7 @@ package org.piestream.evaluation;
 import org.piestream.datasource.DataSource;
 import org.piestream.datasource.FileDataSource;
 import org.piestream.engine.Engine;
+import org.piestream.engine.RuntimeSet;
 import org.piestream.engine.WindowType;
 import org.piestream.events.Attribute;
 import org.piestream.parser.Schema;
@@ -10,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class Lowlatency {
@@ -91,6 +94,7 @@ public class Lowlatency {
         Schema schema = buildSchema(col);
         String query = buildSimpleJoinQuery(col, windSize); // Assuming buildQuery is used here
 
+        RuntimeSet.initialize(false,true);
         Engine engine = new Engine(schema, query, windowType);
 
         // Initialize FileDataSource and process data with the Engine
@@ -136,7 +140,8 @@ public class Lowlatency {
             int col = 4;
             long limit = 100000L;
             long windSize = 100000L;
-            String dataPath = "/Users/czq/Code/TPS_data/events_col4_row10000000.csv";
+            URL resource  =  Correctness.class.getClassLoader().getResource("data/events_col4_row100000.csv");
+            String dataPath = Paths.get(resource.toURI()).toAbsolutePath().toString();
             long rate = 100000;
             logger.info("method,PIEs,MPPs,events,wind_size,rates,avg_process_latency(ns),result,processed_time(ms)");
 

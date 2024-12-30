@@ -23,6 +23,11 @@ public class GreaterOrEqual implements Predicate {
         // Retrieve the value of the specified attribute from the event's payload
         Object attributeValue = event.getPayload().get(attribute);
 
+        if (attributeValue == null) {
+            throw new IllegalArgumentException(
+                    String.format("Attribute '%s' value is null in the event payload.", attribute.getName())
+            );
+        }
         // Compare the attribute's value to the parameter using the specified comparison operator (>=)
         return PredicateUtils.compareValues(attributeValue, parameter, attribute.getType(), ">=");
     }

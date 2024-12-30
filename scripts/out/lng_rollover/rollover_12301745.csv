@@ -1,0 +1,8 @@
+method,PIEs,MPPs,events,wind_size,result,processed_time(ms)
+PieStream,3,2,8640000,500000,95,20726
+method,PIEs,MPPs,events,wind_size,result,processed_time(ms)
+PieStream,3,2,8640000,1000000,95,21709
+method,PIEs,MPPs,events,wind_size,result,processed_time(ms)
+PieStream,3,2,8640000,500000,2822,21922
+method,PIEs,MPPs,events,wind_size,result,processed_time(ms)
+PieStream,3,2,8640000,1000000,5344,20701

@@ -164,42 +164,42 @@ public class BinaryDataSource implements DataSource {
         }
     }
 
-    /**
-     * Main method for testing the BinaryDataSource class.
-     * This method loads a schema, creates an engine instance, and processes records from a binary data file.
-     *
-     * @param args command line arguments (not used)
-     */
-    public static void main(String[] args) {
-        String binaryFilePath = "/Users/czq/Code/TPS_data/linear_accel_filtered_404.events";
-        String schemaFilePath = "src/main/resources/domain/linearBin_404.yaml";
-        Schema schema = new Schema(schemaFilePath); // Load the schema
-
-        String query =
-                "FROM CarStream " +
-                        "DEFINE D AS ACCEL <= -0.00455 , S AS SPEED >= 32 , A AS ACCEL >= 0.0050 " +
-                        "PATTERN " +
-                        "A  meets; overlaps; starts; during ; before    S  " +
-                        "AND S  meets; contains; followed-by; overlaps;after;before   D  " +
-                        "WITHIN 1000000 "+
-                        "RETURN s.ts, s.te ";
-
-        // Create an Engine instance
-        Engine engine = new Engine(schema, query);
-
-        try (DataSource dataSource = new BinaryDataSource(binaryFilePath, schema)) {
-            long time = -System.nanoTime();
-            // Process each record in the data source
-            while (dataSource.hasNext()) {
-                String record = dataSource.readNext();
-                engine.apply("", record); // Process each record
-            }
-
-            time += System.nanoTime();
-            engine.printResultCNT(); // Print the result count
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    /**
+//     * Main method for testing the BinaryDataSource class.
+//     * This method loads a schema, creates an engine instance, and processes records from a binary data file.
+//     *
+//     * @param args command line arguments (not used)
+//     */
+//    public static void main(String[] args) {
+//        String binaryFilePath = "/Users/czq/Code/TPS_data/linear_accel_filtered_404.events";
+//        String schemaFilePath = "src/main/resources/domain/linearBin_404.yaml";
+//        Schema schema = new Schema(schemaFilePath); // Load the schema
+//
+//        String query =
+//                "FROM CarStream " +
+//                        "DEFINE D AS ACCEL <= -0.00455 , S AS SPEED >= 32 , A AS ACCEL >= 0.0050 " +
+//                        "PATTERN " +
+//                        "A  meets; overlaps; starts; during ; before    S  " +
+//                        "AND S  meets; contains; followed-by; overlaps;after;before   D  " +
+//                        "WITHIN 1000000 "+
+//                        "RETURN s.ts, s.te ";
+//
+//        // Create an Engine instance
+//        Engine engine = new Engine(schema, query);
+//
+//        try (DataSource dataSource = new BinaryDataSource(binaryFilePath, schema)) {
+//            long time = -System.nanoTime();
+//            // Process each record in the data source
+//            while (dataSource.hasNext()) {
+//                String record = dataSource.readNext();
+//                engine.apply("", record); // Process each record
+//            }
+//
+//            time += System.nanoTime();
+//            engine.printResultCNT(); // Print the result count
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }

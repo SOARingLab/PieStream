@@ -22,6 +22,11 @@ public class Greater implements Predicate {
     @Override
     public boolean test(PointEvent event, Attribute attribute, Object parameter) {
         Object attributeValue = event.getPayload().get(attribute);  // Retrieves the value of the attribute from the event's payload
+        if (attributeValue == null) {
+            throw new IllegalArgumentException(
+                    String.format("Attribute '%s' value is null in the event payload.", attribute.getName())
+            );
+        }
         return PredicateUtils.compareValues(attributeValue, parameter, attribute.getType(), ">");  // Compares the values using the ">" operator
     }
 }

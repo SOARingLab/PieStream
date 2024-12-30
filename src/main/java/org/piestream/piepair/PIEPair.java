@@ -235,7 +235,7 @@ public class PIEPair {
 
         /* If n == 0, no matching IEP was found, throw an exception */
         if (n == 0) {
-            throw new IllegalStateException("No matching IEP found to update.");
+            logger.debug("No matching IEP found to update,because interval events exceed the window size");
         }
     }
 

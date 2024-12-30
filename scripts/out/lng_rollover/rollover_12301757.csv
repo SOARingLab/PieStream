@@ -1,0 +1,4 @@
+(MACmini)method,PIEs,MPPs,events,wind_size,result,all_used_time(ms),usePreciseRel
+PieStream,3,2,8640000,10000,95,21888,1
+PieStream,3,2,8640000,50000,95,19429,1
+PieStream,3,2,8640000,100000,95,20174,1

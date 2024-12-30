@@ -1,5 +1,6 @@
 package org.piestream.merger;
 
+import org.piestream.engine.RuntimeSet;
 import org.piestream.events.Expirable;
 import org.piestream.piepair.IEP;
 import org.piestream.piepair.eba.EBA;
@@ -31,12 +32,15 @@ public class Row implements Expirable {
         // Generate column names and values based on the IEP and EBA mapping
         String formerPieSTKey = EBA2String.get(iep.getFormerPie()) + ".ST";  // formerPieST column name
         String latterPieSTKey = EBA2String.get(iep.getLatterPie()) + ".ST";  // latterPieST column name
-        String triggerName = EBA2String.get(iep.getFormerPie()) + "-" + EBA2String.get(iep.getLatterPie()) + "_triggerTime";
-
         this.timeData = new HashMap<>();
         this.timeData.put(formerPieSTKey, iep.getFormerStartTime());  // Store the start time of the former pie
         this.timeData.put(latterPieSTKey, iep.getLatterStartTime());  // Store the start time of the latter pie
-        this.timeData.put(triggerName, iep.getSystemTriggerTime());  // Store the trigger time
+
+
+        if(RuntimeSet.getInstance().isRecordAVGProceTime()){
+            String triggerName = EBA2String.get(iep.getFormerPie()) + "-" + EBA2String.get(iep.getLatterPie()) + "_triggerTime";
+            this.timeData.put(triggerName, iep.getSystemTriggerTime());  // Store the trigger time
+        }
         this.source = new HashSet<>();
         this.source.add(iep);  // Add the IEP to the source set
         this.triggerTime = iep.getTriggerTime();  // Set the trigger time from the IEP
@@ -104,6 +108,24 @@ public class Row implements Expirable {
     @Override
     public String toString() {
         return timeData.toString();  // Return the time data as a string
+    }
+
+    // Get the StartTime of result interval events
+    public String getSTstring() {
+        int i=0;
+        StringBuilder sb=new StringBuilder();
+        sb.append("<");
+        for(Map.Entry<String,Long> entry:timeData.entrySet()){
+            if(entry.getKey().endsWith(".ST")){
+                if (i!=0){
+                    sb.append(",");
+                }
+                i++;
+                sb.append(" ").append(entry.getKey()).append("=").append(entry.getValue());
+            }
+        }
+        sb.append(" >");
+        return sb.toString();  // Return the time data as a string
     }
 
     @Override

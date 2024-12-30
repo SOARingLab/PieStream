@@ -267,28 +267,12 @@ public class QueryParser {
      */
     private EBA parsePie() throws ParseException, EBA.ParseException {
         StringBuilder expressionBuilder = new StringBuilder();
-        String token = consume();
-
-        if (token.matches("\\w+")) {
-            // Handling simple predicates, e.g., accel > 8
-            expressionBuilder.append(token);
-            if (peek(">") || peek("<") || peek(">=") || peek("<=") || peek("==") || peek("=") || peek("!=")) {
-                expressionBuilder.append(" ").append(consume()); // append comparator
-                expressionBuilder.append(" ").append(consume()); // append value
-            }
-        } else if (token.equals("(")) {
-            // Handling complex expressions
-            expressionBuilder.append("(");
-            expressionBuilder.append(parsePie().toString());
-            expressionBuilder.append(expect(")"));
-        } else if (token.equals("!")) {
-            expressionBuilder.append("!").append(parsePie().toString());
-        } else {
-            throw new EBA.ParseException("Invalid PIE: " + token);
+        while( !peek(",")  && !peek("PATTERN")   ) {
+            expressionBuilder.append(consume());
         }
-
         // Use the EBAParser to parse the constructed expression
-        return EBAParser.parse(expressionBuilder.toString(), schema);
+        EBA pred =EBAParser.parse(expressionBuilder.toString(), schema);
+        return pred;
     }
 
     /**

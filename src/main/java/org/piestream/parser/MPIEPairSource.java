@@ -44,12 +44,8 @@ public class MPIEPairSource {
         for (TemporalRelations.AllRel rel : rels) {
             if (rel == BEFORE) {
                 this.hasBeforeRel = true; // Mark the presence of "before" relation
-                this.relations.add(FOLLOWED_BY); // Add FOLLOWED_BY relation
-                this.relations.addAll(TemporalRelations.getRelSetBefore()); // Add all relations from the set of relations before
             } else if (rel == AFTER) {
                 this.hasAfterRel = true; // Mark the presence of "after" relation
-                this.relations.add(FOLLOW); // Add FOLLOW relation
-                this.relations.addAll(TemporalRelations.getRelSetAfter()); // Add all relations from the set of relations after
             } else {
                 originRels.add(rel.getPreciseRel()); // Add precise relations to the origin relations set
             }
