@@ -1,0 +1,4 @@
+(DELL_G7)method,PIEs,MPPs,events,wind_size,rates,avg_process_latency(ns),result,all_used_time(ms)
+PieStream,4,3,10000000,10000,10000000,4957,37024,22294
+PieStream,4,3,10000000,10000,1000000,4378,37024,20966
+PieStream,4,3,10000000,10000,100000,18509,37024,99729

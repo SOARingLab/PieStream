@@ -39,12 +39,12 @@ public class Correctness {
             // Not include finishes/finished-by 不包含
             pattern = " A1  meets;met-by;overlaps;overlapped-by   A2 " +
                     "AND A2  starts;started-by;contains;during  A3 " +
-                    "AND A3  before;after;equals  A4 " ;
+                    "AND A3  before;after  A4 " ;
         }else{
             // Include finishes/finished-by
-            pattern = " A1  meets;met-by;overlaps;overlapped-by;finishes;finished-by   A2 " +
-                    "AND A2  starts;started-by;contains;during;finishes;finished-by  A3 " +
-                    "AND A3  before;after;equals;finishes;finished-by  A4 " ;
+            pattern = " A1  meets;met-by;overlaps;overlapped-by ;equals;finishes;finished-by   A2 " +
+                    "AND A2  starts;started-by;contains;during  ;equals;finishes;finished-by  A3 " +
+                    "AND A3  before;after   ;equals;finishes;finished-by  A4 " ;
         }
 
         // Combine all parts into a complete query string

@@ -111,7 +111,6 @@ public class ProcessedTime {
             StringBuilder resMsg=new StringBuilder();
             resMsg.append("PieStream,").append(col).append(",").append(col-1).append(",").append(limit).append(",")
                     .append(windSize).append(",").append(engine.getResultCNT()).append(",").append(processedTime);
-            logger.info("method,PIEs,MPPs,events,wind_size,result,processed_time");
             logger.info(resMsg.toString());
             return processedTime;
         } catch (IOException e) {
@@ -134,6 +133,8 @@ public class ProcessedTime {
             long windSize = 100000L;
             URL resource  =  Correctness.class.getClassLoader().getResource("data/events_col4_row100000.csv");
             String dataPath = Paths.get(resource.toURI()).toAbsolutePath().toString();
+            logger.info("method,PIEs,MPPs,events,wind_size,result,processed_time");
+
             execute(col, limit, windSize, dataPath);
 
 

@@ -22,16 +22,20 @@ dataPath=$DATA_DIR"LNG_FSRU_simulation_data.csv"
 windList=( 10000 50000  100000 200000 400000 600000 800000 1000000  )
 usePreciseRelList=(1 0)
 limit=8640000
+loopNum=10
 
 for usePreciseRel in "${usePreciseRelList[@]}"
 do
     for wind in "${windList[@]}"
     do
-      EXEC="$JAVA_CMD  org.piestream.evaluation.LNGRollover  $limit $wind $dataPath $usePreciseRel"
-      # Execute the command and write the results to the file
-      $EXEC >> $OUT_FILE
-      # Output the result of each execution
-      echo $EXEC
+        for ((i = 1; i <= loopNum; i++))
+        do
+            EXEC="$JAVA_CMD  org.piestream.evaluation.LNGRollover  $limit $wind $dataPath $usePreciseRel"
+            # Execute the command and write the results to the file
+            $EXEC >> $OUT_FILE
+            # Output the result of each execution
+            echo $EXEC
+        done
     done
 done
 
