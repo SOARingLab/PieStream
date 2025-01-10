@@ -8,8 +8,7 @@ OUT_DIR="out/latency_time"
 mkdir -p $OUT_DIR
 
 TIMESTAMP=$(date +"%m%d%H%M")
-#OUT_FILE="$OUT_DIR/latency_$TIMESTAMP.csv"
-OUT_FILE="$OUT_DIR/latency_plus.csv"
+OUT_FILE="$OUT_DIR/latency_$TIMESTAMP.csv"
 
 echo -n > $OUT_FILE
 
