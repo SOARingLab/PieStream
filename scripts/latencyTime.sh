@@ -8,14 +8,15 @@ OUT_DIR="out/latency_time"
 mkdir -p $OUT_DIR
 
 TIMESTAMP=$(date +"%m%d%H%M")
-OUT_FILE="$OUT_DIR/latency_$TIMESTAMP.csv"
+#OUT_FILE="$OUT_DIR/latency_$TIMESTAMP.csv"
+OUT_FILE="$OUT_DIR/latency_plus.csv"
 
 echo -n > $OUT_FILE
 
 cols=( 4 )
 limits=(  10000000 )
 windSize=( 10000 )
-rates=(10000000 1000000 100000 10000 1000 )
+rates=(100000000 10000000 1000000 100000 10000  1000 )
 loopNum=10
 
 # Write the header

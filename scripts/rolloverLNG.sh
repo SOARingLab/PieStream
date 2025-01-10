@@ -16,10 +16,10 @@ echo -n > $OUT_FILE  # Clear the file
 echo "($ENV_NAME)method,PIEs,MPPs,events,wind_size,result,all_used_time(ms),usePreciseRel" >> $OUT_FILE
 
 # Build the Java command to execute
-dataPath=$DATA_DIR"LNG_FSRU_simulation_data.csv"
+dataPath=$DATA_DIR"LNG_simulation_data.csv"
 
 
-windList=( 10000 50000  100000 200000 400000 600000 800000 1000000  )
+windList=(  10 20 30 40 50 60 70 80 90 100   )
 usePreciseRelList=(1 0)
 limit=8640000
 loopNum=10
@@ -28,6 +28,7 @@ for usePreciseRel in "${usePreciseRelList[@]}"
 do
     for wind in "${windList[@]}"
     do
+        wind=$(( wind * 86400 )) # 1 days seconds
         for ((i = 1; i <= loopNum; i++))
         do
             EXEC="$JAVA_CMD  org.piestream.evaluation.LNGRollover  $limit $wind $dataPath $usePreciseRel"

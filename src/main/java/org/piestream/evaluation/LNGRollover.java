@@ -100,7 +100,7 @@ public class LNGRollover {
      * @param windowType The window type for processing (TIME_WINDOW or other types)
      * @return The total processing time in milliseconds
      */
-    public static long buildRunner(int col, long limit, long windSize, String dataPath, WindowType windowType,int usePreciseRel  ) {
+    public static long buildRunner( long limit, long windSize, String dataPath, WindowType windowType,int usePreciseRel  ) {
         Schema schema = buildSchema( );
         String query = buildSimpleJoinQuery( windSize,usePreciseRel ); // Assuming buildQuery is used here
         RuntimeSet.initialize(false, false); // 根据需要设置配置项
@@ -123,7 +123,7 @@ public class LNGRollover {
 
 //          CSV head:  method,PIEs,MPPs,events,wind_size,result,processed_time(ms)
             StringBuilder resMsg=new StringBuilder();
-            resMsg.append("PieStream,").append(col).append(",").append(col-1).append(",").append(limit).append(",")
+            resMsg.append("PieStream,").append(4).append(",").append(5).append(",").append(limit).append(",")
                     .append(windSize).append(",").append(engine.getResultCNT()).append(",").append(processedTime)
                     .append(",").append(usePreciseRel);
             logger.info(resMsg.toString());
@@ -143,22 +143,20 @@ public class LNGRollover {
      */
     public static void main(String[] args) throws Exception {
         if (args.length < 1) {
-            int col = 3;
             long limit = 4320000L;
             long windSize = 4320000L;
             URL resource  =  Correctness.class.getClassLoader().getResource("data/LNGRollover_8633_45.csv");
             String dataPath = Paths.get(resource.toURI()).toAbsolutePath().toString();
             int usePreciseRel = 0;
             logger.info("method,PIEs,MPPs,events,wind_size,result,processed_time(ms),usePreciseRel");
-            buildRunner(col, limit, windSize, dataPath, WindowType.TIME_WINDOW,usePreciseRel );
+            buildRunner( limit, windSize, dataPath, WindowType.TIME_WINDOW,usePreciseRel );
 
         } else {
-            int col = 3;
             long limit = Long.valueOf(args[0] );
             long windSize =  Long.valueOf(args[1] );
             String dataPath= args[2];
             int usePreciseRel = Integer.valueOf(args[3]);
-            buildRunner(col, limit, windSize, dataPath, WindowType.TIME_WINDOW,usePreciseRel );
+            buildRunner( limit, windSize, dataPath, WindowType.TIME_WINDOW,usePreciseRel );
         }
     }
 }
