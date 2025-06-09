@@ -1,17 +1,17 @@
 #!/bin/bash
 
-#JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home
-#PIE_STREAM_HOME=/Users/czq/Code/PieStream
-#DATA_DIR="/Users/czq/Code/TPS_data/"
-#MAX_MEMO="-Xms4G -Xmx4G"
-#ENV_NAME="MACmini"
+JAVA_HOME=/Library/Java/JavaVirtualMachines/jdk-1.8.jdk/Contents/Home
+PIE_STREAM_HOME=/Users/czq/Code/PieStream
+DATA_DIR="/Users/czq/Code/TPS_data/"
+MAX_MEMO="-Xms4G -Xmx4G"
+ENV_NAME="MACmini"
 
 
-PIE_STREAM_HOME=/home/uzi/Code/pieP
-DATA_DIR="/home/uzi/Code/TPSdata/"
-JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
-MAX_MEMO="-Xms16G -Xmx16G"
-ENV_NAME="DELL_G7"
+#PIE_STREAM_HOME=/home/uzi/Code/pieP
+#DATA_DIR="/home/uzi/Code/TPSdata/"
+#JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64
+#MAX_MEMO="-Xms16G -Xmx16G"
+#ENV_NAME="DELL_G7"
 
 # Set CLASSPATH for your project (target/classes and libraries)
 CLASSPATH=$PIE_STREAM_HOME/target/classes:$PIE_STREAM_HOME/lib/*
