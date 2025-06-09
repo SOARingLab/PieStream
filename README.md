@@ -6,41 +6,56 @@ Traditional CEP systems struggle with handling complex queries due to the ineffi
 
 Experimental evaluations show that our method significantly outperforms state-of-the-art techniques, offering nearly quasilinear time and space complexity.
 
-## About Paper
-
-* **Title**: A Scalable Framework to Detect Interval Temporal Patterns in Data Streaming
-* **Authors**: [Zhongqing Chen](mailto:21210240135@m.fudan.edu.cn), Feng Liu, Hongyu Jia, and [Liang Zhang](mailto:lzhang@fudan.edu.cn)(Corresponding Author)
-* **Conference**: Submitted to the International Conference on Advanced Information Systems Engineering (CAiSE 2025)
-* **PDF of the paper**:  [Full Paper](attachments/caise2025_paper_67_submission.pdf)
-* **Proofs of theorem and the proposition in the paper**:  [appendix](attachments/appendix.pdf)
-
 ### Challenges
 
-1. **Limitations in Handling Temporal Relationships**: Sequential Pattern Matching methods struggle with interval events that span time and their complex temporal relationships, particularly when events overlap or are related. Representing multiple Allen’s interval relations increases processing complexity.
+1. **Event Latency Issues**
+   Traditional methods require waiting for complete event intervals before detection, resulting in high latency that fails to meet real-time streaming requirements. Approaches like TPStream exhibit high average processing latency under extreme data input rates.
 
-2. **Scalability Issues with Existing Methods**: State-of-the-art methods like TPStream can detect interval event pairs with low latency but suffer from exponential complexity when dealing with complex patterns. As the problem size increases, the performance degrades significantly, making these methods unsuitable for large-scale, real-time streaming data scenarios.
+2. **Inefficient Complex Query Processing**
+   Complex queries (e.g., combinations of interval event pairs) lead to exponential time complexity. Existing methods (e.g., TPStream) suffer severe performance degradation as problem scale increases, becoming unsuitable for large-scale streaming data.
 
-### Proposed Method
+3. **Imprecise Temporal Relationship Semantics**
+   Traditional Allen relations (e.g., before/after) generate high false positive rates, wasting system resources and reducing detection accuracy.
 
-To address the challenges of detecting complex temporal patterns in real-time streaming data, we propose a novel method that operates in two key steps:
+---
 
-1. **Decomposition and Detection of Binary Event Pairs**
-Complex temporal patterns are first decomposed into simpler binary event pairs. These event pairs are represented using regular expressions and automata, enabling efficient and low-latency recognition of interval patterns. Each binary event pair is detected independently, with results obtained in constant time, making the detection process highly efficient.
+### Solution Approach
 
-2. **Efficient Assembly through Natural Joins**
-Once the binary event pairs are detected, they are seamlessly joined using natural joins. This allows for efficient assembly of the full temporal pattern, with the entire process exhibiting nearly quasilinear time complexity.  
+1. **Atomic Low-Latency Detection**
+   Encode single-temporal-relation interval event pairs into symbolic regular expressions and automata, enabling event-level immediate detection to eliminate waiting latency.
+
+2. **Divide-and-Conquer Optimization**
+   Employ a two-phase decomposition:
+- Split complex patterns into atomic event pairs for independent detection
+- Merge results via incremental natural joins (materializing intermediate results within windows reduces redundant computations)
+  Time complexity optimized from exponential to quasi-linear.
+
+3. **Precise Temporal Relationship Modeling**
+   Introduce new relational operators:
+- `followed-by` (immediately succeeded by)
+- `follows` (immediately preceded by)
+  Replacing traditional before/after relations, reducing false positives from 79% to 0% in LNG cases.
+
+---
 
 ### Key Contributions
 
-- Proposing a novel framework for transforming predicate-based interval event pairs into regular expressions and automata. This enables efficient encoding of temporal relationships, achieving low-latency detection for complex interval patterns in streaming data.
+1. **Low-Latency Detection Framework**
+   Pioneered an automata-based instant detection mechanism for atomic event pairs, enabling stream-level event processing with >30% latency reduction under extreme throughput.
 
-- Developing a scalable approach to support above framework, not only reduces time complexity from exponential to nearly quasilinear but also achieves nearly quasilinear space complexity, significantly improving the efficiency of handling complex queries in real-time streaming systems.
+2. **Quasi-Linear Complexity Algorithm**
+   Breakthrough in complex query performance via divide-and-conquer and incremental joins:
+- Time complexity: exponential → quasi-linear
+- Space complexity: quasi-linear
+
+3. **Zero False-Positive Temporal Model**
+   Defined precise temporal semantic operators that: Completely eliminate semantic ambiguity in traditional before/after relations 
 
 ### Experiments
 
 #### Processing Time
 
-The experiment aimed to compare the processing time of **[PieStream](https://github.com/cyann7/PieStream)** and **[TPStream](http://uni-marburg.de/oaCPk)** using the same synthetic dataset of TPStream and query statements. The query complexity was varied by adjusting the number of PIEs, with each sequence of n PIEs forming n - 1 mPiePairs, each containing 6 Allen temporal relations.
+The experiment aimed to compare the processing time of **PieStream** and **[TPStream](http://uni-marburg.de/oaCPk)** using the same synthetic dataset of TPStream and query statements. The query complexity was varied by adjusting the number of PIEs, with each sequence of n PIEs forming n - 1 mPiePairs, each containing 6 Allen temporal relations.
 
 The experiment used a window size of 10,000 and the fastest event input rate, testing different event counts (ranging from 10³ to 10⁷). Multiple trials were conducted, varying the number of PIEs from 4 to 24, to evaluate processing time and system scalability.
 
@@ -65,8 +80,7 @@ We propose a novel framework for efficient complex event processing (CEP) that c
 
 1. Clone the repository:
 
-    ```bash
-    git clone git@github.com:cyann7/PieStream.git
+    ```bash 
     cd PieStream
     ```
 
