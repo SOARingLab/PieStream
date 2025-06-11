@@ -53,6 +53,11 @@ Experimental evaluations show that our method significantly outperforms state-of
 
 ### Experiments
 
+
+#### Dataset
+
+The dataset consists of script-synthesized data from **[TPStream](http://uni-marburg.de/oaCPk)** and simulation-synthesized data based on LNG rollover cases. It is available for download on the [Zenodo platform](https://zenodo.org/records/15637848).
+
 #### Processing Time
 
 The experiment aimed to compare the processing time of **PieStream** and **[TPStream](http://uni-marburg.de/oaCPk)** using the same synthetic dataset of TPStream and query statements. The query complexity was varied by adjusting the number of PIEs, with each sequence of n PIEs forming n - 1 mPiePairs, each containing 6 Allen temporal relations.

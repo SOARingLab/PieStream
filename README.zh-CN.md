@@ -52,6 +52,10 @@
 
 ### 实验
 
+#### 数据集
+
+数据集采用**[TPStream](http://uni-marburg.de/oaCPk)**中脚本合成的数据集以及根据LNG翻滚案例仿真合成的数据集，在[zenodo平台可下载](https://zenodo.org/records/15637848)。
+
 #### 平均处理时间
 实验比较了**PieStream**与**[TPStream](http://uni-marburg.de/oaCPk)**在相同合成数据集上的处理时间。通过调整PIE数量改变查询复杂度（n个PIE序列形成n-1个mPiePair，每个包含6种Allen时序关系）。
 
@@ -67,6 +71,7 @@
 右图表明当PIE超过12个后，PieStream始终保持更低处理时间。TPStream在小规模时表现更优，但性能差距随规模扩大而加剧。
 
 注：PieStream实验代码均位于`scripts`文件夹。
+
 
 ### 结论
 我们提出了一种新型高效复杂事件处理框架：将含区间关系的二元事件对转化为正则表达式和自动机，实现低延迟识别。通过分解复杂模式为独立事件对并使用自然连接，实现了更精准高效的检测。实验证明该方法在处理复杂查询时优于前沿技术。
@@ -86,7 +91,7 @@ mvn clean install
 3. 修改`scripts/env`并运行`scripts`文件夹中的实验脚本：
 ```bash
 cd scripts
-# 首先修改 scripts/env
+# 首先修改 scripts/env中的环境和数据集地址
 ./processedTime.sh
 ```
 
